@@ -2,7 +2,6 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
 import { posix } from "path";
-import { existsSync } from "fs";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -41,9 +40,11 @@ async function createDataset() {
     const workspaceFolderUri = vscode.workspace.workspaceFolders[0].uri;
     const datasetUri = workspaceFolderUri.with({ path: posix.join(workspaceFolderUri.path, "datasets", dataset) });
 
-    if (existsSync(datasetUri.path)) {
-        vscode.window.showTextDocument(datasetUri);
-        return;
+    try {
+        await vscode.workspace.fs.stat(datasetUri);
+        return vscode.window.showTextDocument(datasetUri);
+    } catch (err) {
+
     }
 
     await vscode.workspace.fs.writeFile(datasetUri, Buffer.from(createDatasetContent(), "utf-8"));
@@ -120,9 +121,11 @@ async function createForm() {
     const workspaceFolderUri = vscode.workspace.workspaceFolders[0].uri;
     const formUri = workspaceFolderUri.with({ path: posix.join(workspaceFolderUri.path, "forms", formName, formFileName) });
 
-    if (existsSync(formUri.path)) {
-        vscode.window.showTextDocument(formUri);
-        return;
+    try {
+        await vscode.workspace.fs.stat(formUri);
+        return vscode.window.showTextDocument(formUri);
+    } catch (err) {
+
     }
 
     await vscode.workspace.fs.writeFile(formUri, Buffer.from(createFormContent(), "utf-8"));
@@ -203,9 +206,11 @@ async function createFormEvent(folderUri: vscode.Uri) {
         )
     });
 
-    if (existsSync(eventUri.path)) {
-        vscode.window.showTextDocument(eventUri);
-        return;
+    try {
+        await vscode.workspace.fs.stat(eventUri);
+        return vscode.window.showTextDocument(eventUri);
+    } catch (err) {
+
     }
 
     let fileData: string = "";
@@ -297,9 +302,11 @@ async function createWorkflowEvent(folderUri: vscode.Uri) {
         )
     });
 
-    if (existsSync(eventUri.path)) {
-        vscode.window.showTextDocument(eventUri);
-        return;
+    try {
+        await vscode.workspace.fs.stat(eventUri);
+        return vscode.window.showTextDocument(eventUri);
+    } catch (err) {
+
     }
 
     let fileData: string = "";
