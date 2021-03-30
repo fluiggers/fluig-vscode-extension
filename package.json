@@ -3,6 +3,8 @@
 	"displayName": "fluig-vscode-extension",
 	"description": "Extensão para agilizar o desenvolvimento para o Fluig no VS Code",
 	"version": "0.0.1",
+	"publisher": "BrunoGasparetto",
+	"repository": {"url": "https://github.com/brunogasparetto/fluig-vscode-extension"},
 	"engines": {
 		"vscode": "^1.54.0"
 	},
