@@ -6,9 +6,9 @@ import { posix } from "path";
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
-	context.subscriptions.push(vscode.commands.registerCommand("fluig-vscode-extension.newDataset", createDataset));
-	context.subscriptions.push(vscode.commands.registerCommand("fluig-vscode-extension.newForm", createForm));
-	context.subscriptions.push(vscode.commands.registerCommand("fluig-vscode-extension.newFormEvent", createFormEvent));
+    context.subscriptions.push(vscode.commands.registerCommand("fluig-vscode-extension.newDataset", createDataset));
+    context.subscriptions.push(vscode.commands.registerCommand("fluig-vscode-extension.newForm", createForm));
+    context.subscriptions.push(vscode.commands.registerCommand("fluig-vscode-extension.newFormEvent", createFormEvent));
 }
 
 // this method is called when your extension is deactivated
@@ -18,28 +18,28 @@ export function deactivate() {}
  * Cria um arquivo contendo um novo Dataset
  */
 async function createDataset() {
-	if (!vscode.workspace.workspaceFolders) {
-		vscode.window.showInformationMessage("Você precisa estar em um diretório / workspace.");
-		return;
-	}
+    if (!vscode.workspace.workspaceFolders) {
+        vscode.window.showInformationMessage("Você precisa estar em um diretório / workspace.");
+        return;
+    }
 
-	let dataset:string = await vscode.window.showInputBox({
-		prompt: "Qual o nome do Dataset (sem espaços e sem caracteres especiais)?",
-		placeHolder: "ds_nome_dataset"
-	}) || "";
+    let dataset:string = await vscode.window.showInputBox({
+        prompt: "Qual o nome do Dataset (sem espaços e sem caracteres especiais)?",
+        placeHolder: "ds_nome_dataset"
+    }) || "";
 
-	if (!dataset) {
-		return;
-	}
+    if (!dataset) {
+        return;
+    }
 
-	if (!dataset.endsWith(".js")) {
-		dataset += ".js";
-	}
+    if (!dataset.endsWith(".js")) {
+        dataset += ".js";
+    }
 
-	const workspaceFolderUri = vscode.workspace.workspaceFolders[0].uri;
-	const datasetUri = workspaceFolderUri.with({ path: posix.join(workspaceFolderUri.path, "datasets", dataset) });
-	await vscode.workspace.fs.writeFile(datasetUri, Buffer.from(createDatasetContent(), "utf-8"));
-	vscode.window.showTextDocument(datasetUri);
+    const workspaceFolderUri = vscode.workspace.workspaceFolders[0].uri;
+    const datasetUri = workspaceFolderUri.with({ path: posix.join(workspaceFolderUri.path, "datasets", dataset) });
+    await vscode.workspace.fs.writeFile(datasetUri, Buffer.from(createDatasetContent(), "utf-8"));
+    vscode.window.showTextDocument(datasetUri);
 }
 
 /**
@@ -48,7 +48,7 @@ async function createDataset() {
  * @returns {string}
  */
 function createDatasetContent() {
-	return `/**
+    return `/**
  *
  *
  * @param {string[]} fields Campos Solicitados
@@ -57,9 +57,9 @@ function createDatasetContent() {
  * @returns {Dataset}
  */
 function createDataset(fields, constraints, sorts) {
-	var dataset = DatasetBuilder.newDataset();
+    var dataset = DatasetBuilder.newDataset();
 
-	return dataset;
+    return dataset;
 }
 
 /**
@@ -94,25 +94,25 @@ function onMobileSync(user) {
  * Cria um novo formulário
  */
 async function createForm() {
-	if (!vscode.workspace.workspaceFolders) {
-		vscode.window.showInformationMessage("Você precisa estar em um diretório / workspace.");
-		return;
-	}
+    if (!vscode.workspace.workspaceFolders) {
+        vscode.window.showInformationMessage("Você precisa estar em um diretório / workspace.");
+        return;
+    }
 
-	let formName:string = await vscode.window.showInputBox({
-		prompt: "Qual o nome do Formulário (sem espaços e sem caracteres especiais)?",
-		placeHolder: "NomeFormulario"
-	}) || "";
+    let formName:string = await vscode.window.showInputBox({
+        prompt: "Qual o nome do Formulário (sem espaços e sem caracteres especiais)?",
+        placeHolder: "NomeFormulario"
+    }) || "";
 
-	if (!formName) {
-		return;
-	}
+    if (!formName) {
+        return;
+    }
 
-	const formFileName = formName + ".html";
-	const workspaceFolderUri = vscode.workspace.workspaceFolders[0].uri;
-	const formUri = workspaceFolderUri.with({ path: posix.join(workspaceFolderUri.path, "forms", formName, formFileName) });
-	await vscode.workspace.fs.writeFile(formUri, Buffer.from(createFormContent(), "utf-8"));
-	vscode.window.showTextDocument(formUri);
+    const formFileName = formName + ".html";
+    const workspaceFolderUri = vscode.workspace.workspaceFolders[0].uri;
+    const formUri = workspaceFolderUri.with({ path: posix.join(workspaceFolderUri.path, "forms", formName, formFileName) });
+    await vscode.workspace.fs.writeFile(formUri, Buffer.from(createFormContent(), "utf-8"));
+    vscode.window.showTextDocument(formUri);
 }
 
 /**
@@ -121,20 +121,20 @@ async function createForm() {
  * @returns {string}
  */
 function createFormContent() {
-	return `<html>
+    return `<html>
 <head>
-	<link rel="stylesheet" href="/style-guide/css/fluig-style-guide.min.css"/>
-	<script type="text/javascript" src="/portal/resources/js/jquery/jquery.js"></script>
-	<script type="text/javascript" src="/portal/resources/js/jquery/jquery-ui.min.js"></script>
-	<script type="text/javascript" src="/portal/resources/js/mustache/mustache-min.js"></script>
-	<script type="text/javascript" src="/style-guide/js/fluig-style-guide.min.js"></script>
+    <link rel="stylesheet" href="/style-guide/css/fluig-style-guide.min.css"/>
+    <script type="text/javascript" src="/portal/resources/js/jquery/jquery.js"></script>
+    <script type="text/javascript" src="/portal/resources/js/jquery/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="/portal/resources/js/mustache/mustache-min.js"></script>
+    <script type="text/javascript" src="/style-guide/js/fluig-style-guide.min.js"></script>
 </head>
 <body>
-	<div class="fluig-style-guide">
-		<form name="form" role="form">
+    <div class="fluig-style-guide">
+        <form name="form" role="form">
 
-		</form>
-	</div>
+        </form>
+    </div>
 </body>
 </html>
 `;
@@ -144,74 +144,74 @@ function createFormContent() {
  * Cria um novo evento de formulário
  */
 async function createFormEvent(folderUri: vscode.Uri) {
-	if (!vscode.workspace.workspaceFolders) {
-		vscode.window.showInformationMessage("Você precisa estar em um diretório / workspace.");
-		return;
-	}
+    if (!vscode.workspace.workspaceFolders) {
+        vscode.window.showInformationMessage("Você precisa estar em um diretório / workspace.");
+        return;
+    }
 
-	if (!folderUri.path.includes("/forms/")) {
-		vscode.window.showErrorMessage("Necessário selecionar um formulário para criar o evento.");
-		return;
-	}
+    if (!folderUri.path.includes("/forms/")) {
+        vscode.window.showErrorMessage("Necessário selecionar um formulário para criar o evento.");
+        return;
+    }
 
-	const formName:string = folderUri.path.replace(/.*\/forms\/([^/]+).*/, "$1");
+    const formName:string = folderUri.path.replace(/.*\/forms\/([^/]+).*/, "$1");
 
-	console.log(formName);
+    console.log(formName);
 
-	const eventName: string = await vscode.window.showQuickPick(
-		[
-			'afterProcessing',
-			'afterSaveNew',
-			'beforeProcessing',
-			'displayFields',
-			'enableFields',
-			'inputFields',
-			'setEnable',
-			'validateForm'
-		],
-		{
-			canPickMany: false,
-			placeHolder: "Selecione o Evento"
-		}
-	) || "";
+    const eventName: string = await vscode.window.showQuickPick(
+        [
+            'afterProcessing',
+            'afterSaveNew',
+            'beforeProcessing',
+            'displayFields',
+            'enableFields',
+            'inputFields',
+            'setEnable',
+            'validateForm'
+        ],
+        {
+            canPickMany: false,
+            placeHolder: "Selecione o Evento"
+        }
+    ) || "";
 
-	if (!eventName) {
-		return;
-	}
+    if (!eventName) {
+        return;
+    }
 
-	const eventFilename = eventName + ".js";
-	const workspaceFolderUri = vscode.workspace.workspaceFolders[0].uri;
-	const eventUri = workspaceFolderUri.with({
-		path: posix.join(
-			workspaceFolderUri.path,
-			"forms",
-			formName,
-			'events',
-			eventFilename
-		)
-	});
+    const eventFilename = eventName + ".js";
+    const workspaceFolderUri = vscode.workspace.workspaceFolders[0].uri;
+    const eventUri = workspaceFolderUri.with({
+        path: posix.join(
+            workspaceFolderUri.path,
+            "forms",
+            formName,
+            'events',
+            eventFilename
+        )
+    });
 
-	let fileData: string = "";
+    let fileData: string = "";
 
-	switch (eventName) {
-		case "displayFields":
-			fileData = createEventFormDisplayFields();
-			break;
+    switch (eventName) {
+        case "displayFields":
+            fileData = createEventFormDisplayFields();
+            break;
 
-		case "setEnable":
-			fileData = createEventFormSetEnable();
-			break;
+        case "setEnable":
+            fileData = createEventFormSetEnable();
+            break;
 
-		default:
-			fileData = createEventFormWithFormController(eventName);
-	}
+        default:
+            fileData = createEventFormWithFormController(eventName);
+    }
 
-	await vscode.workspace.fs.writeFile(eventUri, Buffer.from(fileData, "utf-8"));
-	vscode.window.showTextDocument(eventUri);
+    await vscode.workspace.fs.writeFile(eventUri, Buffer.from(fileData, "utf-8"));
+    vscode.window.showTextDocument(eventUri);
 }
 
 function createEventFormWithFormController(eventName: string) {
-	return `/**
+    return `/**
  *
  *
  * @param {FormController} form
@@ -223,7 +223,7 @@ function ${eventName}(form) {
 }
 
 function createEventFormSetEnable() {
-	return `/**
+    return `/**
  *
  *
  */
@@ -234,7 +234,7 @@ function setEnable() {
 }
 
 function createEventFormDisplayFields() {
-	return `/**
+    return `/**
  *
  *
  * @param {FormController} form
