@@ -1,0 +1,57 @@
+{
+    "fluig-paifilho-loop": {
+        "scope": "javascript",
+        "prefix": "fluig-paifilho-loop",
+        "body": [
+            "var indexes = form.getChildrenIndexes(\"$1\");",
+            "",
+            "for (var i = 0; i < indexes.length; ++i) {",
+            "    form.getValue(\"$2___\" + indexes[i]);$0",
+            "}"
+        ],
+        "description": "Percorre os itens de um Pai Filho (back-end)."
+    },
+
+    "fluig-function-data": {
+        "scope": "javascript",
+        "prefix": "fluig-function-data",
+        "body": [
+            "/**",
+            " * Pega a data atual formatada",
+            " *",
+            " * Por padrão retorna o formato dd/MM/yyyy",
+            " *",
+            " * @param {string} format",
+            " * @returns {string}",
+            " */",
+            "function pegaDataAtual(format) {",
+            "    if (format == null || !format.length) {",
+            "        format = \"dd/MM/yyyy\";",
+            "    }",
+            "",
+            "    var data = java.time.LocalDateTime.now();",
+            "    var formatter = java.time.format.DateTimeFormatter.ofPattern(format);",
+            "    return data.format(formatter);",
+            "}$0"
+        ],
+        "description": "Cria uma função que retorna a data atual formatada (back-end)."
+    },
+
+    "fluig-calendar": {
+        "scope": "javascript",
+        "prefix": "fluig-calendar",
+        "body": [
+            "FLUIGC.calendar(\"#$1\"$0);"
+        ],
+        "description": "Ativa o plugin de Data em um input text (front-end)."
+    },
+
+    "fluig-data-atual": {
+        "scope": "javascript",
+        "prefix": "fluig-data-atual",
+        "body": [
+            "moment().format(\"DD/MM/YYYY\")"
+        ],
+        "description": "Pega a data atual formatada em PT-BR (front-end)."
+    }
+}

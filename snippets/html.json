@@ -1,0 +1,134 @@
+{
+    "fluig-input-text": {
+        "scope": "html",
+        "prefix": "fluig-input-text",
+        "body": [
+            "<div class=\"col-md-6\">",
+            "    <div class=\"form-group\">",
+            "        <label for=\"$1\">$2</label>",
+            "        <input type=\"text\" class=\"form-control\" name=\"$1\" id=\"$1\">",
+            "    </div>",
+            "</div>$0"
+        ],
+        "description": "Cria um campo do tipo Texto."
+    },
+
+    "fluig-input-textarea": {
+        "scope": "html",
+        "prefix": "fluig-input-textarea",
+        "body": [
+            "<div class=\"col-md-12\">",
+            "    <div class=\"form-group\">",
+            "        <label for=\"$1\">$2</label>",
+            "        <textarea class=\"form-control\" name=\"$1\" id=\"$1\" rows=\"${3:10}\"></textarea>",
+            "    </div>",
+            "</div>$0"
+        ],
+        "description": "Cria um campo do tipo Texto."
+    },
+
+    "fluig-input-zoom": {
+        "scope": "html",
+        "prefix": "fluig-input-zoom",
+        "body": [
+            "<div class=\"col-md-6\">",
+            "    <div class=\"form-group\">",
+            "        <label for=\"$1\">$2</label>",
+            "        <input type=\"zoom\" class=\"form-control\" id=\"$1\" name=\"$1\" data-zoom=\"{",
+            "            'datasetId':'$3',",
+            "            'displayKey':'$4',",
+            "            'maximumSelectionLength':'1',",
+            "            'placeholder':'$5',",
+            "            'fields':[",
+            "                {",
+            "                    'field':'$4',",
+            "                    'label':'$6',",
+            "                    'standard':'true'",
+            "                }$0",
+            "            ]",
+            "        }\">",
+            "    </div>",
+            "</div>"
+        ],
+        "description": "Cria um campo Zoom de Formulário."
+    },
+
+    "fluig-switch-aprovacao": {
+        "scope": "html",
+        "prefix": "fluig-switch-aprovacao",
+        "body": [
+            "<div class=\"row\">",
+            "    <div class=\"form-group col-md-1\">",
+            "        <div class=\"switch switch-success\">",
+            "            <label for=\"$1_aprovado\">Aprovado</label>",
+            "            <input class=\"switch-input\" type=\"radio\" value=\"aprovado\" name=\"$1\" id=\"$1_aprovado\"/>",
+            "            <label class=\"switch-button\" for=\"$1_aprovado\">Toggle</label>",
+            "        </div>",
+            "    </div>",
+            "    <div class=\"form-group col-md-1\">",
+            "        <div class=\"switch switch-danger\">",
+            "            <label for=\"$1_reprovado\">Reprovado</label>",
+            "            <input class=\"switch-input\" type=\"radio\" value=\"reprovado\" name=\"$1\" id=\"$1_reprovado\">",
+            "            <label class=\"switch-button\" for=\"$1_reprovado\">Toggle</label>",
+            "        </div>",
+            "    </div>",
+            "</div>$0"
+        ],
+        "description": "Cria dois switches interligados para indicar aprovação ou reprovação de algo."
+    },
+
+    "fluig-input-data": {
+        "scope": "html",
+        "prefix": "fluig-input-data",
+        "body": [
+            "<div class=\"col-md-6\">",
+            "    <div class=\"form-group\">",
+            "        <label for=\"$1\">${2:Data}</label>",
+            "        <div class=\"input-group\">",
+            "            <input class=\"form-control\" type=\"text\" id=\"$1\" name=\"$1\" mask=\"00/00/0000\">",
+            "            <div class=\"input-group-addon\"><span class=\"fluigicon fluigicon-calendar\"></span></div>",
+            "        </div>",
+            "    </div>",
+            "</div>$0"
+        ],
+        "description": "Cria um campo tipo texto com ícone de calendário e máscara de data."
+    },
+
+    "fluig-panel": {
+        "scope": "html",
+        "prefix": "fluig-panel",
+        "body": [
+            "<div class=\"panel panel-default\">",
+            "    <div class=\"panel-heading\">",
+            "        <h2 class=\"panel-title\">$1</h2>",
+            "    </div>",
+            "    <div class=\"panel-body\">",
+            "        $0",
+            "    </div>",
+            "</div>"
+        ],
+        "description": "Cria um painel simples com título."
+    },
+
+    "fluig-panel-collapse": {
+        "scope": "html",
+        "prefix": "fluig-panel-collapse",
+        "body": [
+            "<div class=\"panel panel-default\">",
+            "    <div class=\"panel-heading\">",
+            "        <h2 class=\"panel-title\">",
+            "            <a class=\"collapse-icon up\" data-toggle=\"collapse\" href=\"#${2:idDivCollapse}\" aria-expanded=\"true\">",
+            "                ${1:Título}",
+            "            </a>",
+            "        </h2>",
+            "    </div>",
+            "    <div id=\"${2:idDivCollapse}\" class=\"collapse in\">",
+            "        <div class=\"panel-body\">",
+            "            $0",
+            "        </div>",
+            "    </div>",
+            "</div>"
+        ],
+        "description": "Cria um painel com título e que pode ser encolhido."
+    }
+}
