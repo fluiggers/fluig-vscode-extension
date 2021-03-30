@@ -15,6 +15,29 @@ export function activate(context: vscode.ExtensionContext) {
 // this method is called when your extension is deactivated
 export function deactivate() {}
 
+const eventMapFunctions = new Map<String, Function>();
+
+eventMapFunctions.set('displayFields', createEventFormDisplayFields);
+eventMapFunctions.set('setEnable', createEventFormSetEnable);
+eventMapFunctions.set('afterCancelProcess', createEventWorkflowAfterCancelProcess);
+eventMapFunctions.set('afterProcessCreate', createEventWorkflowAfterProcessCreate);
+eventMapFunctions.set('afterProcessFinish', createEventWorkflowAfterProcessFinish);
+eventMapFunctions.set('afterReleaseProcessVersion', createEventWorkflowAfterReleaseProcessVersion);
+eventMapFunctions.set('afterReleaseVersion', createEventWorkflowAfterReleaseVersion);
+eventMapFunctions.set('afterStateLeave', createEventWorkflowAfterStateLeave);
+eventMapFunctions.set('afterTaskComplete', createEventWorkflowAfterTaskComplete);
+eventMapFunctions.set('afterTaskCreate', createEventWorkflowAfterTaskCreate);
+eventMapFunctions.set('beforeCancelProcess', createEventWorkflowBeforeCancelProcess);
+eventMapFunctions.set('beforeSendData', createEventWorkflowBeforeSendData);
+eventMapFunctions.set('beforeStateEntry', createEventWorkflowBeforeStateEntry);
+eventMapFunctions.set('beforeStateLeave', createEventWorkflowBeforeStateLeave);
+eventMapFunctions.set('beforeTaskComplete', createEventWorkflowBeforeTaskComplete);
+eventMapFunctions.set('beforeTaskCreate', createEventWorkflowBeforeTaskCreate);
+eventMapFunctions.set('beforeTaskSave', createEventWorkflowBeforeTaskSave);
+eventMapFunctions.set('checkComplementsPermission', createEventWorkflowCheckComplementsPermission);
+eventMapFunctions.set('subProcessCreated', createEventWorkflowSubProcessCreated);
+eventMapFunctions.set('validateAvailableStates', createEventWorkflowValidateAvailableStates);
+
 /**
  * Cria um arquivo contendo um novo Dataset
  */
@@ -52,54 +75,6 @@ async function createDataset() {
 }
 
 /**
- * Cria o conteúdo do arquivo de um novo Dataset
- *
- * @returns {string}
- */
-function createDatasetContent(): string {
-    return `/**
- *
- *
- * @param {string[]} fields Campos Solicitados
- * @param {Constraint[]} constraints Filtros
- * @param {string[]} sorts Campos da Ordenação
- * @returns {Dataset}
- */
-function createDataset(fields, constraints, sorts) {
-    var dataset = DatasetBuilder.newDataset();
-
-    return dataset;
-}
-
-/**
- *
- */
-function defineStructure() {
-
-}
-
-/**
- *
- *
- * @param {number} lastSyncDate
- */
-function onSync(lastSyncDate) {
-
-}
-
-/**
- *
- *
- * @param user
- * @returns {DatasetMobileSync}
- */
-function onMobileSync(user) {
-
-}
-`;
-}
-
-/**
  * Cria um novo formulário
  */
 async function createForm() {
@@ -130,31 +105,6 @@ async function createForm() {
 
     await vscode.workspace.fs.writeFile(formUri, Buffer.from(createFormContent(), "utf-8"));
     vscode.window.showTextDocument(formUri);
-}
-
-/**
- * Cria o conteúdo do arquivo de um novo Formulário
- *
- * @returns {string}
- */
-function createFormContent(): string {
-    return `<html>
-<head>
-    <link rel="stylesheet" href="/style-guide/css/fluig-style-guide.min.css"/>
-    <script type="text/javascript" src="/portal/resources/js/jquery/jquery.js"></script>
-    <script type="text/javascript" src="/portal/resources/js/jquery/jquery-ui.min.js"></script>
-    <script type="text/javascript" src="/portal/resources/js/mustache/mustache-min.js"></script>
-    <script type="text/javascript" src="/style-guide/js/fluig-style-guide.min.js"></script>
-</head>
-<body>
-    <div class="fluig-style-guide">
-        <form name="form" role="form">
-
-        </form>
-    </div>
-</body>
-</html>
-`;
 }
 
 /**
@@ -213,20 +163,7 @@ async function createFormEvent(folderUri: vscode.Uri) {
 
     }
 
-    let fileData: string = "";
-
-    switch (eventName) {
-        case "displayFields":
-            fileData = createEventFormDisplayFields();
-            break;
-
-        case "setEnable":
-            fileData = createEventFormSetEnable();
-            break;
-
-        default:
-            fileData = createEventFormWithFormController(eventName);
-    }
+    const fileData = eventMapFunctions.get(eventName)?.apply({}) || createEventFormWithFormController(eventName);
 
     await vscode.workspace.fs.writeFile(eventUri, Buffer.from(fileData, "utf-8"));
     vscode.window.showTextDocument(eventUri);
@@ -309,87 +246,84 @@ async function createWorkflowEvent(folderUri: vscode.Uri) {
 
     }
 
-    let fileData: string = "";
-
-    switch (eventName) {
-        case "afterReleaseProcessVersion":
-            fileData = createEventWorkflowAfterReleaseProcessVersion();
-            break;
-
-        case "afterReleaseVersion":
-            fileData = createEventWorkflowAfterReleaseVersion();
-            break;
-
-        case "afterTaskCreate":
-            fileData = createEventWorkflowAfterTaskCreate();
-            break;
-
-        case "beforeStateEntry":
-            fileData = createEventWorkflowBeforeStateEntry();
-            break;
-
-        case "beforeTaskCreate":
-            fileData = createEventWorkflowBeforeTaskCreate();
-            break;
-
-        case "beforeSendData":
-            fileData = createEventWorkflowBeforeSendData();
-            break;
-
-        case "validateAvailableStates":
-            fileData = createEventWorkflowValidateAvailableStates();
-            break;
-
-        case "beforeTaskSave":
-            fileData = createEventWorkflowBeforeTaskSave();
-            break;
-
-        case "afterProcessCreate":
-            fileData = createEventWorkflowAfterProcessCreate();
-            break;
-
-        case "beforeTaskComplete":
-            fileData = createEventWorkflowBeforeTaskComplete();
-            break;
-
-        case "afterTaskComplete":
-            fileData = createEventWorkflowAfterTaskComplete();
-            break;
-
-        case "afterStateLeave":
-            fileData = createEventWorkflowAfterStateLeave()
-            break;
-
-        case "beforeStateLeave":
-            fileData = createEventWorkflowBeforeStateLeave();
-            break;
-
-        case "checkComplementsPermission":
-            fileData = createEventWorkflowCheckComplementsPermission();
-            break;
-
-        case "subProcessCreated":
-            fileData = createEventWorkflowSubProcessCreated();
-            break;
-
-        case "afterProcessFinish":
-            fileData = createEventWorkflowAfterProcessFinish();
-            break;
-
-        case "beforeCancelProcess":
-            fileData = createEventWorkflowBeforeCancelProcess();
-            break;
-
-        case "afterCancelProcess":
-            fileData = createEventWorkflowAfterCancelProcess();
-            break;
-
-        default:
-            fileData = createEmptyFunction(eventName);
-    }
+    const fileData = eventMapFunctions.get(eventName)?.apply({}) || createEmptyFunction(eventName);
 
     await vscode.workspace.fs.writeFile(eventUri, Buffer.from(fileData, "utf-8"));
     vscode.window.showTextDocument(eventUri);
+}
+
+
+/**
+ * Cria o conteúdo do arquivo de um novo Dataset
+ *
+ * @returns {string}
+ */
+ function createDatasetContent(): string {
+    return `/**
+ *
+ *
+ * @param {string[]} fields Campos Solicitados
+ * @param {Constraint[]} constraints Filtros
+ * @param {string[]} sorts Campos da Ordenação
+ * @returns {Dataset}
+ */
+function createDataset(fields, constraints, sorts) {
+    var dataset = DatasetBuilder.newDataset();
+
+    return dataset;
+}
+
+/**
+ *
+ */
+function defineStructure() {
+
+}
+
+/**
+ *
+ *
+ * @param {number} lastSyncDate
+ */
+function onSync(lastSyncDate) {
+
+}
+
+/**
+ *
+ *
+ * @param user
+ * @returns {DatasetMobileSync}
+ */
+function onMobileSync(user) {
+
+}
+`;
+}
+
+/**
+ * Cria o conteúdo do arquivo de um novo Formulário
+ *
+ * @returns {string}
+ */
+ function createFormContent(): string {
+    return `<html>
+<head>
+    <link rel="stylesheet" href="/style-guide/css/fluig-style-guide.min.css"/>
+    <script type="text/javascript" src="/portal/resources/js/jquery/jquery.js"></script>
+    <script type="text/javascript" src="/portal/resources/js/jquery/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="/portal/resources/js/mustache/mustache-min.js"></script>
+    <script type="text/javascript" src="/style-guide/js/fluig-style-guide.min.js"></script>
+</head>
+<body>
+    <div class="fluig-style-guide">
+        <form name="form" role="form">
+
+        </form>
+    </div>
+</body>
+</html>
+`;
 }
 
 /**
@@ -668,15 +602,6 @@ function checkComplementsPermission() {
 }
 `;
 }
-
-
-
-
-
-
-
-
-
 
 function createEmptyFunction(functionName: string): string {
     return `/**
