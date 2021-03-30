@@ -2,6 +2,7 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
 import { posix } from "path";
+import { existsSync } from "fs";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -9,6 +10,7 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(vscode.commands.registerCommand("fluig-vscode-extension.newDataset", createDataset));
     context.subscriptions.push(vscode.commands.registerCommand("fluig-vscode-extension.newForm", createForm));
     context.subscriptions.push(vscode.commands.registerCommand("fluig-vscode-extension.newFormEvent", createFormEvent));
+    context.subscriptions.push(vscode.commands.registerCommand("fluig-vscode-extension.newWorkflowEvent", createWorkflowEvent));
 }
 
 // this method is called when your extension is deactivated
@@ -38,6 +40,12 @@ async function createDataset() {
 
     const workspaceFolderUri = vscode.workspace.workspaceFolders[0].uri;
     const datasetUri = workspaceFolderUri.with({ path: posix.join(workspaceFolderUri.path, "datasets", dataset) });
+
+    if (existsSync(datasetUri.path)) {
+        vscode.window.showTextDocument(datasetUri);
+        return;
+    }
+
     await vscode.workspace.fs.writeFile(datasetUri, Buffer.from(createDatasetContent(), "utf-8"));
     vscode.window.showTextDocument(datasetUri);
 }
@@ -111,6 +119,12 @@ async function createForm() {
     const formFileName = formName + ".html";
     const workspaceFolderUri = vscode.workspace.workspaceFolders[0].uri;
     const formUri = workspaceFolderUri.with({ path: posix.join(workspaceFolderUri.path, "forms", formName, formFileName) });
+
+    if (existsSync(formUri.path)) {
+        vscode.window.showTextDocument(formUri);
+        return;
+    }
+
     await vscode.workspace.fs.writeFile(formUri, Buffer.from(createFormContent(), "utf-8"));
     vscode.window.showTextDocument(formUri);
 }
@@ -156,8 +170,6 @@ async function createFormEvent(folderUri: vscode.Uri) {
 
     const formName:string = folderUri.path.replace(/.*\/forms\/([^/]+).*/, "$1");
 
-    console.log(formName);
-
     const eventName: string = await vscode.window.showQuickPick(
         [
             'afterProcessing',
@@ -191,6 +203,11 @@ async function createFormEvent(folderUri: vscode.Uri) {
         )
     });
 
+    if (existsSync(eventUri.path)) {
+        vscode.window.showTextDocument(eventUri);
+        return;
+    }
+
     let fileData: string = "";
 
     switch (eventName) {
@@ -204,6 +221,164 @@ async function createFormEvent(folderUri: vscode.Uri) {
 
         default:
             fileData = createEventFormWithFormController(eventName);
+    }
+
+    await vscode.workspace.fs.writeFile(eventUri, Buffer.from(fileData, "utf-8"));
+    vscode.window.showTextDocument(eventUri);
+}
+
+/**
+ * Cria um novo evento de Processo
+ */
+async function createWorkflowEvent(folderUri: vscode.Uri) {
+    if (!vscode.workspace.workspaceFolders) {
+        vscode.window.showInformationMessage("Você precisa estar em um diretório / workspace.");
+        return;
+    }
+
+    if (!folderUri.path.endsWith(".process")) {
+        vscode.window.showErrorMessage("Necessário selecionar um Processo para criar o evento.");
+        return;
+    }
+
+    const processName:string = folderUri.path.replace(/.*\/(\w+)\.process$/, "$1");
+
+    let eventName: string = await vscode.window.showQuickPick(
+        [
+            'afterCancelProcess',
+            'afterProcessCreate',
+            'afterProcessFinish',
+            'afterReleaseProcessVersion',
+            'afterReleaseVersion',
+            'afterStateLeave',
+            'afterTaskComplete',
+            'afterTaskCreate',
+            'beforeCancelProcess',
+            'beforeSendData',
+            'beforeStateEntry',
+            'beforeStateLeave',
+            'beforeTaskComplete',
+            'beforeTaskCreate',
+            'beforeTaskSave',
+            'checkComplementsPermission',
+            'subProcessCreated',
+            'validateAvailableStates',
+            'Nova Função',
+        ],
+        {
+            canPickMany: false,
+            placeHolder: "Selecione o Evento"
+        }
+    ) || "";
+
+    if (!eventName) {
+        return;
+    }
+
+    if (eventName == 'Nova Função') {
+        eventName = await vscode.window.showInputBox({
+            prompt: "Qual o nome da Nova Função (sem espaços e sem caracteres especiais)?",
+            placeHolder: "nomeFuncao"
+        }) || "";
+
+        if (!eventName) {
+            return;
+        }
+    }
+
+    const eventFilename = `${processName}.${eventName}.js`;
+    const workspaceFolderUri = vscode.workspace.workspaceFolders[0].uri;
+    const eventUri = workspaceFolderUri.with({
+        path: posix.join(
+            workspaceFolderUri.path,
+            "workflow",
+            "scripts",
+            eventFilename
+        )
+    });
+
+    if (existsSync(eventUri.path)) {
+        vscode.window.showTextDocument(eventUri);
+        return;
+    }
+
+    let fileData: string = "";
+
+    switch (eventName) {
+        case "afterReleaseProcessVersion":
+            fileData = createEventWorkflowAfterReleaseProcessVersion();
+            break;
+
+        case "afterReleaseVersion":
+            fileData = createEventWorkflowAfterReleaseVersion();
+            break;
+
+        case "afterTaskCreate":
+            fileData = createEventWorkflowAfterTaskCreate();
+            break;
+
+        case "beforeStateEntry":
+            fileData = createEventWorkflowBeforeStateEntry();
+            break;
+
+        case "beforeTaskCreate":
+            fileData = createEventWorkflowBeforeTaskCreate();
+            break;
+
+        case "beforeSendData":
+            fileData = createEventWorkflowBeforeSendData();
+            break;
+
+        case "validateAvailableStates":
+            fileData = createEventWorkflowValidateAvailableStates();
+            break;
+
+        case "beforeTaskSave":
+            fileData = createEventWorkflowBeforeTaskSave();
+            break;
+
+        case "afterProcessCreate":
+            fileData = createEventWorkflowAfterProcessCreate();
+            break;
+
+        case "beforeTaskComplete":
+            fileData = createEventWorkflowBeforeTaskComplete();
+            break;
+
+        case "afterTaskComplete":
+            fileData = createEventWorkflowAfterTaskComplete();
+            break;
+
+        case "afterStateLeave":
+            fileData = createEventWorkflowAfterStateLeave()
+            break;
+
+        case "beforeStateLeave":
+            fileData = createEventWorkflowBeforeStateLeave();
+            break;
+
+        case "checkComplementsPermission":
+            fileData = createEventWorkflowCheckComplementsPermission();
+            break;
+
+        case "subProcessCreated":
+            fileData = createEventWorkflowSubProcessCreated();
+            break;
+
+        case "afterProcessFinish":
+            fileData = createEventWorkflowAfterProcessFinish();
+            break;
+
+        case "beforeCancelProcess":
+            fileData = createEventWorkflowBeforeCancelProcess();
+            break;
+
+        case "afterCancelProcess":
+            fileData = createEventWorkflowAfterCancelProcess();
+            break;
+
+        default:
+            fileData = createEmptyFunction(eventName);
     }
 
     await vscode.workspace.fs.writeFile(eventUri, Buffer.from(fileData, "utf-8"));
@@ -257,6 +432,251 @@ function createEventFormDisplayFields(): string {
  * @param {customHTML} customHTML
  */
 function displayFields(form, customHTML) {
+
+}
+`;
+}
+
+function createEventWorkflowAfterReleaseProcessVersion(): string {
+    return `/**
+ *
+ *
+ * @param {string} processXML
+ */
+function afterReleaseProcessVersion(processXML) {
+
+}
+`;
+}
+
+function createEventWorkflowAfterReleaseVersion(): string {
+    return `/**
+ *
+ *
+ * @param {string} processXML
+ */
+function afterReleaseVersion(processXML) {
+
+}
+`;
+}
+
+function createEventWorkflowBeforeStateEntry(): string {
+    return `/**
+ *
+ *
+ * @param {number} sequenceId Sequência da atividade
+ */
+function beforeStateEntry(sequenceId) {
+
+}
+`;
+}
+
+function createEventWorkflowBeforeTaskCreate(): string {
+    return `/**
+ *
+ *
+ * @param {string} colleagueId Matrícula do Usuário
+ */
+function beforeTaskCreate(colleagueId) {
+
+}
+`;
+}
+
+function createEventWorkflowAfterTaskCreate(): string {
+    return `/**
+ *
+ *
+ * @param {string} colleagueId Matrícula do Usuário
+ */
+function afterTaskCreate(colleagueId) {
+
+}
+`;
+}
+
+function createEventWorkflowBeforeCancelProcess(): string {
+    return `/**
+ *
+ *
+ * @param {string} colleagueId Matrícula do Usuário
+ * @param {number} processId
+ */
+function beforeCancelProcess(colleagueId, processId) {
+
+}
+`;
+}
+
+function createEventWorkflowAfterCancelProcess(): string {
+    return `/**
+ *
+ *
+ * @param {string} colleagueId Matrícula do Usuário
+ * @param {number} processId
+ */
+function afterCancelProcess(colleagueId, processId) {
+
+}
+`;
+}
+
+
+function createEventWorkflowBeforeSendData(): string {
+    return `/**
+ *
+ *
+ */
+function beforeSendData(customFields,customFacts) {
+
+}
+`;
+}
+
+function createEventWorkflowValidateAvailableStates(): string {
+    return `/**
+ *
+ *
+ * @param {number} iCurrentState
+ * @param {java.util.List<number>} stateList
+ */
+function validateAvailableStates(iCurrentState, stateList) {
+
+}
+`;
+}
+
+function createEventWorkflowBeforeTaskSave(): string {
+    return `/**
+ *
+ *
+ * @param {string} colleagueId Matrícula do usuário corrente
+ * @param {number} nextSequenceId
+ * @param {java.util.List<string>} userList Lista de matrículas de usuários destino
+ */
+function beforeTaskSave(colleagueId, nextSequenceId, userList) {
+
+}
+`;
+}
+
+function createEventWorkflowBeforeTaskComplete(): string {
+    return `/**
+ *
+ *
+ * @param {string} colleagueId Matrícula do usuário corrente
+ * @param {number} nextSequenceId
+ * @param {java.util.List<string>} userList Lista de matrículas de usuários destino
+ */
+function beforeTaskComplete(colleagueId, nextSequenceId, userList) {
+
+}
+`;
+}
+
+function createEventWorkflowAfterTaskComplete(): string {
+    return `/**
+ *
+ *
+ * @param {string} colleagueId Matrícula do usuário corrente
+ * @param {number} nextSequenceId
+ * @param {java.util.List<string>} userList Lista de matrículas de usuários destino
+ */
+function afterTaskComplete(colleagueId, nextSequenceId, userList) {
+
+}
+`;
+}
+
+function createEventWorkflowAfterProcessCreate(): string {
+    return `/**
+ *
+ *
+ * @param {number} processId
+ */
+function afterProcessCreate(processId) {
+
+}
+`;
+}
+
+function createEventWorkflowSubProcessCreated(): string {
+    return `/**
+ *
+ *
+ * @param {number} processId
+ */
+function subProcessCreated(processId) {
+
+}
+`;
+}
+
+function createEventWorkflowAfterProcessFinish(): string {
+    return `/**
+ *
+ *
+ * @param {number} processId
+ */
+function afterProcessFinish(processId) {
+
+}
+`;
+}
+
+function createEventWorkflowBeforeStateLeave(): string {
+    return `/**
+ *
+ *
+ * @param {number} sequenceId
+ */
+function beforeStateLeave(sequenceId) {
+
+}
+`;
+}
+
+function createEventWorkflowAfterStateLeave(): string {
+    return `/**
+ *
+ *
+ * @param {number} sequenceId
+ */
+function afterStateLeave(sequenceId) {
+
+}
+`;
+}
+
+function createEventWorkflowCheckComplementsPermission(): string {
+    return `/**
+ *
+ *
+ * @returns {boolean} Se retornar false impede adição de complemento
+ */
+function checkComplementsPermission() {
+
+}
+`;
+}
+
+
+
+
+
+
+
+
+
+
+function createEmptyFunction(functionName: string): string {
+    return `/**
+ *
+ *
+ */
+function ${functionName}() {
 
 }
 `;

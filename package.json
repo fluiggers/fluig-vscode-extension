@@ -17,7 +17,8 @@
 	"activationEvents": [
 		"onCommand:fluig-vscode-extension.newDataset",
 		"onCommand:fluig-vscode-extension.newForm",
-		"onCommand:fluig-vscode-extension.newFormEvent"
+		"onCommand:fluig-vscode-extension.newFormEvent",
+		"onCommand:fluig-vscode-extension.newWorkflowEvent"
 	],
 	"main": "./dist/extension.js",
 	"contributes": {
@@ -36,6 +37,11 @@
 				"command": "fluig-vscode-extension.newFormEvent",
 				"title": "Novo Evento de Formulário",
 				"category": "Fluig"
+			},
+			{
+				"command": "fluig-vscode-extension.newWorkflowEvent",
+				"title": "Novo Evento de Processo",
+				"category": "Fluig"
 			}
 		],
 
@@ -43,6 +49,10 @@
 			"commandPalette": [
 				{
 					"command": "fluig-vscode-extension.newFormEvent",
+					"when": "false"
+				},
+				{
+					"command": "fluig-vscode-extension.newWorkflowEvent",
 					"when": "false"
 				}
 			],
@@ -59,6 +69,11 @@
 				{
 					"command": "fluig-vscode-extension.newFormEvent",
 					"when": "explorerResourceIsFolder || isFileSystemResource",
+					"group": "navigation@-1"
+				},
+				{
+					"command": "fluig-vscode-extension.newWorkflowEvent",
+					"when": "isFileSystemResource",
 					"group": "navigation@-1"
 				}
 			]
