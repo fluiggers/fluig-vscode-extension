@@ -47,7 +47,7 @@ async function createDataset() {
  *
  * @returns {string}
  */
-function createDatasetContent() {
+function createDatasetContent(): string {
     return `/**
  *
  *
@@ -116,11 +116,11 @@ async function createForm() {
 }
 
 /**
- * Cria o conteúdo do arquivo de um novo Dataset
+ * Cria o conteúdo do arquivo de um novo Formulário
  *
  * @returns {string}
  */
-function createFormContent() {
+function createFormContent(): string {
     return `<html>
 <head>
     <link rel="stylesheet" href="/style-guide/css/fluig-style-guide.min.css"/>
@@ -210,7 +210,13 @@ async function createFormEvent(folderUri: vscode.Uri) {
     vscode.window.showTextDocument(eventUri);
 }
 
-function createEventFormWithFormController(eventName: string) {
+/**
+ * Cria o conteúdo de um Evento de Formulário que utiliza o FormController
+ *
+ * @param eventName Nome do Evento
+ * @returns {string}
+ */
+function createEventFormWithFormController(eventName: string): string {
     return `/**
  *
  *
@@ -222,7 +228,12 @@ function ${eventName}(form) {
 `;
 }
 
-function createEventFormSetEnable() {
+/**
+ * Cria o conteúdo do Evento de Formulário "setEnable"
+ *
+ * @returns {string}
+ */
+function createEventFormSetEnable(): string {
     return `/**
  *
  *
@@ -233,7 +244,12 @@ function setEnable() {
 `;
 }
 
-function createEventFormDisplayFields() {
+/**
+ * Cria o conteúdo do Evento de Formulário "displayFields"
+ *
+ * @returns {string}
+ */
+function createEventFormDisplayFields(): string {
     return `/**
  *
  *
