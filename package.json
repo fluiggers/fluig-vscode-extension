@@ -10,16 +10,52 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:fluig-vscode-extension.helloWorld"
+		"onCommand:fluig-vscode-extension.newDataset",
+		"onCommand:fluig-vscode-extension.newForm",
+		"onCommand:fluig-vscode-extension.newFormEvent"
 	],
 	"main": "./dist/extension.js",
 	"contributes": {
 		"commands": [
 			{
-				"command": "fluig-vscode-extension.helloWorld",
-				"title": "Hello World"
+				"command": "fluig-vscode-extension.newDataset",
+				"title": "Novo Dataset",
+				"category": "Fluig"
+			},
+			{
+				"command": "fluig-vscode-extension.newForm",
+				"title": "Novo Formulário",
+				"category": "Fluig"
+			},
+			{
+				"command": "fluig-vscode-extension.newFormEvent",
+				"title": "Novo Evento de Formulário",
+				"category": "Fluig"
 			}
-		]
+		],
+		"menus": {
+			"commandPalette": [
+				{
+					"command": "fluig-vscode-extension.newFormEvent",
+					"when": "false"
+				}
+			],
+			"explorer/context": [
+				{
+					"command": "fluig-vscode-extension.newDataset",
+					"group": "navigation@-1"
+				},
+				{
+					"command": "fluig-vscode-extension.newForm",
+					"group": "navigation@-1"
+				},
+				{
+					"command": "fluig-vscode-extension.newFormEvent",
+					"when": "explorerResourceIsFolder || isFileSystemResource",
+					"group": "navigation@-1"
+				}
+			]
+		}
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run package",
