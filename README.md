@@ -2,8 +2,14 @@
 
 Extensão para facilitar o desenvolvimento no Fluig utilizando o VS Code.
 
-## Features
+Os comandos aparecem ao clicar com o botão direito do mouse nos arquivos e diretórios.
 
-Necessário inserir imagens mostrando os recursos. Exemplo abaixo:
+Comandos para criar Dataset e Formulário também são acessíveis pressionando CTRL + SHIFT + P.
 
-\!\[feature X\]\(images/feature-x.png\)
+## Recomendações
+
+Instalar a [Declaração de Tipos](https://github.com/brunogasparetto/fluig-declaration-type) do Fluig para ter auto-complete no VS Code.
+
+## Todo
+
+Publicar a extensão no Market Share
