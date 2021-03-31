@@ -35,7 +35,6 @@ auto-complete no VS Code.
 
 ## Todo
 
-- Publicar a extensão no Market Share
 - Criar Widgets
 - Criar Layouts
 - Adicionar novos Snippets
