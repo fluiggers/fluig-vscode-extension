@@ -14,7 +14,8 @@ interface ExtensionsPath {
 
 interface EventsNames {
     FORM: string[],
-    WORKFLOW: string[]
+    WORKFLOW: string[],
+    GLOBAL: string[]
 }
 
 const EXTENSION_PATHS: ExtensionsPath = {
@@ -27,7 +28,8 @@ const EXTENSION_PATHS: ExtensionsPath = {
 
 const EVENTS_NAMES: EventsNames = {
     FORM: [],
-    WORKFLOW: []
+    WORKFLOW: [],
+    GLOBAL: []
 }
 
 
@@ -50,12 +52,18 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerCommand("fluig-vscode-extension.newWorkflowEvent", createWorkflowEvent)
     );
 
+    context.subscriptions.push(
+        vscode.commands.registerCommand("fluig-vscode-extension.newGlobalEvent", createGlobalEvent)
+    );
+
     EXTENSION_PATHS.TEMPLATES = getTemplateDirectoryPath();
     EXTENSION_PATHS.FORM_EVENTS = posix.join(EXTENSION_PATHS.TEMPLATES, 'formEvents')
     EXTENSION_PATHS.WORKFLOW_EVENTS = posix.join(EXTENSION_PATHS.TEMPLATES, 'workflowEvents')
+    EXTENSION_PATHS.GLOBAL_EVENTS = posix.join(EXTENSION_PATHS.TEMPLATES, 'globalEvents')
 
     EVENTS_NAMES.FORM = getTemplatesNameFromPath(EXTENSION_PATHS.FORM_EVENTS);
     EVENTS_NAMES.WORKFLOW = getTemplatesNameFromPath(EXTENSION_PATHS.WORKFLOW_EVENTS);
+    EVENTS_NAMES.GLOBAL = getTemplatesNameFromPath(EXTENSION_PATHS.GLOBAL_EVENTS);
 }
 
 // this method is called when your extension is deactivated
@@ -183,6 +191,51 @@ async function createFormEvent(folderUri: vscode.Uri) {
     await vscode.workspace.fs.writeFile(
         eventUri,
         readFileSync(posix.join(EXTENSION_PATHS.FORM_EVENTS, `${eventName}.txt`))
+    );
+    vscode.window.showTextDocument(eventUri);
+}
+
+/**
+ * Cria um novo evento Global
+ */
+async function createGlobalEvent(folderUri: vscode.Uri) {
+    if (!vscode.workspace.workspaceFolders) {
+        vscode.window.showInformationMessage("Você precisa estar em um diretório / workspace.");
+        return;
+    }
+
+    const eventName: string = await vscode.window.showQuickPick(
+        EVENTS_NAMES.GLOBAL,
+        {
+            canPickMany: false,
+            placeHolder: "Selecione o Evento"
+        }
+    ) || "";
+
+    if (!eventName) {
+        return;
+    }
+
+    const eventFilename = eventName + ".js";
+    const workspaceFolderUri = vscode.workspace.workspaceFolders[0].uri;
+    const eventUri = workspaceFolderUri.with({
+        path: posix.join(
+            workspaceFolderUri.path,
+            "events",
+            eventFilename
+        )
+    });
+
+    try {
+        await vscode.workspace.fs.stat(eventUri);
+        return vscode.window.showTextDocument(eventUri);
+    } catch (err) {
+
+    }
+
+    await vscode.workspace.fs.writeFile(
+        eventUri,
+        readFileSync(posix.join(EXTENSION_PATHS.GLOBAL_EVENTS, `${eventName}.txt`))
     );
     vscode.window.showTextDocument(eventUri);
 }

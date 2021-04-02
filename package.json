@@ -20,7 +20,8 @@
         "onCommand:fluig-vscode-extension.newDataset",
         "onCommand:fluig-vscode-extension.newForm",
         "onCommand:fluig-vscode-extension.newFormEvent",
-        "onCommand:fluig-vscode-extension.newWorkflowEvent"
+        "onCommand:fluig-vscode-extension.newWorkflowEvent",
+        "onCommand:fluig-vscode-extension.newGlobalEvent"
     ],
     "main": "./dist/extension.js",
     "contributes": {
@@ -44,6 +45,11 @@
                 "command": "fluig-vscode-extension.newWorkflowEvent",
                 "title": "Novo Evento de Processo",
                 "category": "Fluig"
+            },
+            {
+                "command": "fluig-vscode-extension.newGlobalEvent",
+                "title": "Novo Evento Global",
+                "category": "Fluig"
             }
         ],
         "menus": {
@@ -64,6 +70,10 @@
                 },
                 {
                     "command": "fluig-vscode-extension.newForm",
+                    "group": "navigation@-1"
+                },
+                {
+                    "command": "fluig-vscode-extension.newGlobalEvent",
                     "group": "navigation@-1"
                 },
                 {
