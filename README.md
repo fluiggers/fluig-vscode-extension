@@ -1,4 +1,4 @@
-# fluig-vscode-extension
+# Fluig - Extensão VS Code
 
 Extensão para facilitar o desenvolvimento na plataforma TOTVS Fluig utilizando o VS Code.
 
