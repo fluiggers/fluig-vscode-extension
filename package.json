@@ -2,26 +2,26 @@
     "name": "fluig-vscode-extension",
     "displayName": "Fluig - Extensão VS Code",
     "description": "Extensão para agilizar o desenvolvimento para o TOTVS Fluig no VS Code",
-    "version": "0.0.6",
+    "version": "0.0.7",
     "publisher": "BrunoGasparetto",
     "repository": {
         "type": "git",
         "url": "https://github.com/brunogasparetto/fluig-vscode-extension"
     },
     "engines": {
-        "vscode": "^1.54.0"
+        "vscode": "^1.55.0"
     },
     "categories": [
         "Snippets",
         "Programming Languages",
         "Other"
-	],
+    ],
     "activationEvents": [
-		"onCommand:fluig-vscode-extension.newDataset",
-		"onCommand:fluig-vscode-extension.newForm",
-		"onCommand:fluig-vscode-extension.newFormEvent",
-		"onCommand:fluig-vscode-extension.newWorkflowEvent"
-	],
+        "onCommand:fluig-vscode-extension.newDataset",
+        "onCommand:fluig-vscode-extension.newForm",
+        "onCommand:fluig-vscode-extension.newFormEvent",
+        "onCommand:fluig-vscode-extension.newWorkflowEvent"
+    ],
     "main": "./dist/extension.js",
     "contributes": {
         "commands": [
@@ -29,58 +29,55 @@
                 "command": "fluig-vscode-extension.newDataset",
                 "title": "Novo Dataset",
                 "category": "Fluig"
-			},
+            },
             {
                 "command": "fluig-vscode-extension.newForm",
                 "title": "Novo Formulário",
                 "category": "Fluig"
-			},
+            },
             {
                 "command": "fluig-vscode-extension.newFormEvent",
                 "title": "Novo Evento de Formulário",
                 "category": "Fluig"
-			},
+            },
             {
                 "command": "fluig-vscode-extension.newWorkflowEvent",
                 "title": "Novo Evento de Processo",
                 "category": "Fluig"
-			}
-		],
-
+            }
+        ],
         "menus": {
             "commandPalette": [
                 {
                     "command": "fluig-vscode-extension.newFormEvent",
                     "when": "false"
-				},
+                },
                 {
                     "command": "fluig-vscode-extension.newWorkflowEvent",
                     "when": "false"
-				}
-			],
-
+                }
+            ],
             "explorer/context": [
                 {
                     "command": "fluig-vscode-extension.newDataset",
                     "group": "navigation@-1"
-				},
+                },
                 {
                     "command": "fluig-vscode-extension.newForm",
                     "group": "navigation@-1"
-				},
+                },
                 {
                     "command": "fluig-vscode-extension.newFormEvent",
                     "when": "resourcePath =~ /[\\/\\\\]forms[\\/\\\\].+$/",
                     "group": "navigation@-1"
-				},
+                },
                 {
                     "command": "fluig-vscode-extension.newWorkflowEvent",
                     "when": "resourceExtname == .process",
                     "group": "navigation@-1"
-				}
-			]
+                }
+            ]
         },
-
         "snippets": [
             {
                 "language": "html",
@@ -107,7 +104,7 @@
         "@types/glob": "^7.1.3",
         "@types/mocha": "^8.0.4",
         "@types/node": "^12.11.7",
-        "@types/vscode": "^1.54.0",
+        "@types/vscode": "^1.55.0",
         "@typescript-eslint/eslint-plugin": "^4.14.1",
         "@typescript-eslint/parser": "^4.14.1",
         "eslint": "^7.19.0",
@@ -116,7 +113,7 @@
         "ts-loader": "^8.0.14",
         "typescript": "^4.1.3",
         "vscode-test": "^1.5.0",
-        "webpack": "^5.19.0",
+        "webpack": "^5.30.0",
         "webpack-cli": "^4.4.0"
     }
 }

@@ -1,9 +1,29 @@
 # Change Log
 
-All notable changes to the "fluig-vscode-extension" extension will be documented in this file.
+Lista de atualizações da Extensão.
 
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
+## 0.0.7
 
-## [Unreleased]
+- Refatoração dos templates em arquivos ao invés de funções;
 
-- Initial release
+## 0.0.5
+
+- Comando **Novo Evento de Formulário** só aparece no menu se for selecionado um formulário;
+- Comando **Novo Evento de Processo** só aparece no menu se for selecionado um diagrama de processo;
+
+## 0.0.3
+
+- Criação do comando **Novo Evento de Formulário** no menu de contexto de arquivos;
+- Criação do comando **Novo Evento de Processo** no menu de contexto de arquivos;
+
+## 0.0.2
+
+- Comando **Criar Dataset** adicionado ao menu de contexto de arquivos;
+- Comando **Novo Formulário** adicionado ao menu de contexto de arquivos;
+
+## 0.0.1
+
+- Criação dos snippets para HTML;
+- Criação dos snippets para JavaScript;
+- Criação do comando **Novo Dataset** no Command Palette;
+- Criação do comando **Novo Formulário** no Command Palette;

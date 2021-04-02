@@ -2,6 +2,7 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
 import { posix } from "path";
+import { readFileSync, statSync } from "fs";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -14,29 +15,6 @@ export function activate(context: vscode.ExtensionContext) {
 
 // this method is called when your extension is deactivated
 export function deactivate() {}
-
-const eventMapFunctions = new Map<String, Function>();
-
-eventMapFunctions.set('displayFields', createEventFormDisplayFields);
-eventMapFunctions.set('setEnable', createEventFormSetEnable);
-eventMapFunctions.set('afterCancelProcess', createEventWorkflowAfterCancelProcess);
-eventMapFunctions.set('afterProcessCreate', createEventWorkflowAfterProcessCreate);
-eventMapFunctions.set('afterProcessFinish', createEventWorkflowAfterProcessFinish);
-eventMapFunctions.set('afterReleaseProcessVersion', createEventWorkflowAfterReleaseProcessVersion);
-eventMapFunctions.set('afterReleaseVersion', createEventWorkflowAfterReleaseVersion);
-eventMapFunctions.set('afterStateLeave', createEventWorkflowAfterStateLeave);
-eventMapFunctions.set('afterTaskComplete', createEventWorkflowAfterTaskComplete);
-eventMapFunctions.set('afterTaskCreate', createEventWorkflowAfterTaskCreate);
-eventMapFunctions.set('beforeCancelProcess', createEventWorkflowBeforeCancelProcess);
-eventMapFunctions.set('beforeSendData', createEventWorkflowBeforeSendData);
-eventMapFunctions.set('beforeStateEntry', createEventWorkflowBeforeStateEntry);
-eventMapFunctions.set('beforeStateLeave', createEventWorkflowBeforeStateLeave);
-eventMapFunctions.set('beforeTaskComplete', createEventWorkflowBeforeTaskComplete);
-eventMapFunctions.set('beforeTaskCreate', createEventWorkflowBeforeTaskCreate);
-eventMapFunctions.set('beforeTaskSave', createEventWorkflowBeforeTaskSave);
-eventMapFunctions.set('checkComplementsPermission', createEventWorkflowCheckComplementsPermission);
-eventMapFunctions.set('subProcessCreated', createEventWorkflowSubProcessCreated);
-eventMapFunctions.set('validateAvailableStates', createEventWorkflowValidateAvailableStates);
 
 /**
  * Cria um arquivo contendo um novo Dataset
@@ -70,8 +48,28 @@ async function createDataset() {
 
     }
 
-    await vscode.workspace.fs.writeFile(datasetUri, Buffer.from(createDatasetContent(), "utf-8"));
+    const templatePath = posix.join(
+        getTemplateDirectoryPath(),
+        'createDataset.txt'
+    );
+
+    await vscode.workspace.fs.writeFile(datasetUri, readFileSync(templatePath));
     vscode.window.showTextDocument(datasetUri);
+}
+
+/**
+ * Pega o diretório de templates da Extensão
+ *
+ * @returns O caminho do diretório de templates da Extensão
+ */
+function getTemplateDirectoryPath(): string {
+    const path = vscode.extensions.getExtension("BrunoGasparetto.fluig-vscode-extension")?.extensionPath;
+
+    if (!path) {
+        throw "Não foi possível encontrar o diretório de templates.";
+    }
+
+    return posix.join(path, 'templates');
 }
 
 /**
@@ -103,7 +101,12 @@ async function createForm() {
 
     }
 
-    await vscode.workspace.fs.writeFile(formUri, Buffer.from(createFormContent(), "utf-8"));
+    const templatePath = posix.join(
+        getTemplateDirectoryPath(),
+        'form.txt'
+    );
+
+    await vscode.workspace.fs.writeFile(formUri, readFileSync(templatePath));
     vscode.window.showTextDocument(formUri);
 }
 
@@ -163,9 +166,13 @@ async function createFormEvent(folderUri: vscode.Uri) {
 
     }
 
-    const fileData = eventMapFunctions.get(eventName)?.apply({}) || createEventFormWithFormController(eventName);
+    const templatePath = posix.join(
+        getTemplateDirectoryPath(),
+        "formEvents",
+        `${eventName}.txt`
+    );
 
-    await vscode.workspace.fs.writeFile(eventUri, Buffer.from(fileData, "utf-8"));
+    await vscode.workspace.fs.writeFile(eventUri, readFileSync(templatePath));
     vscode.window.showTextDocument(eventUri);
 }
 
@@ -217,6 +224,8 @@ async function createWorkflowEvent(folderUri: vscode.Uri) {
         return;
     }
 
+    let isNewFunction = false;
+
     if (eventName == 'Nova Função') {
         eventName = await vscode.window.showInputBox({
             prompt: "Qual o nome da Nova Função (sem espaços e sem caracteres especiais)?",
@@ -226,6 +235,8 @@ async function createWorkflowEvent(folderUri: vscode.Uri) {
         if (!eventName) {
             return;
         }
+
+        isNewFunction = true;
     }
 
     const eventFilename = `${processName}.${eventName}.js`;
@@ -246,366 +257,25 @@ async function createWorkflowEvent(folderUri: vscode.Uri) {
 
     }
 
-    const fileData = eventMapFunctions.get(eventName)?.apply({}) || createEmptyFunction(eventName);
+    const templatePath = posix.join(
+        getTemplateDirectoryPath(),
+        "workflowEvents",
+        `${eventName}.txt`
+    );
 
-    await vscode.workspace.fs.writeFile(eventUri, Buffer.from(fileData, "utf-8"));
+    await vscode.workspace.fs.writeFile(
+        eventUri,
+        isNewFunction ? Buffer.from(createEmptyFunction(eventName), "utf-8") : readFileSync(templatePath)
+    );
     vscode.window.showTextDocument(eventUri);
 }
 
-
 /**
- * Cria o conteúdo do arquivo de um novo Dataset
+ * Cria o conteúdo de função compartilhada no processo
  *
- * @returns {string}
+ * @param functionName Nome da Função
+ * @returns Definição da função
  */
- function createDatasetContent(): string {
-    return `/**
- *
- *
- * @param {string[]} fields Campos Solicitados
- * @param {Constraint[]} constraints Filtros
- * @param {string[]} sorts Campos da Ordenação
- * @returns {Dataset}
- */
-function createDataset(fields, constraints, sorts) {
-    var dataset = DatasetBuilder.newDataset();
-
-    return dataset;
-}
-
-/**
- *
- */
-function defineStructure() {
-
-}
-
-/**
- *
- *
- * @param {number} lastSyncDate
- */
-function onSync(lastSyncDate) {
-
-}
-
-/**
- *
- *
- * @param user
- * @returns {DatasetMobileSync}
- */
-function onMobileSync(user) {
-
-}
-`;
-}
-
-/**
- * Cria o conteúdo do arquivo de um novo Formulário
- *
- * @returns {string}
- */
- function createFormContent(): string {
-    return `<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/style-guide/css/fluig-style-guide.min.css"/>
-    <script type="text/javascript" src="/portal/resources/js/jquery/jquery.js"></script>
-    <script type="text/javascript" src="/portal/resources/js/jquery/jquery-ui.min.js"></script>
-    <script type="text/javascript" src="/portal/resources/js/mustache/mustache-min.js"></script>
-    <script type="text/javascript" src="/style-guide/js/fluig-style-guide.min.js"></script>
-</head>
-<body>
-    <div class="fluig-style-guide">
-        <form name="form" role="form">
-
-        </form>
-    </div>
-</body>
-</html>
-`;
-}
-
-/**
- * Cria o conteúdo de um Evento de Formulário que utiliza o FormController
- *
- * @param eventName Nome do Evento
- * @returns {string}
- */
-function createEventFormWithFormController(eventName: string): string {
-    return `/**
- *
- *
- * @param {FormController} form
- */
-function ${eventName}(form) {
-
-}
-`;
-}
-
-/**
- * Cria o conteúdo do Evento de Formulário "setEnable"
- *
- * @returns {string}
- */
-function createEventFormSetEnable(): string {
-    return `/**
- *
- *
- */
-function setEnable() {
-
-}
-`;
-}
-
-/**
- * Cria o conteúdo do Evento de Formulário "displayFields"
- *
- * @returns {string}
- */
-function createEventFormDisplayFields(): string {
-    return `/**
- *
- *
- * @param {FormController} form
- * @param {customHTML} customHTML
- */
-function displayFields(form, customHTML) {
-
-}
-`;
-}
-
-function createEventWorkflowAfterReleaseProcessVersion(): string {
-    return `/**
- *
- *
- * @param {string} processXML
- */
-function afterReleaseProcessVersion(processXML) {
-
-}
-`;
-}
-
-function createEventWorkflowAfterReleaseVersion(): string {
-    return `/**
- *
- *
- * @param {string} processXML
- */
-function afterReleaseVersion(processXML) {
-
-}
-`;
-}
-
-function createEventWorkflowBeforeStateEntry(): string {
-    return `/**
- *
- *
- * @param {number} sequenceId Sequência da atividade
- */
-function beforeStateEntry(sequenceId) {
-
-}
-`;
-}
-
-function createEventWorkflowBeforeTaskCreate(): string {
-    return `/**
- *
- *
- * @param {string} colleagueId Matrícula do Usuário
- */
-function beforeTaskCreate(colleagueId) {
-
-}
-`;
-}
-
-function createEventWorkflowAfterTaskCreate(): string {
-    return `/**
- *
- *
- * @param {string} colleagueId Matrícula do Usuário
- */
-function afterTaskCreate(colleagueId) {
-
-}
-`;
-}
-
-function createEventWorkflowBeforeCancelProcess(): string {
-    return `/**
- *
- *
- * @param {string} colleagueId Matrícula do Usuário
- * @param {number} processId
- */
-function beforeCancelProcess(colleagueId, processId) {
-
-}
-`;
-}
-
-function createEventWorkflowAfterCancelProcess(): string {
-    return `/**
- *
- *
- * @param {string} colleagueId Matrícula do Usuário
- * @param {number} processId
- */
-function afterCancelProcess(colleagueId, processId) {
-
-}
-`;
-}
-
-
-function createEventWorkflowBeforeSendData(): string {
-    return `/**
- *
- *
- */
-function beforeSendData(customFields,customFacts) {
-
-}
-`;
-}
-
-function createEventWorkflowValidateAvailableStates(): string {
-    return `/**
- *
- *
- * @param {number} iCurrentState
- * @param {java.util.List<number>} stateList
- */
-function validateAvailableStates(iCurrentState, stateList) {
-
-}
-`;
-}
-
-function createEventWorkflowBeforeTaskSave(): string {
-    return `/**
- *
- *
- * @param {string} colleagueId Matrícula do usuário corrente
- * @param {number} nextSequenceId
- * @param {java.util.List<string>} userList Lista de matrículas de usuários destino
- */
-function beforeTaskSave(colleagueId, nextSequenceId, userList) {
-
-}
-`;
-}
-
-function createEventWorkflowBeforeTaskComplete(): string {
-    return `/**
- *
- *
- * @param {string} colleagueId Matrícula do usuário corrente
- * @param {number} nextSequenceId
- * @param {java.util.List<string>} userList Lista de matrículas de usuários destino
- */
-function beforeTaskComplete(colleagueId, nextSequenceId, userList) {
-
-}
-`;
-}
-
-function createEventWorkflowAfterTaskComplete(): string {
-    return `/**
- *
- *
- * @param {string} colleagueId Matrícula do usuário corrente
- * @param {number} nextSequenceId
- * @param {java.util.List<string>} userList Lista de matrículas de usuários destino
- */
-function afterTaskComplete(colleagueId, nextSequenceId, userList) {
-
-}
-`;
-}
-
-function createEventWorkflowAfterProcessCreate(): string {
-    return `/**
- *
- *
- * @param {number} processId
- */
-function afterProcessCreate(processId) {
-
-}
-`;
-}
-
-function createEventWorkflowSubProcessCreated(): string {
-    return `/**
- *
- *
- * @param {number} processId
- */
-function subProcessCreated(processId) {
-
-}
-`;
-}
-
-function createEventWorkflowAfterProcessFinish(): string {
-    return `/**
- *
- *
- * @param {number} processId
- */
-function afterProcessFinish(processId) {
-
-}
-`;
-}
-
-function createEventWorkflowBeforeStateLeave(): string {
-    return `/**
- *
- *
- * @param {number} sequenceId
- */
-function beforeStateLeave(sequenceId) {
-
-}
-`;
-}
-
-function createEventWorkflowAfterStateLeave(): string {
-    return `/**
- *
- *
- * @param {number} sequenceId
- */
-function afterStateLeave(sequenceId) {
-
-}
-`;
-}
-
-function createEventWorkflowCheckComplementsPermission(): string {
-    return `/**
- *
- *
- * @returns {boolean} Se retornar false impede adição de complemento
- */
-function checkComplementsPermission() {
-
-}
-`;
-}
-
 function createEmptyFunction(functionName: string): string {
     return `/**
  *
@@ -614,5 +284,6 @@ function createEmptyFunction(functionName: string): string {
 function ${functionName}() {
 
 }
+
 `;
 }
