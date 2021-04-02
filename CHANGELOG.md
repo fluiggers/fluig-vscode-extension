@@ -2,6 +2,12 @@
 
 Lista de atualizações da Extensão.
 
+## 0.0.8
+
+- Adicionado comando **Novo Evento Global**;
+- Adicionado template para o evento global **displayCentralTasks**;
+- Adicionado template para o evento global **onNotify**;
+
 ## 0.0.7
 
 - Refatoração dos templates em arquivos ao invés de funções;

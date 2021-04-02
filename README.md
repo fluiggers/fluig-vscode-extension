@@ -47,5 +47,5 @@ Deve-se selecionar um diagrama (arquivo com extensão .process) para ter essa op
 
 - Criar Widgets;
 - Criar Layouts;
-- Criar Eventos Globais;
+- Criar todos os templates de Eventos Globais;
 - Adicionar novos Snippets;
