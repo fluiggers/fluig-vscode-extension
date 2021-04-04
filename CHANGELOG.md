@@ -2,6 +2,11 @@
 
 Lista de atualizações da Extensão.
 
+## 1.0.0
+
+- Melhoria da documentação da Extensão;
+- Redução do tamanho da Extensão;
+
 ## 0.0.8
 
 - Adicionado comando **Novo Evento Global**;
