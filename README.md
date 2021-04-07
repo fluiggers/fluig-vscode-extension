@@ -10,7 +10,7 @@ Os comandos aparecem ao clicar com o botão direito do mouse nos arquivos e dire
 
 ## Instalação
 
-Você pode procurar pela extensão `Fluig - Extensão VS Code` no VS Code ou baixá-la diretamente no [VS Code Market Place: Fluig - Extensão VS Code](https://marketplace.visualstudio.com/items?itemName=BrunoGasparetto.fluig-vscode-extension).
+Você pode procurar pela extensão `Fluig - Extensão VS Code` no VS Code, baixá-la diretamente no [VS Code Market Place: Fluig - Extensão VS Code](https://marketplace.visualstudio.com/items?itemName=BrunoGasparetto.fluig-vscode-extension) ou abrir o **Quick Open** (CTRL + P) e executar o comando `ext install brunogasparetto.fluig-vscode-extension`.
 
 Essa extensão cria os arquivos utilizando os tipos declarados na biblioteca [Declaração de Tipos para o Fluig](https://github.com/brunogasparetto/fluig-declaration-type) para ter auto-complete no VS Code, por isso é recomendado que ela seja instalada.
 
