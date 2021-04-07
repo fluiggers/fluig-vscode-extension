@@ -3,6 +3,7 @@
 import * as vscode from "vscode";
 import { posix } from "path";
 import { readFileSync, statSync } from "fs";
+import { ServerItemProvider } from "./providers/ServerItemProvider";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -11,6 +12,9 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(vscode.commands.registerCommand("fluig-vscode-extension.newForm", createForm));
     context.subscriptions.push(vscode.commands.registerCommand("fluig-vscode-extension.newFormEvent", createFormEvent));
     context.subscriptions.push(vscode.commands.registerCommand("fluig-vscode-extension.newWorkflowEvent", createWorkflowEvent));
+
+    const serverItemProvider = new ServerItemProvider();
+    vscode.window.registerTreeDataProvider("fluig-vscode-extension.servers", serverItemProvider);
 }
 
 // this method is called when your extension is deactivated

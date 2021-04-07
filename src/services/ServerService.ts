@@ -29,6 +29,20 @@ export class ServerService {
     }
 
     /**
+     * Retorna o caminho do arquivo Server Config
+     * @returns 
+     */
+    public static getFileServerConfig() {
+        const fs = require('fs');
+
+        if(!fs.existsSync(ServerService.FILE_SERVER_CONFIG)) {
+            ServerService.createServerConfig();
+        }
+
+        return ServerService.FILE_SERVER_CONFIG;
+    }
+
+    /**
      * Cria o arquivo de configuração dos servidores
      */
     private static createServerConfig() {
@@ -64,7 +78,7 @@ export class ServerService {
      * Leitura do arquivo Server Config
      * @returns 
      */
-    private static getServerConfig(): ServerConfig {
+    public static getServerConfig(): ServerConfig {
         const fs = require('fs');
         if(!fs.existsSync(ServerService.FILE_SERVER_CONFIG)) {
             ServerService.createServerConfig();

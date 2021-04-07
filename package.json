@@ -20,7 +20,8 @@
         "onCommand:fluig-vscode-extension.newDataset",
         "onCommand:fluig-vscode-extension.newForm",
         "onCommand:fluig-vscode-extension.newFormEvent",
-        "onCommand:fluig-vscode-extension.newWorkflowEvent"
+        "onCommand:fluig-vscode-extension.newWorkflowEvent",
+        "onView:fluig-vscode-extension.servers"
     ],
     "main": "./dist/extension.js",
     "contributes": {
@@ -75,6 +76,23 @@
                     "command": "fluig-vscode-extension.newWorkflowEvent",
                     "when": "resourceExtname == .process",
                     "group": "navigation@-1"
+                }
+            ]
+        },
+        "viewsContainers": {
+            "activitybar": [
+                {
+                    "id": "fluig-config",
+                    "title": "Fluig",
+                    "icon": "src/resources/images/icon-brand.png"
+                }
+            ]
+        },
+        "views": {
+            "fluig-config": [
+                {
+                    "id": "fluig-vscode-extension.servers",
+                    "name": "Servidores"
                 }
             ]
         },
