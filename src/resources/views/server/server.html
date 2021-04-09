@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adicionar servidor</title>
+
+    <link rel="stylesheet" href="../../css/bootstrap.min.css">
+    <style>
+        ${d.css}
+    </style>
+</head>
+    <body class="container-fluid">
+        <div class="row">
+            <div class="col-md-12 form-group">
+                <label for="name"><strong>Nome</strong></label>
+                <input type="text" class="form-control" id="name" value="${d.name ? d.name : ''}">
+                <input type="hidden" class="form-control" id="id" value="${d.id ? d.id : ''}">
+            </div>
+            
+            <div class="col-md-8 form-group">
+                <label for="host"><strong>Host</strong></label>
+                <input type="text" class="form-control" id="host" placeholder="Exemplo: https://fluig.com.br" value="${d.host ? d.host : ''}">
+            </div>
+
+            <div class="col-md-2 form-group">
+                <label for="ssl"><strong>SSL</strong></label>
+                <select class="form-control" id="ssl">
+                    <option value="yes" ${d.ssl ? "selected" : ""}>Sim</option>
+                    <option value="no" ${!d.ssl ? "selected" : ""}>Não</option>
+                </select>
+            </div>
+
+            <div class="col-md-2 form-group">
+                <label for="port"><strong>Porta</strong></label>
+                <input type="text" class="form-control" id="port" placeholder="443" value="${d.port ? d.port : ''}"> 
+            </div>
+            
+            <div class="col-md-6 form-group">
+                <label for="username"><strong>Usuário</strong></label>
+                <input type="text" class="form-control" id="username"value="${d.username ? d.username : ''}">
+            </div>
+
+            <div class="col-md-6 form-group">
+                <label for="password"><strong>Senha</strong></label>
+                <input type="password" class="form-control" id="password" value="${d.password ? d.password : ''}">
+            </div>
+            
+            <div class="col-md-5 form-group">
+                <label for="confirm_pass_exporting"><strong>Confirmar senha quando exportar</strong></label>
+                <select class="form-control" id="confirm_pass_exporting">
+                    <option value="yes" ${d.confirmExporting ? "selected" : ""}>Sim</option>
+                    <option value="no" ${!d.confirmExporting ? "selected" : ""}>Não</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-2 form-group">
+                <button class="btn btn-success" onclick="saveServer()">Salvar</button>
+            </div>
+        </div>
+    </body>
+
+    <script>
+        const vscode = acquireVsCodeApi();
+        function saveServer(close = true) {
+            const id = document.getElementById("id").value;
+            const name = document.getElementById("name").value;
+            const host  = document.getElementById("host").value;
+            const ssl = document.getElementById("ssl").value == "yes";
+            const port = document.getElementById("port").value;
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+            const confirmExportiong = document.getElementById("confirm_pass_exporting").value == "yes";
+            vscode.postMessage({
+                id,
+                name,
+                host,
+                ssl,
+                port,
+                username,
+                password,
+                confirmExportiong
+            });
+        }
+    </script>
+</html>
