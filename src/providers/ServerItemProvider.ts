@@ -3,6 +3,7 @@ import { ServerDTO } from '../models/ServerDTO';
 import * as path from 'path';
 import { ServerService } from '../services/ServerService';
 import * as fs from 'fs';
+import { ServerView } from '../views/ServerView';
 
 export class ServerItem extends vscode.TreeItem {
     constructor(
@@ -28,7 +29,7 @@ export class ServerItemProvider implements vscode.TreeDataProvider<ServerItem> {
 
     public serverItems: Array<ServerItem> = [];
 
-    constructor() {
+    constructor(public context: vscode.ExtensionContext) {
         this.serverConfigListener();    
     }
 
@@ -48,6 +49,11 @@ export class ServerItemProvider implements vscode.TreeDataProvider<ServerItem> {
 
     public refresh(): void {
         this._onDidChangeTreeData.fire();
+    }
+
+    public add() {
+        const serverView = new ServerView(this.context);
+        serverView.show();
     }
 
     private getServers() {

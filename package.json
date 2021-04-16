@@ -21,6 +21,7 @@
         "onCommand:fluig-vscode-extension.newForm",
         "onCommand:fluig-vscode-extension.newFormEvent",
         "onCommand:fluig-vscode-extension.newWorkflowEvent",
+        "onCommand:fluig-vscode-extension.addServer",
         "onView:fluig-vscode-extension.servers"
     ],
     "main": "./dist/extension.js",
@@ -45,6 +46,15 @@
                 "command": "fluig-vscode-extension.newWorkflowEvent",
                 "title": "Novo Evento de Processo",
                 "category": "Fluig"
+            },
+            {
+                "command": "fluig-vscode-extension.addServer",
+                "title": "Adicionar Server",
+                "category": "Fluig",
+                "icon": {
+                    "light": "src/resources/images/light/add.svg",
+                    "dark": "src/resources/images/dark/add.svg"
+                }
             }
         ],
         "menus": {
@@ -76,6 +86,13 @@
                     "command": "fluig-vscode-extension.newWorkflowEvent",
                     "when": "resourceExtname == .process",
                     "group": "navigation@-1"
+                }
+            ],
+            "view/title": [
+                {
+                    "command": "fluig-vscode-extension.addServer",
+                    "when": "view == fluig-vscode-extension.servers",
+                    "group": "navigation"
                 }
             ]
         },
@@ -133,5 +150,8 @@
         "vscode-test": "^1.5.0",
         "webpack": "^5.30.0",
         "webpack-cli": "^4.4.0"
+    },
+    "dependencies": {
+        "template-literal": "^1.0.3"
     }
 }
