@@ -21,7 +21,7 @@
             
             <div class="col-md-8 form-group">
                 <label for="host"><strong>Host</strong></label>
-                <input type="text" class="form-control" id="host" placeholder="Exemplo: https://fluig.com.br" value="${d.host ? d.host : ''}">
+                <input type="text" class="form-control" id="host" placeholder="Exemplo: fluig.com.br" value="${d.host ? d.host : ''}" onchange="validateHost(this)">
             </div>
 
             <div class="col-md-2 form-group">
@@ -84,6 +84,25 @@
                 password,
                 confirmExporting
             });
+        }
+
+        function validateHost(element) {
+            const url = new URL(element.value);
+            const isSSL = url.protocol.indexOf("https") >= 0;
+
+            let port = url.port;
+            if(!port) {
+                port = isSSL ? "443" : "80";
+            }
+
+            const name = document.getElementById("name");
+            if(!name.value) {
+                name.value = url.hostname;
+            }
+
+            document.getElementById("host").value = url.hostname;
+            document.getElementById("ssl").value = isSSL ? "yes" : "no";
+            document.getElementById("port").value = port;
         }
     </script>
 </html>
