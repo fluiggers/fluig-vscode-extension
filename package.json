@@ -152,6 +152,7 @@
         "webpack-cli": "^4.4.0"
     },
     "dependencies": {
+        "axios": "^0.21.1",
         "template-literal": "^1.0.3"
     }
 }

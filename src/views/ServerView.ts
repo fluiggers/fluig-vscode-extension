@@ -3,6 +3,7 @@ import * as path from 'path';
 import { ServerDTO } from '../models/ServerDTO';
 import { ServerService } from '../services/ServerService';
 import * as fs from 'fs';
+import { UserService } from '../services/UserService';
 const compile = require('template-literal');
 
 export class ServerView {
@@ -72,11 +73,15 @@ export class ServerView {
                     confirmExporting: obj.confirmExporting
                 };
 
-                ServerService.create(server);
+                UserService.getUser(server).then((response) => {
+                    ServerService.create(server);
 
-                if (this.currentPanel) {
-                    this.currentPanel.dispose();
-                }
+                    if (this.currentPanel) {
+                        this.currentPanel.dispose();
+                    }
+                }).catch(() => {
+                    vscode.window.showErrorMessage(`Falha na conexão com o servidor ${server.name}`);
+                });
         }
     }
 }

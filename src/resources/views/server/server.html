@@ -73,7 +73,7 @@
             const port = document.getElementById("port").value;
             const username = document.getElementById("username").value;
             const password = document.getElementById("password").value;
-            const confirmExportiong = document.getElementById("confirm_pass_exporting").value == "yes";
+            const confirmExporting = document.getElementById("confirm_pass_exporting").value == "yes";
             vscode.postMessage({
                 id,
                 name,
@@ -82,7 +82,7 @@
                 port,
                 username,
                 password,
-                confirmExportiong
+                confirmExporting
             });
         }
     </script>
