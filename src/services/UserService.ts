@@ -1,5 +1,6 @@
 import axios from "axios";
 import { ServerDTO } from "../models/ServerDTO";
+import * as https from 'https'
 
 export class UserService {
 
@@ -17,6 +18,11 @@ export class UserService {
         uri += "&password=" + server.password;
         uri += "&login=" + server.username;
 
-        return await axios.get(uri);
+        const agent = new https.Agent({
+            rejectUnauthorized: false
+        })
+        return await axios.get(uri, {
+            httpsAgent: agent
+        });
     }
 }
