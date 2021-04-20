@@ -135,8 +135,12 @@ Devido ao Fluig utilizar JavaScript para front-end (navegador) e JavaScript para
 
 ### Snippets para Front-End
 
+- **fluig-beforeMovementOptions**: Evento beforeMovementOptions do formulário no Processo;
+- **fluig-beforeSendValidate**: Evento beforeSendValidate do formulário no Processo;
 - **fluig-calendar**: Ativa o plugin de Data em um input text;
 - **fluig-data-atual**: Pega a data atual formatada em PT-BR;
+- **fluig-zoom-removed**: Função executada ao desmarcar item no Zoom;
+- **fluig-zoom-selected**: Função executada ao selecionar item no Zoom;
 
 ## Todo
 
