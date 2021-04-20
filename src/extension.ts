@@ -3,7 +3,7 @@
 import * as vscode from "vscode";
 import { posix } from "path";
 import { readFileSync, statSync } from "fs";
-import { ServerItemProvider } from "./providers/ServerItemProvider";
+import { ServerItem, ServerItemProvider } from "./providers/ServerItemProvider";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -16,6 +16,7 @@ export function activate(context: vscode.ExtensionContext) {
     const serverItemProvider = new ServerItemProvider(context);
     vscode.window.registerTreeDataProvider("fluig-vscode-extension.servers", serverItemProvider);
     context.subscriptions.push(vscode.commands.registerCommand("fluig-vscode-extension.addServer", () => serverItemProvider.add()));
+    context.subscriptions.push(vscode.commands.registerCommand("fluig-vscode-extension.deleteServer", (serverItem: ServerItem) => serverItemProvider.delete(serverItem)));
 }
 
 // this method is called when your extension is deactivated

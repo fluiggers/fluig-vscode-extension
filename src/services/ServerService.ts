@@ -29,6 +29,29 @@ export class ServerService {
     }
 
     /**
+     * Remover um servidor
+     * @param id 
+     * @returns 
+     */
+    public static delete(id: string) {
+        const serverConfig = ServerService.getServerConfig();
+
+        if(!serverConfig.configurations) {
+            return;
+        }
+
+        const servers = serverConfig.configurations;
+        servers.forEach((element: ServerDTO) => {
+            if(element.id === id) {
+                const index = servers.indexOf(element, 0);
+                servers.splice(index, 1);
+                ServerService.writeServerConfig(serverConfig);
+                return;
+            }
+        });
+    }
+
+    /**
      * Retorna o caminho do arquivo Server Config
      * @returns 
      */
