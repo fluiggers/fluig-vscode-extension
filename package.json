@@ -23,6 +23,7 @@
         "onCommand:fluig-vscode-extension.newWorkflowEvent",
         "onCommand:fluig-vscode-extension.addServer",
         "onCommand:fluig-vscode-extension.deleteServer",
+        "onCommand:fluig-vscode-extension.refreshServer",
         "onView:fluig-vscode-extension.servers"
     ],
     "main": "./dist/extension.js",
@@ -65,6 +66,15 @@
                     "light": "src/resources/images/light/trash.svg",
                     "dark": "src/resources/images/dark/trash.svg"
                 }
+            },
+            {
+                "command": "fluig-vscode-extension.refreshServer",
+                "title": "Atualizar",
+                "category": "Fluig",
+                "icon": {
+                    "light": "src/resources/images/light/refresh.svg",
+                    "dark": "src/resources/images/dark/refresh.svg"
+                }
             }
         ],
         "menus": {
@@ -101,6 +111,11 @@
             "view/title": [
                 {
                     "command": "fluig-vscode-extension.addServer",
+                    "when": "view == fluig-vscode-extension.servers",
+                    "group": "navigation"
+                },
+                {
+                    "command": "fluig-vscode-extension.refreshServer",
                     "when": "view == fluig-vscode-extension.servers",
                     "group": "navigation"
                 }
