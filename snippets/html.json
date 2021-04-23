@@ -130,5 +130,60 @@
             "</div>"
         ],
         "description": "Cria um painel com título e que pode ser encolhido."
+    },
+
+    "fluig-tabs": {
+        "scope": "html",
+        "prefix": "fluig-tabs",
+        "body": [
+            "<ul class=\"nav nav-tabs nav-justified\" role=\"tablist\">",
+            "    <li role=\"presentation\" class=\"active\"><a href=\"#${1:item1}\" aria-controls=\"${1:item1}\" role=\"tab\" data-toggle=\"tab\">${2:Item 1}</a></li>",
+            "    <li role=\"presentation\"><a href=\"#${3:item2}\" aria-controls=\"${3:item2}\" role=\"tab\" data-toggle=\"tab\">${4:Item 2}</a></li>",
+            "</ul>",
+            "",
+            "<div class=\"tab-content\">",
+            "    <div role=\"tabpanel\" class=\"tab-pane fade in active\" id=\"${1:item1}\">",
+            "        $0",
+            "    </div>",
+            "    <div role=\"tabpanel\" class=\"tab-pane fade\" id=\"${3:item2}\">",
+            "        ",
+            "    </div>",
+            "</div>"
+        ],
+        "description": "Cria uma navegação em Abas."
+    },
+
+    "fluig-radio": {
+        "scope": "html",
+        "prefix": "fluig-radio",
+        "body": [
+            "<div class=\"custom-radio custom-radio-primary\">",
+            "    <input type=\"radio\" name=\"${1:options}\" id=\"${2:option1}\" value=\"${3:option1}\">",
+            "    <label for=\"${2:option1}\">${4:Opção 1}</label>",
+            "</div>",
+            "<div class=\"custom-radio custom-radio-primary\">",
+            "    <input type=\"radio\" name=\"${1:options}\" id=\"${5:option2}\" value=\"${6:option2}\">",
+            "    <label for=\"${5:option2}\">${7:Opção 2}</label>",
+            "</div>",
+            "$0"
+        ],
+        "description": "Cria um input customizado do tipo radio."
+    },
+
+    "fluig-radio-inline": {
+        "scope": "html",
+        "prefix": "fluig-radio-inline",
+        "body": [
+            "<div class=\"custom-radio custom-radio-inline custom-radio-primary\">",
+            "    <input type=\"radio\" name=\"${1:options}\" id=\"${2:option1}\" value=\"${3:option1}\">",
+            "    <label for=\"${2:option1}\">${4:Opção 1}</label>",
+            "</div>",
+            "<div class=\"custom-radio custom-radio-inline custom-radio-primary\">",
+            "    <input type=\"radio\" name=\"${1:options}\" id=\"${5:option2}\" value=\"${6:option2}\">",
+            "    <label for=\"${5:option2}\">${7:Opção 2}</label>",
+            "</div>",
+            "$0"
+        ],
+        "description": "Cria um input customizado inline do tipo radio."
     }
 }

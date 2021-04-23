@@ -122,7 +122,10 @@ Os snippets disponibilizados são:
 - **fluig-input-zoom**: cria uma coluna contendo um Zoom;
 - **fluig-panel-collapse**: cria um painel com estrutura de collapse;
 - **fluig-panel**: cria um painel;
+- **fluig-radio**: Cria um input customizado do tipo radio;
+- **fluig-radio-inline**: Cria um input customizado inline do tipo radio;
 - **fluig-switch-aprovacao**: cria uma linha contendo dois botões para indicar aprovação / reprovação;
+- **fluig-tabs**: Cria uma navegação em Abas;
 
 ## Snippets para JavaScript
 

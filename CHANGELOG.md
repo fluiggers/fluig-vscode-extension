@@ -2,6 +2,23 @@
 
 Lista de atualizações da Extensão.
 
+## 1.2.0
+
+Adição dos snippets HTML:
+
+- fluig-radio
+- fluig-radio-inline
+- fluig-tabs
+
+## 1.1.0
+
+Adição dos snippets JavaScript:
+
+- fluig-beforeMovementOptions
+- fluig-beforeSendValidate
+- fluig-zoom-removed
+- fluig-zoom-selected
+
 ## 1.0.0
 
 - Melhoria da documentação da Extensão;
