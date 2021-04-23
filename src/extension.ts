@@ -18,6 +18,7 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(vscode.commands.registerCommand("fluig-vscode-extension.addServer", () => serverItemProvider.add()));
     context.subscriptions.push(vscode.commands.registerCommand("fluig-vscode-extension.deleteServer", (serverItem: ServerItem) => serverItemProvider.delete(serverItem)));
     context.subscriptions.push(vscode.commands.registerCommand("fluig-vscode-extension.refreshServer", () => serverItemProvider.refresh()));
+    context.subscriptions.push(vscode.commands.registerCommand("fluig-vscode-extension.editServer", (serverItem: ServerItem) => serverItemProvider.update(serverItem)));
 }
 
 // this method is called when your extension is deactivated

@@ -52,6 +52,39 @@ export class ServerService {
     }
 
     /**
+     * Atualizar dados do servidor
+     * @param server 
+     * @returns 
+     */
+    public static update(server: ServerDTO) {
+        const serverConfig = ServerService.getServerConfig();
+
+        if(!serverConfig.configurations) {
+            return;
+        }
+
+        const servers = serverConfig.configurations;
+        servers.forEach((element: ServerDTO) => {
+            if (element.id === server.id) {
+                const index = servers.indexOf(element, 0);
+                servers.splice(index, 1);
+                servers.push(server);
+                ServerService.writeServerConfig(serverConfig);
+                return;
+            }
+        });
+    }
+
+    public static createOrUpdate(server: ServerDTO) {
+        if(server.id) {
+            this.update(server);
+        }
+        else {
+            this.create(server);
+        }
+    }
+
+    /**
      * Retorna o caminho do arquivo Server Config
      * @returns 
      */

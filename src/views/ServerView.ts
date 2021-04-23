@@ -41,7 +41,9 @@ export class ServerView {
 
         return runTemplate({
             css: cssContent,
-            serverData: this.serverData
+            serverData: this.serverData,
+            ssl: (this.serverData && this.serverData.ssl) ? this.serverData.ssl : false,
+            confirmExporting: (this.serverData && this.serverData.confirmExporting) ? this.serverData.confirmExporting : false,
         });
     }
 
@@ -49,7 +51,7 @@ export class ServerView {
         const file = vscode.Uri.file(path.join(this.context.extensionPath, 'src', 'resources', 'views', 'server'));
         return vscode.window.createWebviewPanel(
             "fluig-vscode-extension.addServer",
-            "Adicionar Servidor",
+            this.serverData != undefined ? "Editar Servidor" : "Adicionar Servidor",
             vscode.ViewColumn.One,
             {
                 enableScripts: true,
@@ -63,7 +65,7 @@ export class ServerView {
         if(obj.name && obj.host && obj.port && 
             obj.username && obj.password) {
                 const server = {
-                    id: '',
+                    id: obj.id,
                     name: obj.name,
                     host: obj.host,
                     ssl: obj.ssl,
@@ -74,7 +76,7 @@ export class ServerView {
                 };
 
                 UserService.getUser(server).then((response) => {
-                    ServerService.create(server);
+                    ServerService.createOrUpdate(server);
 
                     if (this.currentPanel) {
                         this.currentPanel.dispose();

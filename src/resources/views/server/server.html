@@ -15,13 +15,13 @@
         <div class="row">
             <div class="col-md-12 form-group">
                 <label for="name"><strong>Nome</strong></label>
-                <input type="text" class="form-control" id="name" value="${d.name ? d.name : ''}">
-                <input type="hidden" class="form-control" id="id" value="${d.id ? d.id : ''}">
+                <input type="text" class="form-control" id="name" value="${d.serverData ? d.serverData.name : ''}">
+                <input type="hidden" class="form-control" id="id" value="${d.serverData ? d.serverData.id : ''}">
             </div>
             
             <div class="col-md-8 form-group">
                 <label for="host"><strong>Host</strong></label>
-                <input type="text" class="form-control" id="host" placeholder="Exemplo: fluig.com.br" value="${d.host ? d.host : ''}" onchange="validateHost(this)">
+                <input type="text" class="form-control" id="host" placeholder="Exemplo: fluig.com.br" value="${d.serverData ? d.serverData.host : ''}" onchange="validateHost(this)">
             </div>
 
             <div class="col-md-2 form-group">
@@ -34,17 +34,17 @@
 
             <div class="col-md-2 form-group">
                 <label for="port"><strong>Porta</strong></label>
-                <input type="text" class="form-control" id="port" placeholder="443" value="${d.port ? d.port : ''}"> 
+                <input type="text" class="form-control" id="port" placeholder="443" value="${d.serverData ? d.serverData.port : ''}"> 
             </div>
             
             <div class="col-md-6 form-group">
                 <label for="username"><strong>Usuário</strong></label>
-                <input type="text" class="form-control" id="username"value="${d.username ? d.username : ''}">
+                <input type="text" class="form-control" id="username"value="${d.serverData ? d.serverData.username : ''}">
             </div>
 
             <div class="col-md-6 form-group">
                 <label for="password"><strong>Senha</strong></label>
-                <input type="password" class="form-control" id="password" value="${d.password ? d.password : ''}">
+                <input type="password" class="form-control" id="password" value="${d.serverData ? d.serverData.password : ''}">
             </div>
             
             <div class="col-md-5 form-group">

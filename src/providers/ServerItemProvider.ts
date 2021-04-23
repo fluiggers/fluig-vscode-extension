@@ -66,6 +66,12 @@ export class ServerItemProvider implements vscode.TreeDataProvider<ServerItem> {
         ServerService.delete(serverItem.server.id);
     }
 
+    public update(serverItem: ServerItem) {
+        const serverView = new ServerView(this.context);
+        serverView.setServerData(serverItem.server);
+        serverView.show();
+    }
+
     private getServers() {
         const serverConfig = ServerService.getServerConfig();
         const listServer = new Array<ServerItem>();

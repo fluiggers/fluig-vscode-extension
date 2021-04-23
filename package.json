@@ -24,6 +24,7 @@
         "onCommand:fluig-vscode-extension.addServer",
         "onCommand:fluig-vscode-extension.deleteServer",
         "onCommand:fluig-vscode-extension.refreshServer",
+        "onCommand:fluig-vscode-extension.editServer",
         "onView:fluig-vscode-extension.servers"
     ],
     "main": "./dist/extension.js",
@@ -75,6 +76,15 @@
                     "light": "src/resources/images/light/refresh.svg",
                     "dark": "src/resources/images/dark/refresh.svg"
                 }
+            },
+            {
+                "command": "fluig-vscode-extension.editServer",
+                "title": "Editar",
+                "category": "Fluig",
+                "icon": {
+                    "light": "src/resources/images/light/edit.svg",
+                    "dark": "src/resources/images/dark/edit.svg"
+                }
             }
         ],
         "menus": {
@@ -123,6 +133,11 @@
             "view/item/context": [
                 {
                     "command": "fluig-vscode-extension.deleteServer",
+                    "when": "view == fluig-vscode-extension.servers && viewItem == serverItem",
+                    "group": "inline"
+                },
+                {
+                    "command": "fluig-vscode-extension.editServer",
                     "when": "view == fluig-vscode-extension.servers && viewItem == serverItem",
                     "group": "inline"
                 }
