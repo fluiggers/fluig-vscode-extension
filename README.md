@@ -116,14 +116,19 @@ Snippets para criar estruturas HTML seguindo o **Fluig Style Guide**.
 
 Os snippets disponibilizados são:
 
+- **fluig-alert**: Cria um alerta;
+- **fluig-alert-dismissible**: Cria um alerta que pode ser fechado;
+- **fluig-button-dropdown-split**: Cria um botão com sub menu;
+- **fluig-checkbox-inline**: Cria um input customizado inline do tipo checkbox;
+- **fluig-checkbox**: Cria um input customizado do tipo checkbox;
 - **fluig-input-data**: cria uma coluna com input do tipo texto e ícone de calendário;
 - **fluig-input-text**: cria uma coluna contendo um input do tipo texto;
 - **fluig-input-textarea**: cria uma coluna contendo um textarea;
 - **fluig-input-zoom**: cria uma coluna contendo um Zoom;
 - **fluig-panel-collapse**: cria um painel com estrutura de collapse;
 - **fluig-panel**: cria um painel;
-- **fluig-radio**: Cria um input customizado do tipo radio;
 - **fluig-radio-inline**: Cria um input customizado inline do tipo radio;
+- **fluig-radio**: Cria um input customizado do tipo radio;
 - **fluig-switch-aprovacao**: cria uma linha contendo dois botões para indicar aprovação / reprovação;
 - **fluig-tabs**: Cria uma navegação em Abas;
 

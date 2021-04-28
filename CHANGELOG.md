@@ -2,6 +2,16 @@
 
 Lista de atualizações da Extensão.
 
+## 1.3.0
+
+Adição dos snippets HTML:
+
+- fluig-checkbox
+- fluig-checkbox-inline
+- fluig-alert
+- fluig-alert-dismissible
+- fluig-button-dropdown-split
+
 ## 1.2.0
 
 Adição dos snippets HTML:

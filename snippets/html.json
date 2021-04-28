@@ -185,5 +185,77 @@
             "$0"
         ],
         "description": "Cria um input customizado inline do tipo radio."
+    },
+
+    "fluig-checkbox": {
+        "scope": "html",
+        "prefix": "fluig-checkbox",
+        "body": [
+            "<div class=\"custom-checkbox custom-checkbox-primary\">",
+            "    <input type=\"checkbox\" name=\"${1:check}\" id=\"${1:check}\" value=\"${2:value}\">",
+            "    <label for=\"${1:check}\">${3:Label}</label>",
+            "</div>",
+            "$0"
+        ],
+        "description": "Cria um input customizado do tipo checkbox."
+    },
+
+    "fluig-checkbox-inline": {
+        "scope": "html",
+        "prefix": "fluig-checkbox-inline",
+        "body": [
+            "<div class=\"custom-checkbox custom-checkbox-inline custom-checkbox-primary\">",
+            "    <input type=\"checkbox\" name=\"${1:check}\" id=\"${1:check}\" value=\"${2:value}\">",
+            "    <label for=\"${1:check}\">${3:Label}</label>",
+            "</div>",
+            "$0"
+        ],
+        "description": "Cria um input customizado inline do tipo checkbox."
+    },
+
+    "fluig-alert": {
+        "scope": "html",
+        "prefix": "fluig-alert",
+        "body": [
+            "<div class=\"alert alert-${1:success}\" role=\"alert\">",
+            "    $0",
+            "</div>"
+        ],
+        "description": "Cria um alerta."
+    },
+
+    "fluig-alert-dismissible": {
+        "scope": "html",
+        "prefix": "fluig-alert-dismissible",
+        "body": [
+            "<div class=\"alert alert-${1:success} alert-dismissible\" role=\"alert\">",
+            "    <button type=\"button\" class=\"close\" data-dismiss=\"alert\">",
+            "        <span aria-hidden=\"true\">×</span><span class=\"sr-only\">Fechar</span>",
+            "    </button>",
+            "",
+            "    $0",
+            "</div>"
+        ],
+        "description": "Cria um alerta que pode ser fechado."
+    },
+
+    "fluig-button-dropdown-split": {
+        "scope": "html",
+        "prefix": "fluig-button-dropdown-split",
+        "body": [
+            "<div class=\"btn-group\">",
+            "    <button type=\"button\" class=\"btn btn-${1:default}\" id=\"${2:buttonId}\">${3:Label Button}</button>",
+            "    <button type=\"button\" class=\"btn btn-${1:default} dropdown-toggle\" data-toggle=\"dropdown\">",
+            "        <span class=\"caret\"></span>",
+            "        <span class=\"sr-only\">Sub Menu</span>",
+            "    </button>",
+            "    <ul class=\"dropdown-menu\" role=\"menu\">",
+            "        <li><a href=\"#\" id=\"${4:actionId}\">${5:Action}</a></li>",
+            "        <li><a href=\"#\" id=\"${6:anotherActionId}\">${7:Another Action}</a></li>",
+            "    </ul>",
+            "</div>",
+            "$0"
+        ],
+        "description": "Cria um botão com sub menu."
     }
 }
