@@ -57,13 +57,18 @@ export class ServerItemProvider implements vscode.TreeDataProvider<ServerItem> {
     }
 
     public delete(serverItem: ServerItem) {
-        const index = this.serverItems.indexOf(serverItem);
+        vscode.window.showInformationMessage(`Deseja excluir o servidor ${serverItem.server.name}?`, "Sim", "Não")
+            .then(selection => {
+                if(selection == "Sim") {
+                    const index = this.serverItems.indexOf(serverItem);
 
-        if (index < 0 || serverItem.server.id == undefined) {
-          return;
-        }
+                    if (index < 0 || serverItem.server.id == undefined) {
+                        return;
+                    }
 
-        ServerService.delete(serverItem.server.id);
+                    ServerService.delete(serverItem.server.id);
+                }
+            });
     }
 
     public update(serverItem: ServerItem) {
