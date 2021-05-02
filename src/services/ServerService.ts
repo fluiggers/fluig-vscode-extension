@@ -2,12 +2,9 @@ import { ServerConfig } from "../models/ServerConfig";
 import { ServerDTO } from "../models/ServerDTO";
 import { UtilsService } from "./UtilsService";
 
-const homedir = require('os').homedir();
-
 export class ServerService {
-    private static PATH = homedir + '/.vscode';
-    private static PATH_FLUIG = ServerService.PATH + '/fluig';
-    private static FILE_SERVER_CONFIG = ServerService.PATH_FLUIG + '/servers.json'; 
+    private static PATH = UtilsService.getWorkspace() + '/.vscode';
+    private static FILE_SERVER_CONFIG = ServerService.PATH + '/servers.json'; 
 
     /**
      * Adiciona um novo servidor
@@ -112,10 +109,6 @@ export class ServerService {
 
         if (!fs.existsSync(ServerService.PATH)) {
             fs.mkdirSync(ServerService.PATH);
-        }
-
-        if(!fs.existsSync(ServerService.PATH_FLUIG)) {
-            fs.mkdirSync(ServerService.PATH_FLUIG);
         }
 
         fs.writeFileSync(ServerService.FILE_SERVER_CONFIG, JSON.stringify(serverConfig, null, "\t"));
