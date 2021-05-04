@@ -2,7 +2,7 @@
     "name": "fluig-vscode-extension",
     "displayName": "Fluig - Extensão VS Code",
     "description": "Extensão para agilizar o desenvolvimento para o TOTVS Fluig no VS Code",
-    "version": "0.0.7",
+    "version": "1.3.0",
     "publisher": "BrunoGasparetto",
     "repository": {
         "type": "git",
@@ -21,6 +21,7 @@
         "onCommand:fluig-vscode-extension.newForm",
         "onCommand:fluig-vscode-extension.newFormEvent",
         "onCommand:fluig-vscode-extension.newWorkflowEvent",
+        "onCommand:fluig-vscode-extension.newGlobalEvent",
         "onCommand:fluig-vscode-extension.addServer",
         "onCommand:fluig-vscode-extension.deleteServer",
         "onCommand:fluig-vscode-extension.refreshServer",
@@ -48,6 +49,11 @@
             {
                 "command": "fluig-vscode-extension.newWorkflowEvent",
                 "title": "Novo Evento de Processo",
+                "category": "Fluig"
+            },
+            {
+                "command": "fluig-vscode-extension.newGlobalEvent",
+                "title": "Novo Evento Global",
                 "category": "Fluig"
             },
             {
@@ -105,6 +111,10 @@
                 },
                 {
                     "command": "fluig-vscode-extension.newForm",
+                    "group": "navigation@-1"
+                },
+                {
+                    "command": "fluig-vscode-extension.newGlobalEvent",
                     "group": "navigation@-1"
                 },
                 {

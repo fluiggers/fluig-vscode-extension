@@ -1,0 +1,11 @@
+/**
+ *
+ *
+ * @param subject
+ * @param {java.util.ArrayList<string>} receivers
+ * @param {string} template
+ * @param {java.util.HashMap<string, string>} params
+ */
+function onNotify(subject, receivers, template, params) {
+
+}

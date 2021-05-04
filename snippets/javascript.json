@@ -7,7 +7,8 @@
             "",
             "for (var i = 0; i < indexes.length; ++i) {",
             "    form.getValue(\"$2___\" + indexes[i]);$0",
-            "}"
+            "}",
+            ""
         ],
         "description": "Percorre os itens de um Pai Filho (back-end)."
     },
@@ -32,7 +33,8 @@
             "    var data = java.time.LocalDateTime.now();",
             "    var formatter = java.time.format.DateTimeFormatter.ofPattern(format);",
             "    return data.format(formatter);",
-            "}$0"
+            "}",
+            "$0"
         ],
         "description": "Cria uma função que retorna a data atual formatada (back-end)."
     },
@@ -53,5 +55,87 @@
             "moment().format(\"DD/MM/YYYY\")"
         ],
         "description": "Pega a data atual formatada em PT-BR (front-end)."
+    },
+
+    "fluig-beforeMovementOptions": {
+        "scope": "javascript",
+        "prefix": "fluig-beforeMovementOptions",
+        "body": [
+            "/**",
+            " * Evento executado quando clica no botão Movimentar na tela de movimentações do Workflow",
+            " *",
+            " * @param {number} numState",
+            " * @returns {boolean} True continua a movimentação, False cancela a movimentação",
+            " * @throws {string} Mensagem de erro para cancelar a movimentação",
+            " */",
+            "function beforeMovementOptions(numState) {",
+            "    $0",
+            "}",
+            ""
+        ],
+        "description": "Evento executado quando clica no botão Movimentar na tela de movimentações do Workflow (front-end)."
+    },
+
+    "fluig-beforeSendValidate": {
+        "scope": "javascript",
+        "prefix": "fluig-beforeSendValidate",
+        "body": [
+            "/**",
+            " * Validação do formulário no front-end na tela de Processo",
+            " *",
+            " * Ocorre antes da solicitação ser movimentada, após já ter sido selecionada a atividade destino o usuário",
+            " * e demais informações necessárias à solicitação.",
+            " *",
+            " * @param {number} numState",
+            " * @param {number} nextState",
+            " * @returns {boolean} True submete o formulário, False cancela o envio",
+            " * @throws {string} Mensagem de erro para cancelar o envio do formulário",
+            " */",
+            "function beforeSendValidate(numState, nextState) {",
+            "    $0",
+            "}",
+            ""
+        ],
+        "description": "Validação do formulário na tela de Processo do Workflow (front-end)."
+    },
+
+    "fluig-zoom-selected": {
+        "scope": "javascript",
+        "prefix": "fluig-zoom-selected",
+        "body": [
+            "/**",
+            " * Função executada sempre que um campo Zoom tem um item selecionado",
+            " *",
+            " * Recebe um objeto com o Nome e Id do Zoom além de todos os campos",
+            " * indicados para o Zoom retornar.",
+            " *",
+            " * @param {{inputName: string, inputId: string, selected: boolean}} selectedItem",
+            " */",
+            "function setSelectedZoomItem(selectedItem) {",
+            "    $0",
+            "}",
+            ""
+        ],
+        "description": "Função executada quando um elemento é selecionado no Zoom (front-end)."
+    },
+
+    "fluig-zoom-removed": {
+        "scope": "javascript",
+        "prefix": "fluig-zoom-removed",
+        "body": [
+            "/**",
+            " * Função executada sempre que um campo Zoom tem um item desmarcado",
+            " *",
+            " * Recebe um objeto com o Nome e Id do Zoom além de todos os campos",
+            " * indicados para o Zoom retornar.",
+            " *",
+            " * @param {{inputName: string, inputId: string, selected: boolean}} removedItem",
+            " */",
+            "function removedZoomItem(removedItem) {",
+            "    $0",
+            "}",
+            ""
+        ],
+        "description": "Função executada quando um elemento é desmarcado no Zoom (front-end)."
     }
 }

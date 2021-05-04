@@ -2,6 +2,44 @@
 
 Lista de atualizações da Extensão.
 
+## 1.3.0
+
+Adição dos snippets HTML:
+
+- fluig-checkbox
+- fluig-checkbox-inline
+- fluig-alert
+- fluig-alert-dismissible
+- fluig-button-dropdown-split
+
+## 1.2.0
+
+Adição dos snippets HTML:
+
+- fluig-radio
+- fluig-radio-inline
+- fluig-tabs
+
+## 1.1.0
+
+Adição dos snippets JavaScript:
+
+- fluig-beforeMovementOptions
+- fluig-beforeSendValidate
+- fluig-zoom-removed
+- fluig-zoom-selected
+
+## 1.0.0
+
+- Melhoria da documentação da Extensão;
+- Redução do tamanho da Extensão;
+
+## 0.0.8
+
+- Adicionado comando **Novo Evento Global**;
+- Adicionado template para o evento global **displayCentralTasks**;
+- Adicionado template para o evento global **onNotify**;
+
 ## 0.0.7
 
 - Refatoração dos templates em arquivos ao invés de funções;
