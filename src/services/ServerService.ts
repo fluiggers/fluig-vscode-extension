@@ -1,6 +1,7 @@
 import { ServerConfig } from "../models/ServerConfig";
 import { ServerDTO } from "../models/ServerDTO";
 import { UtilsService } from "./UtilsService";
+import { window } from "vscode";
 
 export class ServerService {
     private static PATH = UtilsService.getWorkspace() + '/.vscode';
@@ -79,6 +80,27 @@ export class ServerService {
         else {
             this.create(server);
         }
+    }
+
+    public static findByName(name: string) {
+        const servers = ServerService.getServerConfig();
+        return servers.configurations.find(server => server.name == name);
+    }
+
+    public static async getSelect() {
+        const serversConfig = ServerService.getServerConfig();
+        const servers = serversConfig.configurations.map(server => ({label: server.name}));
+
+        const result = await window.showQuickPick(servers, {
+            placeHolder: "Selecione o servidor",
+        });
+
+        if(!result) {
+            window.showErrorMessage("Falha ao selecionar o servidor!");
+            return;
+        }
+
+        return ServerService.findByName(result.label);
     }
 
     /**

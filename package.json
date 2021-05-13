@@ -26,6 +26,7 @@
         "onCommand:fluig-vscode-extension.deleteServer",
         "onCommand:fluig-vscode-extension.refreshServer",
         "onCommand:fluig-vscode-extension.editServer",
+        "onCommand:fluig-vscode-extension.importDataset",
         "onView:fluig-vscode-extension.servers"
     ],
     "main": "./dist/extension.js",
@@ -91,6 +92,11 @@
                     "light": "src/resources/images/light/edit.svg",
                     "dark": "src/resources/images/dark/edit.svg"
                 }
+            },
+            {
+                "command": "fluig-vscode-extension.importDataset",
+                "title": "Importar Dataset",
+                "category": "Fluig"
             }
         ],
         "menus": {
@@ -210,6 +216,7 @@
     },
     "dependencies": {
         "axios": "^0.21.1",
+        "soap": "^0.37.0",
         "template-literal": "^1.0.3"
     }
 }

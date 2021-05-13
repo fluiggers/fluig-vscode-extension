@@ -7,4 +7,5 @@ export interface ServerDTO {
     username: string;
     password: string;
     confirmExporting: boolean;
+    companyId: number;
 }

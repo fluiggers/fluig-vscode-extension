@@ -64,7 +64,7 @@ export class ServerView {
     private messageListener(obj: any) {
         if(obj.name && obj.host && obj.port && 
             obj.username && obj.password) {
-                const server = {
+                const server: ServerDTO = {
                     id: obj.id,
                     name: obj.name,
                     host: obj.host,
@@ -72,10 +72,12 @@ export class ServerView {
                     port: obj.port,
                     username: obj.username,
                     password: obj.password,
-                    confirmExporting: obj.confirmExporting
+                    confirmExporting: obj.confirmExporting,
+                    companyId: 0
                 };
 
                 UserService.getUser(server).then((response) => {
+                    server.companyId = response.data.content.tenantId;
                     ServerService.createOrUpdate(server);
 
                     if (this.currentPanel) {

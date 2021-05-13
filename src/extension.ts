@@ -5,6 +5,7 @@ import { posix } from "path";
 import { readFileSync, statSync } from "fs";
 import { ServerItem, ServerItemProvider } from "./providers/ServerItemProvider";
 import { glob } from "glob";
+import { DatasetService } from "./services/DatasetService";
 
 interface ExtensionsPath {
     TEMPLATES: string,
@@ -81,6 +82,10 @@ export function activate(context: vscode.ExtensionContext) {
   
     context.subscriptions.push(
       vscode.commands.registerCommand("fluig-vscode-extension.editServer", (serverItem: ServerItem) => serverItemProvider.update(serverItem))
+    );
+
+    context.subscriptions.push(
+        vscode.commands.registerCommand("fluig-vscode-extension.importDataset", () => DatasetService.import())
     );
 }
 
