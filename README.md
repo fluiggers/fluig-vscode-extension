@@ -158,6 +158,7 @@ Devido ao Fluig utilizar JavaScript para front-end (navegador) e JavaScript para
 - Criar comando Novo Layout;
 - Adicionar todos os templates de Eventos Globais;
 - Adicionar novos Snippets;
+- Adicionar importação / exportação de Datasets;
 
 ## Colaboração
 
