@@ -1,9 +1,9 @@
-// The module "vscode" contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
 import { posix } from "path";
-import { readFileSync } from "fs";
+import { readFileSync, statSync } from "fs";
+import { ServerItem, ServerItemProvider } from "./providers/ServerItemProvider";
 import { glob } from "glob";
+import { DatasetService } from "./services/DatasetService";
 
 interface ExtensionsPath {
     TEMPLATES: string,
@@ -25,16 +25,12 @@ const EXTENSION_PATHS: ExtensionsPath = {
     GLOBAL_EVENTS: ''
 };
 
-
 const EVENTS_NAMES: EventsNames = {
     FORM: [],
     WORKFLOW: [],
     GLOBAL: []
 }
 
-
-// this method is called when your extension is activated
-// your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(
         vscode.commands.registerCommand("fluig-vscode-extension.newDataset", createDataset)
@@ -64,10 +60,47 @@ export function activate(context: vscode.ExtensionContext) {
     EVENTS_NAMES.FORM = getTemplatesNameFromPath(EXTENSION_PATHS.FORM_EVENTS);
     EVENTS_NAMES.WORKFLOW = getTemplatesNameFromPath(EXTENSION_PATHS.WORKFLOW_EVENTS);
     EVENTS_NAMES.GLOBAL = getTemplatesNameFromPath(EXTENSION_PATHS.GLOBAL_EVENTS);
+
+    const serverItemProvider = new ServerItemProvider(context);
+    vscode.window.registerTreeDataProvider("fluig-vscode-extension.servers", serverItemProvider);
+
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
+            "fluig-vscode-extension.addServer",
+            () => serverItemProvider.add()
+        )
+    );
+
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
+            "fluig-vscode-extension.refreshServer",
+            () => serverItemProvider.refresh()
+        )
+    );
+
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
+            "fluig-vscode-extension.importDataset",
+            () => DatasetService.import()
+        )
+    );
+
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
+            "fluig-vscode-extension.editServer",
+            (serverItem: ServerItem) => serverItemProvider.update(serverItem)
+        )
+    );
+
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
+            "fluig-vscode-extension.deleteServer",
+            (serverItem: ServerItem) => serverItemProvider.delete(serverItem)
+        )
+    );
 }
 
-// this method is called when your extension is deactivated
-export function deactivate() {}
+export function deactivate() { }
 
 /**
  * Cria um arquivo contendo um novo Dataset
@@ -78,7 +111,7 @@ async function createDataset() {
         return;
     }
 
-    let dataset:string = await vscode.window.showInputBox({
+    let dataset: string = await vscode.window.showInputBox({
         prompt: "Qual o nome do Dataset (sem espaços e sem caracteres especiais)?",
         placeHolder: "ds_nome_dataset"
     }) || "";
@@ -117,7 +150,7 @@ async function createForm() {
         return;
     }
 
-    let formName:string = await vscode.window.showInputBox({
+    let formName: string = await vscode.window.showInputBox({
         prompt: "Qual o nome do Formulário (sem espaços e sem caracteres especiais)?",
         placeHolder: "NomeFormulario"
     }) || "";
@@ -128,7 +161,14 @@ async function createForm() {
 
     const formFileName = formName + ".html";
     const workspaceFolderUri = vscode.workspace.workspaceFolders[0].uri;
-    const formUri = workspaceFolderUri.with({ path: posix.join(workspaceFolderUri.path, "forms", formName, formFileName) });
+    const formUri = workspaceFolderUri.with({
+        path: posix.join(
+            workspaceFolderUri.path,
+            "forms",
+            formName,
+            formFileName
+        )
+    });
 
     try {
         await vscode.workspace.fs.stat(formUri);
@@ -155,7 +195,7 @@ async function createFormEvent(folderUri: vscode.Uri) {
         return;
     }
 
-    const formName:string = folderUri.path.replace(/.*\/forms\/([^/]+).*/, "$1");
+    const formName: string = folderUri.path.replace(/.*\/forms\/([^/]+).*/, "$1");
 
     const eventName: string = await vscode.window.showQuickPick(
         EVENTS_NAMES.FORM,
@@ -283,7 +323,7 @@ async function createWorkflowEvent(folderUri: vscode.Uri) {
         isNewFunction = true;
     }
 
-    const processName:string = folderUri.path.replace(/.*\/(\w+)\.process$/, "$1");
+    const processName: string = folderUri.path.replace(/.*\/(\w+)\.process$/, "$1");
     const eventFilename = `${processName}.${eventName}.js`;
     const workspaceFolderUri = vscode.workspace.workspaceFolders[0].uri;
     const eventUri = workspaceFolderUri.with({
@@ -316,7 +356,7 @@ async function createWorkflowEvent(folderUri: vscode.Uri) {
  *
  * @returns O caminho do diretório de templates da Extensão
  */
- function getTemplateDirectoryPath(): string {
+function getTemplateDirectoryPath(): string {
     const path = vscode.extensions.getExtension("BrunoGasparetto.fluig-vscode-extension")?.extensionPath;
 
     if (!path) {
