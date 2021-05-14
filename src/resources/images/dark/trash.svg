@@ -9,12 +9,12 @@
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    id="Layer_1"
    enable-background="new 0 0 512 512"
-   height="512"
-   viewBox="0 0 512 512"
-   width="512"
+   height="15"
+   viewBox="0 0 15 15"
+   width="15"
    version="1.1"
    sodipodi:docname="trash.svg"
-   inkscape:version="0.92.5 (2060ec1f9f, 2020-04-08)">
+   inkscape:version="1.0.2 (e86c870879, 2021-01-15, custom)">
   <metadata
      id="metadata4124">
     <rdf:RDF>
@@ -23,6 +23,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -37,26 +38,28 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="640"
-     inkscape:window-height="480"
+     inkscape:window-width="1366"
+     inkscape:window-height="715"
      id="namedview4120"
      showgrid="false"
-     inkscape:zoom="0.4609375"
-     inkscape:cx="256"
-     inkscape:cy="256"
-     inkscape:window-x="0"
-     inkscape:window-y="0"
-     inkscape:window-maximized="0"
-     inkscape:current-layer="Layer_1" />
+     inkscape:zoom="10.429825"
+     inkscape:cx="31.250305"
+     inkscape:cy="22.026493"
+     inkscape:window-x="1358"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="Layer_1"
+     inkscape:document-rotation="0" />
   <g
      id="g4117"
-     style="fill:#ffffff">
+     style="fill:#ffffff"
+     transform="matrix(0.02929688,0,0,0.02929688,0.09374976,0)">
     <path
-       d="m424 64h-88v-16c0-26.51-21.49-48-48-48h-64c-26.51 0-48 21.49-48 48v16h-88c-22.091 0-40 17.909-40 40v32c0 8.837 7.163 16 16 16h384c8.837 0 16-7.163 16-16v-32c0-22.091-17.909-40-40-40zm-216-16c0-8.82 7.18-16 16-16h64c8.82 0 16 7.18 16 16v16h-96z"
+       d="M 424,64 H 336 V 48 C 336,21.49 314.51,0 288,0 H 224 C 197.49,0 176,21.49 176,48 V 64 H 88 C 65.909,64 48,81.909 48,104 v 32 c 0,8.837 7.163,16 16,16 h 384 c 8.837,0 16,-7.163 16,-16 V 104 C 464,81.909 446.091,64 424,64 Z M 208,48 c 0,-8.82 7.18,-16 16,-16 h 64 c 8.82,0 16,7.18 16,16 v 16 h -96 z"
        id="path4113"
        style="fill:#ffffff" />
     <path
-       d="m78.364 184c-2.855 0-5.13 2.386-4.994 5.238l13.2 277.042c1.22 25.64 22.28 45.72 47.94 45.72h242.98c25.66 0 46.72-20.08 47.94-45.72l13.2-277.042c.136-2.852-2.139-5.238-4.994-5.238zm241.636 40c0-8.84 7.16-16 16-16s16 7.16 16 16v208c0 8.84-7.16 16-16 16s-16-7.16-16-16zm-80 0c0-8.84 7.16-16 16-16s16 7.16 16 16v208c0 8.84-7.16 16-16 16s-16-7.16-16-16zm-80 0c0-8.84 7.16-16 16-16s16 7.16 16 16v208c0 8.84-7.16 16-16 16s-16-7.16-16-16z"
+       d="m 78.364,184 c -2.855,0 -5.13,2.386 -4.994,5.238 l 13.2,277.042 c 1.22,25.64 22.28,45.72 47.94,45.72 h 242.98 c 25.66,0 46.72,-20.08 47.94,-45.72 l 13.2,-277.042 C 438.766,186.386 436.491,184 433.636,184 Z M 320,224 c 0,-8.84 7.16,-16 16,-16 8.84,0 16,7.16 16,16 v 208 c 0,8.84 -7.16,16 -16,16 -8.84,0 -16,-7.16 -16,-16 z m -80,0 c 0,-8.84 7.16,-16 16,-16 8.84,0 16,7.16 16,16 v 208 c 0,8.84 -7.16,16 -16,16 -8.84,0 -16,-7.16 -16,-16 z m -80,0 c 0,-8.84 7.16,-16 16,-16 8.84,0 16,7.16 16,16 v 208 c 0,8.84 -7.16,16 -16,16 -8.84,0 -16,-7.16 -16,-16 z"
        id="path4115"
        style="fill:#ffffff" />
   </g>
