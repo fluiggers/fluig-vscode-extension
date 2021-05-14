@@ -33,8 +33,8 @@ export class ServerView {
     }
 
     private getWebViewContent() {
-        const htmlPath = vscode.Uri.file(path.join(this.context.extensionPath, 'src', 'resources', 'views', 'server', 'server.html'));
-        const cssPath = vscode.Uri.file(path.join(this.context.extensionPath, 'src', 'resources', 'css', 'bootstrap.min.css'));
+        const htmlPath = vscode.Uri.file(path.join(this.context.extensionPath, 'resources', 'views', 'server', 'server.html'));
+        const cssPath = vscode.Uri.file(path.join(this.context.extensionPath, 'resources', 'css', 'bootstrap.min.css'));
         const htmlContent = fs.readFileSync(htmlPath.with({ scheme: 'vscode-resource' }).fsPath);
         const cssContent = fs.readFileSync(cssPath.with({ scheme: 'vscode-resource' }).fsPath);
         let runTemplate = compile(htmlContent);
@@ -62,7 +62,7 @@ export class ServerView {
     }
 
     private messageListener(obj: any) {
-        if(obj.name && obj.host && obj.port && 
+        if(obj.name && obj.host && obj.port &&
             obj.username && obj.password) {
                 const server: ServerDTO = {
                     id: obj.id,
