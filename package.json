@@ -8,6 +8,17 @@
         "type": "git",
         "url": "https://github.com/brunogasparetto/fluig-vscode-extension"
     },
+    "author": {
+        "name": "Bruno Gasparetto",
+        "email": "brunogasparetto@gmail.com",
+        "url": "https://github.com/brunogasparetto"
+    },
+    "contributors": [
+        {
+            "name": "Pedro Costa",
+            "url": "https://github.com/pedro-costa-neto"
+        }
+    ],
     "engines": {
         "vscode": "^1.55.0"
     },

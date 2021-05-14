@@ -31,6 +31,8 @@ Foram criados snippets para as seguintes linguagens:
 - [Snippets para HTML](#snippets-para-html);
 - [Snippets para JavaScript](#snippets-para-javascript);
 
+É possível gerenciar os Servidores Fluig, porém ainda não temos mais funcionalidades (importar/exportar datasets, por exemplo).
+
 ## Novo Dataset.
 
 Esse comando cria um arquivo JavaScript, após você preencher o nome do Dataset, no diretório `datasets` do seu projeto Fluig.

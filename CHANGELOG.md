@@ -2,6 +2,10 @@
 
 Lista de atualizações da Extensão.
 
+## 1.4.0
+
+Adição do gerenciamento de Servidores.
+
 ## 1.3.0
 
 Adição dos snippets HTML:
