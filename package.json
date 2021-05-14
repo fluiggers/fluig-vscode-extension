@@ -176,6 +176,12 @@
                 }
             ]
         },
+        "viewsWelcome": [
+            {
+                "view": "fluig-vscode-extension.servers",
+                "contents": "Nenhum Servidor encontrado.\n[Adicionar Servidor](command:fluig-vscode-extension.addServer)"
+            }
+        ],
         "snippets": [
             {
                 "language": "html",
