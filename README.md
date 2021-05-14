@@ -163,4 +163,4 @@ Devido ao Fluig utilizar JavaScript para front-end (navegador) e JavaScript para
 
 Sinta-se à vontade para colaborar criando mais snippets, templates de arquivos e comandos.
 
-Basta criar um fork e uma efetuar uma PR quando estiver pronto.
+Basta criar um fork e efetuar uma PR quando estiver pronto.
