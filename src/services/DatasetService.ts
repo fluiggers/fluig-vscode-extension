@@ -58,6 +58,12 @@ export class DatasetService {
         return datasets.filter(dataset => {return dataset.type === 'CUSTOM';});
     }
 
+    /**
+     * Retorna as informacoes e estrutura de um dataset especifico
+     * @param server 
+     * @param datasetId 
+     * @returns 
+     */
     public static async getDataset(server: ServerDTO, datasetId: string) {
         let uri = server.ssl ? "https://" : "http://";
         uri += server.host;
@@ -76,7 +82,12 @@ export class DatasetService {
         });
     }
 
-    public static async getSelect(server: ServerDTO) {
+    /**
+     * Retorna o dataset selecionado
+     * @param server 
+     * @returns 
+     */
+    public static async getOptionSelected(server: ServerDTO) {
         const datasets = await DatasetService.getDatasetsCustom(server);
         const items = datasets.map(dataset => ({label: dataset.datasetId}));
         const result = await window.showQuickPick(items, {
@@ -91,11 +102,15 @@ export class DatasetService {
         return await DatasetService.getDataset(server, result.label);
     }
 
+    /**
+     * Realiza a importacao de um dataset especifico
+     * @returns 
+     */
     public static async import() {
         const server = await ServerService.getSelect();
 
         if(!server) {return;}
-        const dataset = await DatasetService.getSelect(server);
+        const dataset = await DatasetService.getOptionSelected(server);
 
         if (!workspace.workspaceFolders) {
             window.showInformationMessage("Você precisa estar em um diretório / workspace.");
