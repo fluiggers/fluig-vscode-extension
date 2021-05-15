@@ -91,7 +91,7 @@ export class DatasetService {
         const datasets = await DatasetService.getDatasetsCustom(server);
         const items = datasets.map(dataset => ({label: dataset.datasetId}));
         const result = await window.showQuickPick(items, {
-            placeHolder: "Selecione o dataset",
+            placeHolder: "Selecione o dataset"
         });
 
         if(!result) {
@@ -100,6 +100,29 @@ export class DatasetService {
         }
 
         return await DatasetService.getDataset(server, result.label);
+    }
+
+    /**
+     * Retorna os datasets selecionados
+     * @param server 
+     * @returns 
+     */
+    public static async getOptionsSelected(server: ServerDTO) {
+        const datasets = await DatasetService.getDatasetsCustom(server);
+        const items = datasets.map(dataset => ({label: dataset.datasetId}));
+        const result = await window.showQuickPick(items, {
+            placeHolder: "Selecione o dataset",
+            canPickMany: true
+        });
+
+        if(!result) {
+            window.showErrorMessage("Falha ao selecionar o(s) dataset(s)!");
+            return;
+        }
+
+        return result.map(async item => {
+            return await DatasetService.getDataset(server, item.label);
+        });
     }
 
     /**
@@ -112,25 +135,61 @@ export class DatasetService {
         if(!server) {return;}
         const dataset = await DatasetService.getOptionSelected(server);
 
-        if (!workspace.workspaceFolders) {
-            window.showInformationMessage("Você precisa estar em um diretório / workspace.");
-            return;
-        }
-
         if(!dataset) {
             window.showErrorMessage("Falha ao retornar a estrutura do dataset!");
             return;
         }
 
-        const datasetName = dataset.data.datasetPK.datasetId;
-        const datasetImpl = dataset.data.datasetImpl;
+        DatasetService.saveFile(
+            dataset.data.datasetPK.datasetId, 
+            dataset.data.datasetImpl
+        );
+    }
+
+    /**
+     * Realiza a importacao de varios datasets
+     * @returns 
+     */
+    public static async importMany() {
+        const server = await ServerService.getSelect();
+
+        if(!server) {return;}
+        const datasets = await DatasetService.getOptionsSelected(server);
+
+        if (!workspace.workspaceFolders) {
+            window.showInformationMessage("Você precisa estar em um diretório / workspace.");
+            return;
+        }
+
+        if(!datasets) {
+            window.showErrorMessage("Falha ao retornar a estrutura do dataset!");
+            return;
+        }
+
+        datasets.map(async item => {
+            const dataset = await item;
+            DatasetService.saveFile(
+                dataset.data.datasetPK.datasetId, 
+                dataset.data.datasetImpl
+            );
+        });
+    }
+
+    public static async saveFile(name: string, content: string) {
+        if (!workspace.workspaceFolders) {
+            window.showInformationMessage("Você precisa estar em um diretório / workspace.");
+            return;
+        }
+
         const workspaceFolderUri = workspace.workspaceFolders[0].uri;
-        const datasetUri = workspaceFolderUri.with({ path: posix.join(workspaceFolderUri.path, "datasets", datasetName + ".js") });
+        const datasetUri = workspaceFolderUri.with({ path: posix.join(workspaceFolderUri.path, "datasets", name + ".js") });
 
         await workspace.fs.writeFile(
             datasetUri,
-            Buffer.from(datasetImpl, "utf-8")
+            Buffer.from(content, "utf-8")
         );
+
         window.showTextDocument(datasetUri);
+        window.showInformationMessage("Dataset " + name + " importado com sucesso!");
     }
 }

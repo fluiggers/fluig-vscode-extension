@@ -38,6 +38,7 @@
         "onCommand:fluig-vscode-extension.refreshServer",
         "onCommand:fluig-vscode-extension.editServer",
         "onCommand:fluig-vscode-extension.importDataset",
+        "onCommand:fluig-vscode-extension.importManyDataset",
         "onView:fluig-vscode-extension.servers"
     ],
     "main": "./dist/extension.js",
@@ -107,6 +108,11 @@
             {
                 "command": "fluig-vscode-extension.importDataset",
                 "title": "Importar Dataset",
+                "category": "Fluig"
+            },
+            {
+                "command": "fluig-vscode-extension.importManyDataset",
+                "title": "Importar vários dataset",
                 "category": "Fluig"
             }
         ],

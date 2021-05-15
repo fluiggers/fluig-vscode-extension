@@ -87,6 +87,13 @@ export function activate(context: vscode.ExtensionContext) {
 
     context.subscriptions.push(
         vscode.commands.registerCommand(
+            "fluig-vscode-extension.importManyDataset",
+            () => DatasetService.importMany()
+        )
+    );
+
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
             "fluig-vscode-extension.editServer",
             (serverItem: ServerItem) => serverItemProvider.update(serverItem)
         )
