@@ -39,6 +39,7 @@
         "onCommand:fluig-vscode-extension.editServer",
         "onCommand:fluig-vscode-extension.importDataset",
         "onCommand:fluig-vscode-extension.importManyDataset",
+        "onCommand:fluig-vscode-extension.exportDataset",
         "onView:fluig-vscode-extension.servers"
     ],
     "main": "./dist/extension.js",
@@ -114,6 +115,11 @@
                 "command": "fluig-vscode-extension.importManyDataset",
                 "title": "Importar vários dataset",
                 "category": "Fluig"
+            },
+            {
+                "command": "fluig-vscode-extension.exportDataset",
+                "title": "Exportar Dataset",
+                "category": "Fluig"
             }
         ],
         "menus": {
@@ -148,6 +154,11 @@
                 {
                     "command": "fluig-vscode-extension.newWorkflowEvent",
                     "when": "resourceExtname == .process",
+                    "group": "navigation@-1"
+                },
+                {
+                    "command": "fluig-vscode-extension.exportDataset",
+                    "when": "resourcePath =~ /[\\/\\\\]datasets[\\/\\\\].+$/",
                     "group": "navigation@-1"
                 }
             ],

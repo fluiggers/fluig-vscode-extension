@@ -2,9 +2,11 @@ import axios from "axios";
 import { ServerDTO } from "../models/ServerDTO";
 import * as https from 'https';
 import { ServerService } from "./ServerService";
-import { window, workspace } from "vscode";
+import { window, workspace, Uri } from "vscode";
 import { posix } from "path";
 import { DatasetDTO } from "../models/DatasetDTO";
+import { DatasetStructureDTO } from "../models/DatasetStructureDTO";
+import { readFileSync } from "fs";
 
 const soap = require("soap");
 
@@ -78,6 +80,29 @@ export class DatasetService {
         });
 
         return await axios.get(uri, {
+            httpsAgent: agent
+        });
+    }
+
+    /**
+     * Exportar novo dataset
+     * @param server 
+     * @param dataset 
+     * @returns 
+     */
+    public static async createDataset(server: ServerDTO, dataset: DatasetStructureDTO) {
+        let uri = server.ssl ? "https://" : "http://";
+        uri += server.host;
+        uri += ":" + server.port;
+        uri += "/ecm/api/rest/ecm/dataset/createDataset";
+        uri += "?username=" + server.username;
+        uri += "&password=" + server.password;
+
+        const agent = new https.Agent({
+            rejectUnauthorized: false
+        });
+
+        return await axios.post(uri, dataset, {
             httpsAgent: agent
         });
     }
@@ -175,6 +200,108 @@ export class DatasetService {
         });
     }
 
+    /**
+     * Criar ou atualizar dataset no servidor
+     * @param fileUri 
+     * @returns 
+     */
+    public static async export(fileUri: Uri) {
+        const server = await ServerService.getSelect();
+
+        if(!server) {
+            return;
+        }
+
+        const datasets = await DatasetService.getDatasetsCustom(server);
+        const items = datasets.map(dataset => ({label: dataset.datasetId}));
+        items.unshift({label: 'Novo dataset'});
+
+        const dataset = await window.showQuickPick(items, {
+            placeHolder: "Criar ou editar dataset?"
+        });
+
+        if(!dataset) {
+            return;
+        }
+
+        const file = readFileSync(fileUri.fsPath, 'utf8');
+        let datasetId: string = '';
+        let description: string = '';
+
+        if(dataset.label === 'Novo dataset') {
+            const path = fileUri.fsPath.split("\\");
+            datasetId = path[path.length - 1];
+            datasetId = datasetId.replace('.js', '');
+
+            DatasetService.exportNew(server, file, datasetId, description);
+        }
+        else {
+            datasetId = dataset.label;
+        }
+    }
+
+    /**
+     * Criar dataset no servidor
+     * @param server 
+     * @param file 
+     * @param datasetId 
+     * @param description 
+     * @returns 
+     */
+    public static async exportNew(server: ServerDTO, file: string, datasetId: string, description: string) {
+        datasetId = await window.showInputBox({
+            prompt: "Qual o nome do Dataset (sem espaços e sem caracteres especiais)?",
+            placeHolder: "ds_nome_dataset",
+            value: datasetId
+        }) || "";
+
+        if(!datasetId) {
+            return;
+        }
+
+        description = await window.showInputBox({
+            prompt: "Qual a descrição do dataset?",
+            placeHolder: "Descrição do dataset",
+            value: datasetId
+        }) || "";
+
+        if(!description) {
+            return;
+        }
+
+        const datasetStructure: DatasetStructureDTO = {
+            datasetPK: {
+                companyId: server.companyId,
+                datasetId: datasetId,
+            },
+            datasetDescription: description,
+            datasetImpl: file,
+            datasetBuilder: 'com.datasul.technology.webdesk.dataset.CustomizedDatasetBuilder',
+            serverOffline: false,
+            mobileCache: false,
+            lastReset: 0,
+            lastRemoteSync: 0,
+            type: 'CUSTOM',
+            mobileOffline: false,
+            updateIntervalTimestamp: 0
+        };
+
+        const result = await DatasetService.createDataset(server, datasetStructure);
+
+        if(result.data.content === 'OK') {
+            window.showInformationMessage("Dataset " + datasetId + " exportado com sucesso!");
+        }
+        else {
+            window.showInformationMessage("Falha ao exportar o dataset " + datasetId + "!");
+        }
+    }
+
+    /**
+     * Criar arquivo de dataset
+     * @param name 
+     * @param content 
+     * @returns 
+     */
     public static async saveFile(name: string, content: string) {
         if (!workspace.workspaceFolders) {
             window.showInformationMessage("Você precisa estar em um diretório / workspace.");
