@@ -108,6 +108,30 @@ export class DatasetService {
     }
 
     /**
+     * Exportar dataset existente
+     * @param server 
+     * @param dataset 
+     * @returns 
+     */
+    public static async updateDataset(server: ServerDTO, dataset: DatasetStructureDTO) {
+        let uri = server.ssl ? "https://" : "http://";
+        uri += server.host;
+        uri += ":" + server.port;
+        uri += "/ecm/api/rest/ecm/dataset/editDataset";
+        uri += "?username=" + server.username;
+        uri += "&password=" + server.password;
+        uri += "&confirmnewstructure=false";
+
+        const agent = new https.Agent({
+            rejectUnauthorized: false
+        });
+
+        return await axios.post(uri, dataset, {
+            httpsAgent: agent
+        });
+    }
+
+    /**
      * Retorna o dataset selecionado
      * @param server 
      * @returns 
@@ -224,69 +248,78 @@ export class DatasetService {
             return;
         }
 
-        const file = readFileSync(fileUri.fsPath, 'utf8');
+        const isNewDataset = dataset.label === 'Novo dataset';
+        let datasetStructure: DatasetStructureDTO | undefined = undefined;
         let datasetId: string = '';
         let description: string = '';
 
-        if(dataset.label === 'Novo dataset') {
+        if(isNewDataset) {
             const path = fileUri.fsPath.split("\\");
             datasetId = path[path.length - 1];
             datasetId = datasetId.replace('.js', '');
 
-            DatasetService.exportNew(server, file, datasetId, description);
+            datasetId = await window.showInputBox({
+                prompt: "Qual o nome do Dataset (sem espaços e sem caracteres especiais)?",
+                placeHolder: "ds_nome_dataset",
+                value: datasetId
+            }) || "";
+
+            if(!datasetId) {
+                return;
+            }
+
+            description = await window.showInputBox({
+                prompt: "Qual a descrição do dataset?",
+                placeHolder: "Descrição do dataset",
+                value: datasetId
+            }) || "";
+
+            datasetStructure = {
+                datasetPK: {
+                    companyId: server.companyId,
+                    datasetId: datasetId,
+                },
+                datasetDescription: description,
+                datasetImpl: '',
+                datasetBuilder: 'com.datasul.technology.webdesk.dataset.CustomizedDatasetBuilder',
+                serverOffline: false,
+                mobileCache: false,
+                lastReset: 0,
+                lastRemoteSync: 0,
+                type: 'CUSTOM',
+                mobileOffline: false,
+                updateIntervalTimestamp: 0
+            };
         }
         else {
             datasetId = dataset.label;
+
+            const datasetOld = await DatasetService.getDataset(server, datasetId);
+            datasetStructure = datasetOld.data;
+
+            description = await window.showInputBox({
+                prompt: "Qual a descrição do dataset?",
+                placeHolder: "Descrição do dataset",
+                value: datasetId
+            }) || "";
         }
-    }
 
-    /**
-     * Criar dataset no servidor
-     * @param server 
-     * @param file 
-     * @param datasetId 
-     * @param description 
-     * @returns 
-     */
-    public static async exportNew(server: ServerDTO, file: string, datasetId: string, description: string) {
-        datasetId = await window.showInputBox({
-            prompt: "Qual o nome do Dataset (sem espaços e sem caracteres especiais)?",
-            placeHolder: "ds_nome_dataset",
-            value: datasetId
-        }) || "";
-
-        if(!datasetId) {
+        if(!description || !datasetStructure) {
             return;
         }
 
-        description = await window.showInputBox({
-            prompt: "Qual a descrição do dataset?",
-            placeHolder: "Descrição do dataset",
-            value: datasetId
-        }) || "";
+        const file = readFileSync(fileUri.fsPath, 'utf8');
+        datasetStructure.datasetDescription = description;
+        datasetStructure.datasetImpl = file;
 
-        if(!description) {
-            return;
+        let result: any = undefined;
+
+        if(isNewDataset) {
+            result = await DatasetService.createDataset(server, datasetStructure);
         }
-
-        const datasetStructure: DatasetStructureDTO = {
-            datasetPK: {
-                companyId: server.companyId,
-                datasetId: datasetId,
-            },
-            datasetDescription: description,
-            datasetImpl: file,
-            datasetBuilder: 'com.datasul.technology.webdesk.dataset.CustomizedDatasetBuilder',
-            serverOffline: false,
-            mobileCache: false,
-            lastReset: 0,
-            lastRemoteSync: 0,
-            type: 'CUSTOM',
-            mobileOffline: false,
-            updateIntervalTimestamp: 0
-        };
-
-        const result = await DatasetService.createDataset(server, datasetStructure);
+        else {
+            result = DatasetService.updateDataset(server, datasetStructure);
+        }
 
         if(result.data.content === 'OK') {
             window.showInformationMessage("Dataset " + datasetId + " exportado com sucesso!");
