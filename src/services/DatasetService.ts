@@ -144,7 +144,6 @@ export class DatasetService {
         });
 
         if(!result) {
-            window.showErrorMessage("Falha ao selecionar o dataset!");
             return;
         }
 
@@ -179,13 +178,18 @@ export class DatasetService {
      * @returns 
      */
     public static async import() {
+        if (!workspace.workspaceFolders) {
+            window.showInformationMessage("Você precisa estar em um diretório / workspace.");
+            return;
+        }
+
         const server = await ServerService.getSelect();
+        if(!server) {
+            return;
+        }
 
-        if(!server) {return;}
         const dataset = await DatasetService.getOptionSelected(server);
-
         if(!dataset) {
-            window.showErrorMessage("Falha ao retornar a estrutura do dataset!");
             return;
         }
 
@@ -200,18 +204,18 @@ export class DatasetService {
      * @returns 
      */
     public static async importMany() {
-        const server = await ServerService.getSelect();
-
-        if(!server) {return;}
-        const datasets = await DatasetService.getOptionsSelected(server);
-
         if (!workspace.workspaceFolders) {
             window.showInformationMessage("Você precisa estar em um diretório / workspace.");
             return;
         }
 
+        const server = await ServerService.getSelect();
+        if(!server) {
+            return;
+        }
+
+        const datasets = await DatasetService.getOptionsSelected(server);
         if(!datasets) {
-            window.showErrorMessage("Falha ao retornar a estrutura do dataset!");
             return;
         }
 
@@ -258,15 +262,23 @@ export class DatasetService {
             datasetId = path[path.length - 1];
             datasetId = datasetId.replace('.js', '');
 
-            datasetId = await window.showInputBox({
-                prompt: "Qual o nome do Dataset (sem espaços e sem caracteres especiais)?",
-                placeHolder: "ds_nome_dataset",
-                value: datasetId
-            }) || "";
+            let isDatasetExist: boolean = false;
+            do {
+                datasetId = await window.showInputBox({
+                    prompt: "Qual o nome do Dataset (sem espaços e sem caracteres especiais)?",
+                    placeHolder: "ds_nome_dataset",
+                    value: datasetId
+                }) || "";
 
-            if(!datasetId) {
-                return;
-            }
+                if(!datasetId) {
+                    return;
+                }
+
+                isDatasetExist = datasets.find((dataset => dataset.datasetId === datasetId)) !== undefined;
+                if(isDatasetExist) {
+                    window.showWarningMessage(`O dataset "${datasetId}" já existe no servidor "${server.name}"!`);
+                }
+            } while (isDatasetExist);
 
             description = await window.showInputBox({
                 prompt: "Qual a descrição do dataset?",
@@ -318,7 +330,7 @@ export class DatasetService {
             result = await DatasetService.createDataset(server, datasetStructure);
         }
         else {
-            result = DatasetService.updateDataset(server, datasetStructure);
+            result = await DatasetService.updateDataset(server, datasetStructure);
         }
 
         if(result.data.content === 'OK') {

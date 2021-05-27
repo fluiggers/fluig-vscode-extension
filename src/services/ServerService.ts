@@ -96,7 +96,6 @@ export class ServerService {
         });
 
         if(!result) {
-            window.showErrorMessage("Falha ao selecionar o servidor!");
             return;
         }
 
