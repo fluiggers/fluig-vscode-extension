@@ -326,6 +326,28 @@ export class DatasetService {
 
         let result: any = undefined;
 
+        // Validar senha antes de exportar
+        if(server.confirmExporting) {
+            let isPasswordCorrect: boolean = true;
+            do {
+                const confirmPassword = await window.showInputBox({
+                    prompt: "Informe a senha do servidor " + server.name,
+                    password: true
+                }) || "";
+
+                if(!confirmPassword) {
+                    return;
+                }
+                else if(confirmPassword !== server.password) {
+                    window.showWarningMessage(`A senha informada para o servidor "${server.name}" está incorreta!`);
+                    isPasswordCorrect = false;
+                }
+                else {
+                    isPasswordCorrect = true;
+                }
+            } while (!isPasswordCorrect);
+        }
+
         if(isNewDataset) {
             result = await DatasetService.createDataset(server, datasetStructure);
         }
