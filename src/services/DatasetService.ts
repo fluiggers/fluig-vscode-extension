@@ -299,7 +299,7 @@ export class DatasetService {
             description = await window.showInputBox({
                 prompt: "Qual a descrição do dataset?",
                 placeHolder: "Descrição do dataset",
-                value: datasetId
+                value: datasetStructure?.datasetDescription || datasetId
             }) || "";
         }
 
