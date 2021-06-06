@@ -148,40 +148,38 @@
             "explorer/context": [
                 {
                     "command": "fluig-vscode-extension.newDataset",
-                    "group": "navigation@-1"
+                    "group": "navigation@1"
                 },
                 {
                     "command": "fluig-vscode-extension.newForm",
-                    "group": "navigation@-1"
+                    "group": "navigation@1"
                 },
                 {
                     "command": "fluig-vscode-extension.newGlobalEvent",
-                    "group": "navigation@-1"
+                    "group": "navigation@1"
                 },
                 {
                     "command": "fluig-vscode-extension.newFormEvent",
                     "when": "resourcePath =~ /[\\/\\\\]forms[\\/\\\\].+$/",
-                    "group": "navigation@-1"
+                    "group": "navigation@1"
                 },
                 {
                     "command": "fluig-vscode-extension.newWorkflowEvent",
                     "when": "resourceExtname == .process",
-                    "group": "navigation@-1"
+                    "group": "navigation@1"
                 },
                 {
                     "command": "fluig-vscode-extension.importDataset",
-                    "when": "resourcePath =~ /[\\/\\\\]datasets.*$/",
-                    "group": "navigation@-1"
+                    "group": "navigation@2"
                 },
                 {
                     "command": "fluig-vscode-extension.importManyDataset",
-                    "when": "resourcePath =~ /[\\/\\\\]datasets.*$/",
-                    "group": "navigation@-1"
+                    "group": "navigation@2"
                 },
                 {
                     "command": "fluig-vscode-extension.exportDataset",
                     "when": "resourcePath =~ /[\\/\\\\]datasets[\\/\\\\].+$/",
-                    "group": "navigation@-1"
+                    "group": "navigation@2"
                 }
             ],
             "view/title": [
