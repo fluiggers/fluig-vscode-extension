@@ -7,7 +7,6 @@ export class UtilsService {
 
     /**
      * Retorna o PATH do workspace
-     * @returns 
      */
     public static getWorkspace() {
         if (!vscode.workspace.workspaceFolders) {

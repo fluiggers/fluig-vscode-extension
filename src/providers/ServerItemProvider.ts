@@ -7,20 +7,20 @@ import { ServerView } from '../views/ServerView';
 
 export class ServerItem extends vscode.TreeItem {
     constructor(
-      public readonly label: string,
-      public readonly collapsibleState: vscode.TreeItemCollapsibleState,
-      public server: ServerDTO
+        public readonly label: string,
+        public readonly collapsibleState: vscode.TreeItemCollapsibleState,
+        public server: ServerDTO
     ) {
-      super(label, collapsibleState);
+        super(label, collapsibleState);
     }
 
     iconPath = {
-      light: path.join(__filename, '..', '..', 'resources', 'images', 'light', 'server.svg'),
-      dark: path.join(__filename, '..', '..', 'resources', 'images', 'dark', 'server.svg')
+        light: path.join(__filename, '..', '..', 'resources', 'images', 'light', 'server.svg'),
+        dark: path.join(__filename, '..', '..', 'resources', 'images', 'dark', 'server.svg')
     };
 
     contextValue = 'serverItem';
-  }
+}
 
 export class ServerItemProvider implements vscode.TreeDataProvider<ServerItem> {
 
@@ -51,15 +51,15 @@ export class ServerItemProvider implements vscode.TreeDataProvider<ServerItem> {
         this._onDidChangeTreeData.fire();
     }
 
-    public add() {
+    public add(): void {
         const serverView = new ServerView(this.context);
         serverView.show();
     }
 
-    public delete(serverItem: ServerItem) {
+    public delete(serverItem: ServerItem): void {
         vscode.window.showInformationMessage(`Deseja excluir o servidor ${serverItem.server.name}?`, "Sim", "Não")
             .then(selection => {
-                if(selection == "Sim") {
+                if (selection == "Sim") {
                     const index = this.serverItems.indexOf(serverItem);
 
                     if (index < 0 || serverItem.server.id == undefined) {
@@ -71,13 +71,13 @@ export class ServerItemProvider implements vscode.TreeDataProvider<ServerItem> {
             });
     }
 
-    public update(serverItem: ServerItem) {
+    public update(serverItem: ServerItem): void {
         const serverView = new ServerView(this.context);
         serverView.setServerData(serverItem.server);
         serverView.show();
     }
 
-    private getServers() {
+    private getServers(): ServerItem[] {
         const serverConfig = ServerService.getServerConfig();
         const listServer = new Array<ServerItem>();
 

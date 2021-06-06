@@ -5,8 +5,6 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Adicionar servidor</title>
-
-    <link rel="stylesheet" href="../../css/bootstrap.min.css">
     <style>
         ${d.css}
     </style>
@@ -18,10 +16,17 @@
                 <input type="text" class="form-control" id="name" value="${d.serverData ? d.serverData.name : ''}">
                 <input type="hidden" class="form-control" id="id" value="${d.serverData ? d.serverData.id : ''}">
             </div>
-            
+
             <div class="col-md-8 form-group">
                 <label for="host"><strong>Host</strong></label>
-                <input type="text" class="form-control" id="host" placeholder="Exemplo: fluig.com.br" value="${d.serverData ? d.serverData.host : ''}" onchange="validateHost(this)">
+                <input
+                    type="text"
+                    class="form-control"
+                    id="host"
+                    placeholder="Exemplo: fluig.com.br"
+                    value="${d.serverData ? d.serverData.host : ''}"
+                    onchange="validateHost(this)"
+                >
             </div>
 
             <div class="col-md-2 form-group">
@@ -34,19 +39,35 @@
 
             <div class="col-md-2 form-group">
                 <label for="port"><strong>Porta</strong></label>
-                <input type="text" class="form-control" id="port" placeholder="443" value="${d.serverData ? d.serverData.port : ''}"> 
+                <input
+                    type="text"
+                    class="form-control"
+                    id="port"
+                    placeholder="443"
+                    value="${d.serverData ? d.serverData.port : ''}"
+                >
             </div>
-            
+
             <div class="col-md-6 form-group">
                 <label for="username"><strong>Usuário</strong></label>
-                <input type="text" class="form-control" id="username"value="${d.serverData ? d.serverData.username : ''}">
+                <input
+                    type="text"
+                    class="form-control"
+                    id="username"
+                    value="${d.serverData ? d.serverData.username : ''}"
+                >
             </div>
 
             <div class="col-md-6 form-group">
                 <label for="password"><strong>Senha</strong></label>
-                <input type="password" class="form-control" id="password" value="${d.serverData ? d.serverData.password : ''}">
+                <input
+                    type="password"
+                    class="form-control"
+                    id="password"
+                    value="${d.serverData ? d.serverData.password : ''}"
+                >
             </div>
-            
+
             <div class="col-md-5 form-group">
                 <label for="confirm_pass_exporting"><strong>Confirmar senha quando exportar</strong></label>
                 <select class="form-control" id="confirm_pass_exporting">
@@ -65,6 +86,7 @@
 
     <script>
         const vscode = acquireVsCodeApi();
+
         function saveServer(close = true) {
             const id = document.getElementById("id").value;
             const name = document.getElementById("name").value;
@@ -74,6 +96,7 @@
             const username = document.getElementById("username").value;
             const password = document.getElementById("password").value;
             const confirmExporting = document.getElementById("confirm_pass_exporting").value == "yes";
+
             vscode.postMessage({
                 id,
                 name,
@@ -91,12 +114,14 @@
             const isSSL = url.protocol.indexOf("https") >= 0;
 
             let port = url.port;
-            if(!port) {
+
+            if (!port) {
                 port = isSSL ? "443" : "80";
             }
 
             const name = document.getElementById("name");
-            if(!name.value) {
+
+            if (!name.value) {
                 name.value = url.hostname;
             }
 

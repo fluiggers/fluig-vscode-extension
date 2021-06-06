@@ -2,9 +2,11 @@
 
 Extensão para facilitar o desenvolvimento na plataforma TOTVS Fluig utilizando o VS Code.
 
-Essa extensão adiciona alguns comandos para criar arquivos e snippets HTML e JavaScript.
+Essa extensão adiciona alguns comandos para criar arquivos e snippets HTML e JavaScript, além de gerenciar seus
+Servidores Fluig e permitir Importar e Exportar Datasets.
 
-Os comandos aparecem ao clicar com o botão direito do mouse nos arquivos e diretórios, sendo obrigatório ter um Diretório / Workspace aberto.
+Os comandos aparecem ao clicar com o botão direito do mouse nos arquivos e diretórios ou pressionando
+F1 (Command Palette), sendo obrigatório ter um Diretório / Workspace aberto.
 
 ![Novo Dataset](images/dataset.gif)
 
@@ -25,13 +27,13 @@ Os seguintes comandos estão disponíveis:
 - [Novo Evento Global](#novo-evento-global);
 - [Novo Evento de Formulário](#novo-evento-de-formulário);
 - [Novo Evento de Processo](#novo-evento-de-processo);
+- [Importar Dataset e Importar Vários Datasets](#importar-dataset);
+- [Exportar Dataset](#exportar-dataset);
 
 Foram criados snippets para as seguintes linguagens:
 
 - [Snippets para HTML](#snippets-para-html);
 - [Snippets para JavaScript](#snippets-para-javascript);
-
-É possível gerenciar os Servidores Fluig, porém ainda não temos mais funcionalidades (importar/exportar datasets, por exemplo).
 
 ## Novo Dataset.
 
@@ -43,7 +45,8 @@ Você pode executar esse comando no **Command Palette** ou com o menu de context
 
 ## Novo Formulário.
 
-Esse comando cria, após preencher o nome, um diretório contendo um arquivo HTML de formulário. Esse diretório é criado dentro do diretório `forms` do seu projeto Fluig.
+Esse comando cria, após preencher o nome, um diretório contendo um arquivo HTML de formulário.
+Esse diretório é criado dentro do diretório `forms` do seu projeto Fluig.
 
 O arquivo HTML vem com o esqueleto básico de um formulário Fluig utilizando o **Fluig Style Guide**.
 
@@ -85,11 +88,14 @@ Eventos disponibilizados:
 
 Esse comando cria um arquivo JavaScript, após selecionar o evento, no diretório `workflow/scripts` do seu projeto Fluig.
 
-Esse comando só é exibido no menu de contexto no **File Explorer** ao selecionar um **Diagrama**, que são arquivos com a extensão **.process** e estão no diretório `workflow/diagrams`.
+Esse comando só é exibido no menu de contexto no **File Explorer** ao selecionar um **Diagrama**, que são arquivos com
+a extensão **.process** e estão no diretório `workflow/diagrams`.
 
-O arquivo JavaScript será nomeado seguindo a regra do Fluig (nome_do_diagrama.nome_do_evento.js) e contém a estrutura da função do evento selecionado.
+O arquivo JavaScript será nomeado seguindo a regra do Fluig (nome_do_diagrama.nome_do_evento.js) e contém a
+estrutura da função do evento selecionado.
 
-É possível criar uma função compartilhada para o processo selecionando a opção **Nova Função** no menu de eventos. Quando o fizer será solicitado que informe o nome da função.
+É possível criar uma função compartilhada para o processo selecionando a opção **Nova Função** no menu de eventos.
+Quando o fizer será solicitado que informe o nome da função.
 
 Eventos disponibilizados:
 
@@ -111,6 +117,25 @@ Eventos disponibilizados:
 - checkComplementsPermission
 - subProcessCreated
 - validateAvailableStates
+
+## Importar Dataset
+
+Para importar Dataset (ou vários) é necessário ativar o **Command Pallete** (pressionando F1) e então
+selecionar um dos comandos de exportação (`Fluig: Importar Dataset` ou `Fluig: Importar Vários Datasets`).
+
+Após selecionar o servidor é exibido a lista de Datasets do servidor para selecionar qual/quais serão importados.
+
+![Importar Dataset](images/importar_dataset.gif)
+
+
+## Exportar Dataset
+
+Para exportar Dataset clique com o botão direito do mouse sobre o Dataset e selecione `Exportar Dataset`.
+
+Após selecionar o servidor você poderá escolher um Dataset para ser editado ou selecionar **Novo Dataset**
+para criar o Dataset.
+
+![Exportar Dataset](images/exportar_dataset.gif)
 
 ## Snippets para HTML
 
@@ -136,7 +161,9 @@ Os snippets disponibilizados são:
 
 ## Snippets para JavaScript
 
-Devido ao Fluig utilizar JavaScript para front-end (navegador) e JavaScript para back-end que será convertido em Java (e possui um suporte antigo) na descrição de cada snippet é indicado se ele deve ser utilizado em qual dos dois ambientes.
+Devido ao Fluig utilizar JavaScript para front-end (navegador) e JavaScript para back-end que será convertido em Java
+(e possui um suporte antigo) na descrição de cada snippet é indicado se ele deve ser utilizado em qual dos dois
+ambientes.
 
 ### Snippets para Back-End
 

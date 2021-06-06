@@ -2,6 +2,12 @@
 
 Lista de atualizações da Extensão.
 
+## 1.5.0
+
+- Exportar Dataset
+- Importar Dataset
+- Importar Vários Dataset
+
 ## 1.4.0
 
 Adição do gerenciamento de Servidores.
