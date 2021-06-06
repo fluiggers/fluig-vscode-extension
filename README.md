@@ -104,9 +104,11 @@ Eventos disponibilizados:
 - afterProcessFinish
 - afterReleaseProcessVersion
 - afterReleaseVersion
+- afterStateEntry
 - afterStateLeave
 - afterTaskComplete
 - afterTaskCreate
+- afterTaskSave
 - beforeCancelProcess
 - beforeSendData
 - beforeStateEntry

@@ -4,9 +4,16 @@ Lista de atualizações da Extensão.
 
 ## 1.5.0
 
+Adição dos comandos:
+
 - Exportar Dataset
 - Importar Dataset
 - Importar Vários Dataset
+
+Adição dos eventos de Processo:
+
+- afterStateEntry
+- afterTaskSave
 
 ## 1.4.0
 
