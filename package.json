@@ -131,6 +131,18 @@
                 {
                     "command": "fluig-vscode-extension.newWorkflowEvent",
                     "when": "false"
+                },
+                {
+                    "command": "fluig-vscode-extension.exportDataset",
+                    "when": "false"
+                },
+                {
+                    "command": "fluig-vscode-extension.deleteServer",
+                    "when": "false"
+                },
+                {
+                    "command": "fluig-vscode-extension.editServer",
+                    "when": "false"
                 }
             ],
             "explorer/context": [
@@ -154,6 +166,16 @@
                 {
                     "command": "fluig-vscode-extension.newWorkflowEvent",
                     "when": "resourceExtname == .process",
+                    "group": "navigation@-1"
+                },
+                {
+                    "command": "fluig-vscode-extension.importDataset",
+                    "when": "resourcePath =~ /[\\/\\\\]datasets.*$/",
+                    "group": "navigation@-1"
+                },
+                {
+                    "command": "fluig-vscode-extension.importManyDataset",
+                    "when": "resourcePath =~ /[\\/\\\\]datasets.*$/",
                     "group": "navigation@-1"
                 },
                 {
