@@ -5,17 +5,15 @@ import { window } from "vscode";
 
 export class ServerService {
     private static PATH = UtilsService.getWorkspace() + '/.vscode';
-    private static FILE_SERVER_CONFIG = ServerService.PATH + '/servers.json'; 
+    private static FILE_SERVER_CONFIG = ServerService.PATH + '/servers.json';
 
     /**
      * Adiciona um novo servidor
-     * @param server 
-     * @returns 
      */
     public static create(server: ServerDTO) {
         const serverConfig = ServerService.getServerConfig();
 
-        if(!serverConfig.configurations) {
+        if (!serverConfig.configurations) {
             return null;
         }
 
@@ -28,19 +26,17 @@ export class ServerService {
 
     /**
      * Remover um servidor
-     * @param id 
-     * @returns 
      */
     public static delete(id: string) {
         const serverConfig = ServerService.getServerConfig();
 
-        if(!serverConfig.configurations) {
+        if (!serverConfig.configurations) {
             return;
         }
 
         const servers = serverConfig.configurations;
         servers.forEach((element: ServerDTO) => {
-            if(element.id === id) {
+            if (element.id === id) {
                 const index = servers.indexOf(element, 0);
                 servers.splice(index, 1);
                 ServerService.writeServerConfig(serverConfig);
@@ -51,13 +47,11 @@ export class ServerService {
 
     /**
      * Atualizar dados do servidor
-     * @param server 
-     * @returns 
      */
     public static update(server: ServerDTO) {
         const serverConfig = ServerService.getServerConfig();
 
-        if(!serverConfig.configurations) {
+        if (!serverConfig.configurations) {
             return;
         }
 
@@ -74,10 +68,9 @@ export class ServerService {
     }
 
     public static createOrUpdate(server: ServerDTO) {
-        if(server.id) {
+        if (server.id) {
             this.update(server);
-        }
-        else {
+        } else {
             this.create(server);
         }
     }
@@ -89,13 +82,13 @@ export class ServerService {
 
     public static async getSelect() {
         const serversConfig = ServerService.getServerConfig();
-        const servers = serversConfig.configurations.map(server => ({label: server.name}));
+        const servers = serversConfig.configurations.map(server => ({ label: server.name }));
 
         const result = await window.showQuickPick(servers, {
             placeHolder: "Selecione o servidor",
         });
 
-        if(!result) {
+        if (!result) {
             return;
         }
 
@@ -104,12 +97,11 @@ export class ServerService {
 
     /**
      * Retorna o caminho do arquivo Server Config
-     * @returns 
      */
-    public static getFileServerConfig() {
+    public static getFileServerConfig(): string {
         const fs = require('fs');
 
-        if(!fs.existsSync(ServerService.FILE_SERVER_CONFIG)) {
+        if (!fs.existsSync(ServerService.FILE_SERVER_CONFIG)) {
             ServerService.createServerConfig();
         }
 
@@ -136,8 +128,7 @@ export class ServerService {
     }
 
     /**
-     * Criar/Alterar o arquivo de servidores
-     * @param serverConfig 
+     * Criar / Alterar o arquivo de servidores
      */
     private static writeServerConfig(serverConfig: ServerConfig) {
         const fs = require('fs');
@@ -146,15 +137,14 @@ export class ServerService {
 
     /**
      * Leitura do arquivo Server Config
-     * @returns 
      */
     public static getServerConfig(): ServerConfig {
         const fs = require('fs');
-        if(!fs.existsSync(ServerService.FILE_SERVER_CONFIG)) {
+        if (!fs.existsSync(ServerService.FILE_SERVER_CONFIG)) {
             ServerService.createServerConfig();
         }
 
         const serverConfig = fs.readFileSync(ServerService.FILE_SERVER_CONFIG).toString();
-        return  JSON.parse(serverConfig);
+        return JSON.parse(serverConfig);
     }
 }
