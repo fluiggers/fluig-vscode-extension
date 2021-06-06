@@ -113,7 +113,7 @@
             },
             {
                 "command": "fluig-vscode-extension.importManyDataset",
-                "title": "Importar vários dataset",
+                "title": "Importar Vários Datasets",
                 "category": "Fluig"
             },
             {
