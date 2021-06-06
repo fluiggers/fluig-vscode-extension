@@ -48,7 +48,8 @@ export class ServerView {
     }
 
     private createWebViewPanel() {
-        const file = vscode.Uri.file(path.join(this.context.extensionPath, 'src', 'resources', 'views', 'server'));
+        const file = vscode.Uri.file(path.join(this.context.extensionPath, 'resources', 'views', 'server'));
+
         return vscode.window.createWebviewPanel(
             "fluig-vscode-extension.addServer",
             this.serverData != undefined ? "Editar Servidor" : "Adicionar Servidor",
@@ -62,30 +63,31 @@ export class ServerView {
     }
 
     private messageListener(obj: any) {
-        if(obj.name && obj.host && obj.port &&
-            obj.username && obj.password) {
-                const server: ServerDTO = {
-                    id: obj.id,
-                    name: obj.name,
-                    host: obj.host,
-                    ssl: obj.ssl,
-                    port: obj.port,
-                    username: obj.username,
-                    password: obj.password,
-                    confirmExporting: obj.confirmExporting,
-                    companyId: 0
-                };
-
-                UserService.getUser(server).then((response) => {
-                    server.companyId = response.data.content.tenantId;
-                    ServerService.createOrUpdate(server);
-
-                    if (this.currentPanel) {
-                        this.currentPanel.dispose();
-                    }
-                }).catch(() => {
-                    vscode.window.showErrorMessage(`Falha na conexão com o servidor ${server.name}`);
-                });
+        if (!obj.name || !obj.host || !obj.port || !obj.username || !obj.password) {
+            return;
         }
+
+        const server: ServerDTO = {
+            id: obj.id,
+            name: obj.name,
+            host: obj.host,
+            ssl: obj.ssl,
+            port: obj.port,
+            username: obj.username,
+            password: obj.password,
+            confirmExporting: obj.confirmExporting,
+            companyId: 0
+        };
+
+        UserService.getUser(server).then((response) => {
+            server.companyId = response.data.content.tenantId;
+            ServerService.createOrUpdate(server);
+
+            if (this.currentPanel) {
+                this.currentPanel.dispose();
+            }
+        }).catch(() => {
+            vscode.window.showErrorMessage(`Falha na conexão com o servidor ${server.name}`);
+        });
     }
 }
