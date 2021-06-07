@@ -183,11 +183,11 @@ ambientes.
 
 ## Todo
 
+- Adicionar importação / exportação de Formulários;
 - Criar comando Novo Widget;
 - Criar comando Novo Layout;
 - Adicionar todos os templates de Eventos Globais;
-- Adicionar novos Snippets;
-- Adicionar importação / exportação de Datasets;
+- Adicionar Snippets;
 
 ## Colaboração
 
