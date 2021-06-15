@@ -46,6 +46,45 @@ export class FormService {
     }
 
     /**
+     * Retorna uma lista com o nome dos arquivos referente ao documento
+     */
+     public static async getNameFiles(server: ServerDTO, documentId: Number): Promise<DocumentDTO[]> {
+        const uri = (server.ssl ? "https://" : "http://")
+            + server.host
+            + ":" + server.port
+            + FormService.URL_WSDL_CARD_INDEX_SERVICE
+        ;
+
+        const params = {
+            username: server.username,
+            password: server.password,
+            companyId: server.companyId,
+            documentId: documentId,
+            colleagueId: server.username
+        };
+
+        const forms: any = await new Promise((accept, reject) => {
+            soap.createClient(uri, (err: any, client: soap.Client) => {
+                if (err) {
+                    reject(err);
+                    return;
+                }
+
+                client.getAttachmentsList(params, (err: any, response: any) => {
+                    if (err) {
+                        reject(err);
+                        return;
+                    }
+
+                    accept(response);
+                });
+            });
+        });
+
+        return forms.result.item;
+    }
+
+    /**
      * Retorna o formulário selecionado
      */
      public static async getOptionSelected(server: ServerDTO) {
@@ -63,7 +102,11 @@ export class FormService {
             return;
         }
 
-        return result;
+        const endPosition = result.label.indexOf(" - ");
+        const documentId = result.label.substring(0, endPosition);
+        const form = forms.find(form => form.documentId.toString() === documentId);
+
+        return form;
     }
 
     /**
@@ -82,5 +125,12 @@ export class FormService {
         }
 
         const form = await FormService.getOptionSelected(server);
+
+        if(!form) {
+            return;
+        }
+
+        const documentId = form.documentId;
+        const nameFiles = FormService.getNameFiles(server, documentId);
     }
 }
