@@ -4,6 +4,7 @@ import { window, workspace } from "vscode";
 import { ServerService } from "./ServerService";
 import { DocumentDTO } from "../models/DocumentDTO";
 import { posix } from "path";
+import { CustomizationEventsDTO } from "../models/CustomizationEventsDTO";
 
 export class FormService {
     private static URL_WSDL_CARD_INDEX_SERVICE: string = "/webdesk/ECMCardIndexService?wsdl";
@@ -43,7 +44,12 @@ export class FormService {
             });
         });
 
-        return forms.result.item;
+        if(!forms.result) {
+            return [];
+        }
+        else {
+            return forms.result.item;
+        }
     }
 
     /**
@@ -82,13 +88,21 @@ export class FormService {
             });
         });
 
-        return forms.result.item;
+        if(!forms.result) {
+            return [];
+        }
+        else if(typeof forms.result.item === 'string') {
+            return [forms.result.item];
+        }
+        else {
+            return forms.result.item;
+        }
     }
 
     /**
      * Retorna o base64 referente ao arquivo
      */
-     public static async getFileBase64(server: ServerDTO, documentId: number, version: number, fileName: string, ) {
+     public static async getFileBase64(server: ServerDTO, documentId: number, version: number, fileName: string) {
         const uri = (server.ssl ? "https://" : "http://")
             + server.host
             + ":" + server.port
@@ -124,6 +138,52 @@ export class FormService {
         });
 
         return file.folder;
+    }
+
+    /**
+     * Retorna uma lista com os eventos do formulario
+     */
+     public static async getCustomizationEvents(server: ServerDTO, documentId: number): Promise<CustomizationEventsDTO[]> {
+        const uri = (server.ssl ? "https://" : "http://")
+            + server.host
+            + ":" + server.port
+            + FormService.URL_WSDL_CARD_INDEX_SERVICE
+        ;
+
+        const params = {
+            username: server.username,
+            password: server.password,
+            companyId: server.companyId,
+            documentId: documentId
+        };
+
+        const events: any = await new Promise((accept, reject) => {
+            soap.createClient(uri, (err: any, client: soap.Client) => {
+                if (err) {
+                    reject(err);
+                    return;
+                }
+
+                client.getCustomizationEvents(params, (err: any, response: any) => {
+                    if (err) {
+                        reject(err);
+                        return;
+                    }
+
+                    accept(response);
+                });
+            });
+        });
+
+        if(!events.result) {
+            return [];
+        }
+        else if(typeof events.result.item === 'string') {
+            return [events.result.item];
+        }
+        else {
+            return events.result.item;
+        }
     }
 
     /**
@@ -175,13 +235,24 @@ export class FormService {
         const documentId = form.documentId;
         const version = form.version;
         const folderName = form.documentDescription;
-
         const fileNames = await FormService.getFileNames(server, documentId);
 
         for(let fileName of fileNames) {
             const base64 = await FormService.getFileBase64(server, documentId, version, fileName);
-            const fileContent = Buffer.from(base64, 'base64').toString('utf-8');
-            FormService.saveFile(folderName, fileName, fileContent);
+
+            if(base64) {
+                const fileContent = Buffer.from(base64, 'base64').toString('utf-8');
+                FormService.saveFile(folderName, fileName, fileContent);
+            }
+        }
+
+        const folder = posix.join(folderName, "events");
+        const events = await FormService.getCustomizationEvents(server, documentId);
+
+        for(let item of events) {
+            const name = item.eventId + ".js";
+            const content = item.eventDescription;
+            FormService.saveFile(folder, name, content);
         }
     }
 
@@ -195,10 +266,10 @@ export class FormService {
         }
 
         const workspaceFolderUri = workspace.workspaceFolders[0].uri;
-        const datasetUri = workspaceFolderUri.with({ path: posix.join(workspaceFolderUri.path, "forms", folder, name) });
+        const path = workspaceFolderUri.with({ path: posix.join(workspaceFolderUri.path, "forms", folder, name) });
 
         workspace.fs.writeFile(
-            datasetUri,
+            path,
             Buffer.from(content, "utf-8")
         );
     }
