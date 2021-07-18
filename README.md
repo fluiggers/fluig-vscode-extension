@@ -122,8 +122,7 @@ Eventos disponibilizados:
 
 ## Importar Dataset
 
-Para importar Dataset (ou vários) é necessário ativar clicar com o botão direito do mouse na pasta **Datasets** (ou
-em qualquer subitem dela), ou usar o **Command Pallete** (pressionando F1) e então selecionar um dos comandos de
+Para importar Dataset (ou vários) é necessário clicar com o botão direito do mouse em qualquer lugar do **File Explorer** ou usar o **Command Pallete** (pressionando F1) e então selecionar um dos comandos de
 exportação (`Fluig: Importar Dataset` ou `Fluig: Importar Vários Datasets`).
 
 Após selecionar o servidor é exibido a lista de Datasets do servidor para selecionar qual/quais serão importados.
