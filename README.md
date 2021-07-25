@@ -170,6 +170,7 @@ ambientes.
 
 ### Snippets para Back-End
 
+- **fluig-consulta-jdbc**: cria uma consulta direta ao Banco de Dados usando JDBC;
 - **fluig-function-data**: cria uma função que retorna a data atual formatada no padrão solicitado;
 - **fluig-paifilho-loop**: cria um loop for percorrendo os elementos de uma tabela pai filho;
 

@@ -2,7 +2,7 @@
     "name": "fluig-vscode-extension",
     "displayName": "Fluig - Extensão VS Code",
     "description": "Extensão para agilizar o desenvolvimento para o TOTVS Fluig no VS Code",
-    "version": "1.5.1",
+    "version": "1.6.0",
     "publisher": "BrunoGasparetto",
     "repository": {
         "type": "git",

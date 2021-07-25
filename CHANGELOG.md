@@ -2,6 +2,10 @@
 
 Lista de atualizações da Extensão.
 
+## 1.6.0
+
+Adição do snippet JavaScript (fluig-consulta-jdbc) para facilitar consulta direta ao Banco de Dados com JDBC.
+
 ## 1.5.0
 
 Adição dos comandos:
