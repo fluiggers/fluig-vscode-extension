@@ -20,8 +20,7 @@ Essa extensão cria os arquivos utilizando os tipos declarados na biblioteca [De
 
 Para utilizar os comandos de criação de arquivos é obrigatório estar com um diretório / workspace aberto.
 
-Os seguintes comandos estão disponíveis:
-
+- [Gerenciar Servidores](#gerenciar-servidores);
 - [Novo Dataset](#novo-dataset);
 - [Novo Formulário](#novo-formulário);
 - [Novo Evento Global](#novo-evento-global);
@@ -29,13 +28,16 @@ Os seguintes comandos estão disponíveis:
 - [Novo Evento de Processo](#novo-evento-de-processo);
 - [Importar Dataset e Importar Vários Datasets](#importar-dataset);
 - [Exportar Dataset](#exportar-dataset);
-
-Foram criados snippets para as seguintes linguagens:
-
 - [Snippets para HTML](#snippets-para-html);
 - [Snippets para JavaScript](#snippets-para-javascript);
 
-## Novo Dataset.
+## Gerenciar Servidores
+
+Com a extensão instalada será adicionada a visão de gerenciamento de servidores. Nela é possível adicionar, editar e remover servidores Fluig.
+
+![Gerenciando Servidores](images/gerenciar_servidores.jpg)
+
+## Novo Dataset
 
 Esse comando cria um arquivo JavaScript, após você preencher o nome do Dataset, no diretório `datasets` do seu projeto Fluig.
 
@@ -43,7 +45,7 @@ O arquivo vem com as quatro funções básicas de datasets que o Fluig disponibi
 
 Você pode executar esse comando no **Command Palette** ou com o menu de contexto no **File Explorer**.
 
-## Novo Formulário.
+## Novo Formulário
 
 Esse comando cria, após preencher o nome, um diretório contendo um arquivo HTML de formulário.
 Esse diretório é criado dentro do diretório `forms` do seu projeto Fluig.
@@ -182,6 +184,7 @@ ambientes.
 
 ## Todo
 
+- Preencher a descrição de Dataset ao exportar um Dataset já existente;
 - Adicionar importação / exportação de Formulários;
 - Criar comando Novo Widget;
 - Criar comando Novo Layout;
