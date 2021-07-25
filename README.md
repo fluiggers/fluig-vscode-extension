@@ -184,7 +184,7 @@ ambientes.
 
 ## Todo
 
-- Preencher a descrição de Dataset ao exportar um Dataset já existente;
+- Selecionar automaticamente o Dataset exportar Dataset para Edição;
 - Adicionar importação / exportação de Formulários;
 - Criar comando Novo Widget;
 - Criar comando Novo Layout;
