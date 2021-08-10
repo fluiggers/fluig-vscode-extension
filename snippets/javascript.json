@@ -10,7 +10,21 @@
             "}",
             ""
         ],
-        "description": "Percorre os itens de um Pai Filho (back-end)."
+        "description": "Percorre os itens de um Pai Filho em evento de Formulário (back-end)."
+    },
+
+    "fluig-paifilho-loop-workflow": {
+        "scope": "javascript",
+        "prefix": "fluig-paifilho-loop-workflow",
+        "body": [
+            "var indexes = hAPI.getChildrenIndexes(\"$1\");",
+            "",
+            "for (var i = 0; i < indexes.length; ++i) {",
+            "    hAPI.getCardValue(\"$2___\" + indexes[i]);$0",
+            "}",
+            ""
+        ],
+        "description": "Percorre os itens de um Pai Filho em um evento de Processo (back-end)."
     },
 
     "fluig-function-data": {

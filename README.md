@@ -172,7 +172,8 @@ ambientes.
 
 - **fluig-consulta-jdbc**: cria uma consulta direta ao Banco de Dados usando JDBC;
 - **fluig-function-data**: cria uma função que retorna a data atual formatada no padrão solicitado;
-- **fluig-paifilho-loop**: cria um loop for percorrendo os elementos de uma tabela pai filho;
+- **fluig-paifilho-loop**: cria um loop for percorrendo os elementos de uma tabela pai filho em evento de Formulário;
+- **fluig-paifilho-loop-workflow**: cria um loop for percorrendo os elementos de uma tabela pai filho em evento de Processo;
 
 ### Snippets para Front-End
 
