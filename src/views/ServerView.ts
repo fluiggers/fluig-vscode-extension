@@ -72,7 +72,8 @@ export class ServerView {
             name: obj.name,
             host: obj.host,
             ssl: obj.ssl,
-            port: obj.port,
+            port: parseInt(obj.port),
+            userCode: "",
             username: obj.username,
             password: obj.password,
             confirmExporting: obj.confirmExporting,
@@ -81,6 +82,7 @@ export class ServerView {
 
         UserService.getUser(server).then((response) => {
             server.companyId = response.data.content.tenantId;
+            server.userCode = response.data.content.userCode;
             ServerService.createOrUpdate(server);
 
             if (this.currentPanel) {

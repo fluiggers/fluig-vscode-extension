@@ -6,6 +6,7 @@ export interface ServerDTO {
     port: number;
     username: string;
     password: string;
+    userCode: string;
     confirmExporting: boolean;
     companyId: number;
 }
