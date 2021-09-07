@@ -1,5 +1,5 @@
 export interface ServerDTO {
-    id: string | undefined;
+    id: string;
     name: string;
     host: string;
     ssl: boolean;

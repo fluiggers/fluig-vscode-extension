@@ -2,6 +2,7 @@ import { ServerConfig } from "../models/ServerConfig";
 import { ServerDTO } from "../models/ServerDTO";
 import { UtilsService } from "./UtilsService";
 import { window } from "vscode";
+import { Server } from "../models/Server";
 
 export class ServerService {
     private static PATH = UtilsService.getWorkspace() + '/.vscode';
@@ -144,7 +145,8 @@ export class ServerService {
             ServerService.createServerConfig();
         }
 
-        const serverConfig = fs.readFileSync(ServerService.FILE_SERVER_CONFIG).toString();
-        return JSON.parse(serverConfig);
+        const serverConfig: ServerConfig = JSON.parse(fs.readFileSync(ServerService.FILE_SERVER_CONFIG).toString());
+        serverConfig.configurations = serverConfig.configurations.map(server => new Server(server));
+        return serverConfig;
     }
 }
