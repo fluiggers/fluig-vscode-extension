@@ -76,7 +76,7 @@ export class ServerService {
         }
     }
 
-    public static findByName(name: string) {
+    public static findByName(name: string): ServerDTO|undefined {
         const servers = ServerService.getServerConfig();
         return servers.configurations.find(server => server.name == name);
     }
@@ -93,7 +93,7 @@ export class ServerService {
             return;
         }
 
-        return ServerService.findByName(result.label);
+        return new Server(ServerService.findByName(result.label));
     }
 
     /**
@@ -145,8 +145,6 @@ export class ServerService {
             ServerService.createServerConfig();
         }
 
-        const serverConfig: ServerConfig = JSON.parse(fs.readFileSync(ServerService.FILE_SERVER_CONFIG).toString());
-        serverConfig.configurations = serverConfig.configurations.map(server => new Server(server));
-        return serverConfig;
+        return JSON.parse(fs.readFileSync(ServerService.FILE_SERVER_CONFIG).toString());
     }
 }
