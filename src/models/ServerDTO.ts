@@ -1,3 +1,6 @@
+/**
+ * Representa a configuração de um Servidor
+ */
 export interface ServerDTO {
     id: string;
     name: string;

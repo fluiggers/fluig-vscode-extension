@@ -269,7 +269,9 @@
         "webpack-cli": "^4.7.0"
     },
     "dependencies": {
+        "@types/crypto-js": "^4.0.2",
         "axios": "^0.21.1",
+        "crypto-js": "^4.1.1",
         "soap": "^0.37.0",
         "template-literal": "^1.0.3"
     }
