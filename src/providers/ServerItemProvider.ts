@@ -4,6 +4,7 @@ import * as path from 'path';
 import { ServerService } from '../services/ServerService';
 import * as fs from 'fs';
 import { ServerView } from '../views/ServerView';
+import { Server } from '../models/Server';
 
 export class ServerItem extends vscode.TreeItem {
     constructor(
@@ -73,7 +74,7 @@ export class ServerItemProvider implements vscode.TreeDataProvider<ServerItem> {
 
     public update(serverItem: ServerItem): void {
         const serverView = new ServerView(this.context);
-        serverView.setServerData(serverItem.server);
+        serverView.setServerData(new Server(serverItem.server));
         serverView.show();
     }
 
