@@ -2,16 +2,20 @@
 
 Lista de atualizações da Extensão.
 
-## 1.7.0
+## 1.8.0
 
 Agora as senhas dos servidores são criptografadas no momento de armazenagem.
 
 Os servidores salvos devem ser atualizados para que as senhas sejam atualizadas com a criptografia.
 
+## 1.7.0
+
+Adição do snippet JavaScript (fluig-paifilho-loop-workflow) para percorrer Pai Filho em evento de Processo.
+
 ## 1.6.0
 
 Adição do snippet JavaScript (fluig-consulta-jdbc) para facilitar consulta direta ao Banco de Dados com JDBC.
-Adição do snippet JavaScript (fluig-paifilho-loop-workflow) para percorrer Pai Filho em evento de Processo.
+
 
 ## 1.5.0
 
