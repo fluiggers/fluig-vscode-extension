@@ -11,6 +11,7 @@ Os servidores salvos devem ser atualizados para que as senhas sejam atualizadas 
 ## 1.6.0
 
 Adição do snippet JavaScript (fluig-consulta-jdbc) para facilitar consulta direta ao Banco de Dados com JDBC.
+Adição do snippet JavaScript (fluig-paifilho-loop-workflow) para percorrer Pai Filho em evento de Processo.
 
 ## 1.5.0
 
