@@ -183,6 +183,10 @@
                     "group": "navigation@2"
                 },
                 {
+                    "command": "fluig-vscode-extension.importForm",
+                    "group": "navigation@2"
+                },
+                {
                     "command": "fluig-vscode-extension.exportDataset",
                     "when": "resourcePath =~ /[\\/\\\\]datasets[\\/\\\\].+$/",
                     "group": "navigation@2"
