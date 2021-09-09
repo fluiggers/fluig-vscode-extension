@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { posix } from "path";
-import { readFileSync, statSync } from "fs";
+import { readFileSync } from "fs";
 import { ServerItem, ServerItemProvider } from "./providers/ServerItemProvider";
 import { glob } from "glob";
 import { DatasetService } from "./services/DatasetService";

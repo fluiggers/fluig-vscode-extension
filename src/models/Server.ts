@@ -1,3 +1,4 @@
+import * as vscode from "vscode";
 import { ServerDTO } from "./ServerDTO";
 import * as CryptoJS from 'crypto-js';
 
@@ -16,14 +17,12 @@ export class Server implements ServerDTO {
     public username: string = "";
     private _password: string = "";
 
-    private secret = '_P$ssw0rd-S3cret_';
-
     get password(): string {
-        return CryptoJS.AES.decrypt(this._password, this.secret).toString(CryptoJS.enc.Utf8);
+        return CryptoJS.AES.decrypt(this._password, vscode.env.machineId).toString(CryptoJS.enc.Utf8);
     }
 
     set password(password: string) {
-        this._password = CryptoJS.AES.encrypt(password, this.secret).toString();
+        this._password = CryptoJS.AES.encrypt(password, vscode.env.machineId).toString();
     }
 
     constructor(server?: ServerDTO) {
