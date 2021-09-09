@@ -2,6 +2,12 @@
 
 Lista de atualizações da Extensão.
 
+## 1.9.0
+
+Adicionado o comando "Importar Formulário".
+
+A senha do servidor agora é criptografada utilizando como frase secreta a identificação do computador do usuário.
+
 ## 1.8.0
 
 Agora as senhas dos servidores são criptografadas no momento de armazenagem.
