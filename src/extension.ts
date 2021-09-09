@@ -4,6 +4,7 @@ import { readFileSync, statSync } from "fs";
 import { ServerItem, ServerItemProvider } from "./providers/ServerItemProvider";
 import { glob } from "glob";
 import { DatasetService } from "./services/DatasetService";
+import { FormService } from "./services/FormService";
 
 interface ExtensionsPath {
     TEMPLATES: string,
@@ -110,6 +111,13 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerCommand(
             "fluig-vscode-extension.deleteServer",
             (serverItem: ServerItem) => serverItemProvider.delete(serverItem)
+        )
+    );
+
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
+            "fluig-vscode-extension.importForm",
+            () => FormService.import()
         )
     );
 }
