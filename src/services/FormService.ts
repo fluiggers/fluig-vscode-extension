@@ -7,27 +7,26 @@ import { posix } from "path";
 import { CustomizationEventsDTO } from "../models/CustomizationEventsDTO";
 
 export class FormService {
-    private static URL_WSDL_CARD_INDEX_SERVICE: string = "/webdesk/ECMCardIndexService?wsdl";
+    private static getUri(server: ServerDTO): string {
+        const schema: string = server.ssl ? "https" : "http";
+        const port: string = [80, 443].includes(server.port) ? "" : `:${server.port}`;
+
+        return `${schema}://${server.host}${port}/webdesk/ECMCardIndexService?wsdl`
+    }
 
     /**
      * Retorna uma lista com todos os formulários
      */
     public static async getForms(server: ServerDTO): Promise<DocumentDTO[]> {
-        const uri = (server.ssl ? "https://" : "http://")
-            + server.host
-            + ":" + server.port
-            + FormService.URL_WSDL_CARD_INDEX_SERVICE
-        ;
-
         const params = {
             companyId: server.companyId,
             username: server.username,
             password: server.password,
-            colleagueId: server.username
+            colleagueId: server.userCode
         };
 
         const forms: any = await new Promise((accept, reject) => {
-            soap.createClient(uri, (err: any, client: soap.Client) => {
+            soap.createClient(FormService.getUri(server), (err: any, client: soap.Client) => {
                 if (err) {
                     reject(err);
                     return;
@@ -44,34 +43,23 @@ export class FormService {
             });
         });
 
-        if(!forms.result) {
-            return [];
-        }
-        else {
-            return forms.result.item;
-        }
+        return forms?.result?.item || [];
     }
 
     /**
      * Retorna uma lista com o nome dos arquivos referente ao documento
      */
      public static async getFileNames(server: ServerDTO, documentId: Number): Promise<string[]> {
-        const uri = (server.ssl ? "https://" : "http://")
-            + server.host
-            + ":" + server.port
-            + FormService.URL_WSDL_CARD_INDEX_SERVICE
-        ;
-
         const params = {
             username: server.username,
             password: server.password,
             companyId: server.companyId,
             documentId: documentId,
-            colleagueId: server.username
+            colleagueId: server.userCode
         };
 
         const forms: any = await new Promise((accept, reject) => {
-            soap.createClient(uri, (err: any, client: soap.Client) => {
+            soap.createClient(FormService.getUri(server), (err: any, client: soap.Client) => {
                 if (err) {
                     reject(err);
                     return;
@@ -88,39 +76,33 @@ export class FormService {
             });
         });
 
-        if(!forms.result) {
+        if (!forms.result) {
             return [];
         }
-        else if(typeof forms.result.item === 'string') {
+
+        if (typeof forms.result.item === 'string') {
             return [forms.result.item];
         }
-        else {
-            return forms.result.item;
-        }
+
+        return forms.result.item;
     }
 
     /**
      * Retorna o base64 referente ao arquivo
      */
      public static async getFileBase64(server: ServerDTO, documentId: number, version: number, fileName: string) {
-        const uri = (server.ssl ? "https://" : "http://")
-            + server.host
-            + ":" + server.port
-            + FormService.URL_WSDL_CARD_INDEX_SERVICE
-        ;
-
         const params = {
             username: server.username,
             password: server.password,
             companyId: server.companyId,
             documentId: documentId,
-            colleagueId: server.username,
+            colleagueId: server.userCode,
             version: version,
             nomeArquivo: fileName
         };
 
         const file: any = await new Promise((accept, reject) => {
-            soap.createClient(uri, (err: any, client: soap.Client) => {
+            soap.createClient(FormService.getUri(server), (err: any, client: soap.Client) => {
                 if (err) {
                     reject(err);
                     return;
@@ -144,12 +126,6 @@ export class FormService {
      * Retorna uma lista com os eventos do formulario
      */
      public static async getCustomizationEvents(server: ServerDTO, documentId: number): Promise<CustomizationEventsDTO[]> {
-        const uri = (server.ssl ? "https://" : "http://")
-            + server.host
-            + ":" + server.port
-            + FormService.URL_WSDL_CARD_INDEX_SERVICE
-        ;
-
         const params = {
             username: server.username,
             password: server.password,
@@ -158,7 +134,7 @@ export class FormService {
         };
 
         const events: any = await new Promise((accept, reject) => {
-            soap.createClient(uri, (err: any, client: soap.Client) => {
+            soap.createClient(FormService.getUri(server), (err: any, client: soap.Client) => {
                 if (err) {
                     reject(err);
                     return;
@@ -169,27 +145,26 @@ export class FormService {
                         reject(err);
                         return;
                     }
-
                     accept(response);
                 });
             });
         });
 
-        if(!events.result) {
+        if (!events.result) {
             return [];
         }
-        else if(typeof events.result.item === 'string') {
+
+        if (typeof events.result.item === 'string') {
             return [events.result.item];
         }
-        else {
-            return events.result.item;
-        }
+
+        return events.result.item;
     }
 
     /**
      * Retorna o formulário selecionado
      */
-     public static async getOptionSelected(server: ServerDTO) {
+     public static async getOptionSelected(server: ServerDTO): Promise<DocumentDTO|undefined> {
         const forms = await FormService.getForms(server);
         const items = forms.map(form => ({
             label: form.documentId + ' - ' + form.documentDescription,
@@ -201,7 +176,7 @@ export class FormService {
         });
 
         if (!result) {
-            return;
+            return undefined;
         }
 
         const endPosition = result.label.indexOf(" - ");
@@ -232,27 +207,23 @@ export class FormService {
             return;
         }
 
-        const documentId = form.documentId;
-        const version = form.version;
         const folderName = form.documentDescription;
-        const fileNames = await FormService.getFileNames(server, documentId);
+        const fileNames = await FormService.getFileNames(server, form.documentId);
 
-        for(let fileName of fileNames) {
-            const base64 = await FormService.getFileBase64(server, documentId, version, fileName);
+        for (let fileName of fileNames) {
+            const base64 = await FormService.getFileBase64(server, form.documentId, form.version, fileName);
 
-            if(base64) {
+            if (base64) {
                 const fileContent = Buffer.from(base64, 'base64').toString('utf-8');
                 FormService.saveFile(folderName, fileName, fileContent);
             }
         }
 
         const folder = posix.join(folderName, "events");
-        const events = await FormService.getCustomizationEvents(server, documentId);
+        const events = await FormService.getCustomizationEvents(server, form.documentId);
 
-        for(let item of events) {
-            const name = item.eventId + ".js";
-            const content = item.eventDescription;
-            FormService.saveFile(folder, name, content);
+        for (let item of events) {
+            FormService.saveFile(folder, item.eventId + ".js", item.eventDescription);
         }
     }
 
@@ -268,9 +239,6 @@ export class FormService {
         const workspaceFolderUri = workspace.workspaceFolders[0].uri;
         const path = workspaceFolderUri.with({ path: posix.join(workspaceFolderUri.path, "forms", folder, name) });
 
-        workspace.fs.writeFile(
-            path,
-            Buffer.from(content, "utf-8")
-        );
+        workspace.fs.writeFile(path, Buffer.from(content, "utf-8"));
     }
 }
