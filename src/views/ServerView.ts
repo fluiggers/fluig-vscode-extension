@@ -88,7 +88,7 @@ export class ServerView {
             if (this.currentPanel) {
                 this.currentPanel.dispose();
             }
-        }).catch(() => {
+        }).catch((e) => {
             vscode.window.showErrorMessage(`Falha na conexão com o servidor ${server.name}`);
         });
     }
