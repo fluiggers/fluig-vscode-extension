@@ -2,7 +2,7 @@
     "name": "fluig-vscode-extension",
     "displayName": "Fluig - Extensão VS Code",
     "description": "Extensão para agilizar o desenvolvimento para o TOTVS Fluig no VS Code",
-    "version": "1.5.1",
+    "version": "1.8.0",
     "publisher": "BrunoGasparetto",
     "repository": {
         "type": "git",
@@ -279,7 +279,9 @@
         "webpack-cli": "^4.7.0"
     },
     "dependencies": {
+        "@types/crypto-js": "^4.0.2",
         "axios": "^0.21.1",
+        "crypto-js": "^4.1.1",
         "soap": "^0.37.0",
         "template-literal": "^1.0.3"
     }

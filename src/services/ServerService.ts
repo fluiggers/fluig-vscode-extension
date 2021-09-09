@@ -2,6 +2,7 @@ import { ServerConfig } from "../models/ServerConfig";
 import { ServerDTO } from "../models/ServerDTO";
 import { UtilsService } from "./UtilsService";
 import { window } from "vscode";
+import { Server } from "../models/Server";
 
 export class ServerService {
     private static PATH = UtilsService.getWorkspace() + '/.vscode';
@@ -75,7 +76,7 @@ export class ServerService {
         }
     }
 
-    public static findByName(name: string) {
+    public static findByName(name: string): ServerDTO|undefined {
         const servers = ServerService.getServerConfig();
         return servers.configurations.find(server => server.name == name);
     }
@@ -92,7 +93,7 @@ export class ServerService {
             return;
         }
 
-        return ServerService.findByName(result.label);
+        return new Server(ServerService.findByName(result.label));
     }
 
     /**
@@ -144,7 +145,6 @@ export class ServerService {
             ServerService.createServerConfig();
         }
 
-        const serverConfig = fs.readFileSync(ServerService.FILE_SERVER_CONFIG).toString();
-        return JSON.parse(serverConfig);
+        return JSON.parse(fs.readFileSync(ServerService.FILE_SERVER_CONFIG).toString());
     }
 }

@@ -10,7 +10,21 @@
             "}",
             ""
         ],
-        "description": "Percorre os itens de um Pai Filho (back-end)."
+        "description": "Percorre os itens de um Pai Filho em evento de Formulário (back-end)."
+    },
+
+    "fluig-paifilho-loop-workflow": {
+        "scope": "javascript",
+        "prefix": "fluig-paifilho-loop-workflow",
+        "body": [
+            "var indexes = hAPI.getChildrenIndexes(\"$1\");",
+            "",
+            "for (var i = 0; i < indexes.length; ++i) {",
+            "    hAPI.getCardValue(\"$2___\" + indexes[i]);$0",
+            "}",
+            ""
+        ],
+        "description": "Percorre os itens de um Pai Filho em um evento de Processo (back-end)."
     },
 
     "fluig-function-data": {
@@ -37,6 +51,55 @@
             "$0"
         ],
         "description": "Cria uma função que retorna a data atual formatada (back-end)."
+    },
+
+    "fluig-consulta-jdbc": {
+        "scope": "javascript",
+        "prefix": "fluig-consulta-jdbc",
+        "body": [
+            "",
+            "var myQuery = \"$1\";",
+            "",
+            "try {",
+            "    var dataSource = \"/jdbc/$2\";",
+            "    var ic = new javax.naming.InitialContext();",
+            "    var ds = ic.lookup(dataSource);",
+            "    var conn = ds.getConnection();",
+            "    var stmt = conn.createStatement();",
+            "    var rs = stmt.executeQuery(myQuery);",
+            "    var rsMeta = rs.getMetaData();",
+            "    var columnCount = rsMeta.getColumnCount();",
+            "    var i = 0;",
+            "",
+            "    // Preenchendo automaticamente o nome das colunas do dataset",
+            "    for (i = 1; i <= columnCount; ++i) {",
+            "        dataset.addColumn(rsMeta.getColumnName(i));",
+            "    }",
+            "",
+            "    // Preenchendo o dataset",
+            "    while (rs.next()) {",
+            "        var row = [];",
+            "        for (i = 1; i <= columnCount; ++i) {",
+            "            row.push(rs.getString(i));",
+            "        }",
+            "        dataset.addRow(row);",
+            "    }",
+            "} catch (e) {",
+            "    log.error(\"ERRO => \" + e.message);",
+            "} finally {",
+            "    if (rs != null) {",
+            "        rs.close();",
+            "    }",
+            "    if (stmt != null) {",
+            "        stmt.close();",
+            "    }",
+            "    if (conn != null) {",
+            "        conn.close();",
+            "    }",
+            "}",
+            ""
+        ],
+        "description": "Cria uma consulta direta ao Banco de Dados usando JDBC (back-end)."
     },
 
     "fluig-calendar": {

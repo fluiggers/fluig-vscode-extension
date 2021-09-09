@@ -14,14 +14,15 @@ F1 (Command Palette), sendo obrigatório ter um Diretório / Workspace aberto.
 
 Você pode procurar pela extensão `Fluig - Extensão VS Code` no VS Code, baixá-la diretamente no [VS Code Market Place: Fluig - Extensão VS Code](https://marketplace.visualstudio.com/items?itemName=BrunoGasparetto.fluig-vscode-extension) ou abrir o **Quick Open** (CTRL + P) e executar o comando `ext install brunogasparetto.fluig-vscode-extension`.
 
+### Importante!
+
 Essa extensão cria os arquivos utilizando os tipos declarados na biblioteca [Declaração de Tipos para o Fluig](https://github.com/brunogasparetto/fluig-declaration-type) para ter auto-complete no VS Code, por isso é recomendado que ela seja instalada.
 
 ## Como utilizar
 
 Para utilizar os comandos de criação de arquivos é obrigatório estar com um diretório / workspace aberto.
 
-Os seguintes comandos estão disponíveis:
-
+- [Gerenciar Servidores](#gerenciar-servidores);
 - [Novo Dataset](#novo-dataset);
 - [Novo Formulário](#novo-formulário);
 - [Novo Evento Global](#novo-evento-global);
@@ -29,13 +30,16 @@ Os seguintes comandos estão disponíveis:
 - [Novo Evento de Processo](#novo-evento-de-processo);
 - [Importar Dataset e Importar Vários Datasets](#importar-dataset);
 - [Exportar Dataset](#exportar-dataset);
-
-Foram criados snippets para as seguintes linguagens:
-
 - [Snippets para HTML](#snippets-para-html);
 - [Snippets para JavaScript](#snippets-para-javascript);
 
-## Novo Dataset.
+## Gerenciar Servidores
+
+Com a extensão instalada será adicionada a visão de gerenciamento de servidores. Nela é possível adicionar, editar e remover servidores Fluig.
+
+![Gerenciando Servidores](images/gerenciar_servidores.jpg)
+
+## Novo Dataset
 
 Esse comando cria um arquivo JavaScript, após você preencher o nome do Dataset, no diretório `datasets` do seu projeto Fluig.
 
@@ -43,7 +47,7 @@ O arquivo vem com as quatro funções básicas de datasets que o Fluig disponibi
 
 Você pode executar esse comando no **Command Palette** ou com o menu de contexto no **File Explorer**.
 
-## Novo Formulário.
+## Novo Formulário
 
 Esse comando cria, após preencher o nome, um diretório contendo um arquivo HTML de formulário.
 Esse diretório é criado dentro do diretório `forms` do seu projeto Fluig.
@@ -122,8 +126,7 @@ Eventos disponibilizados:
 
 ## Importar Dataset
 
-Para importar Dataset (ou vários) é necessário ativar clicar com o botão direito do mouse na pasta **Datasets** (ou
-em qualquer subitem dela), ou usar o **Command Pallete** (pressionando F1) e então selecionar um dos comandos de
+Para importar Dataset (ou vários) é necessário clicar com o botão direito do mouse em qualquer lugar do **File Explorer** ou usar o **Command Pallete** (pressionando F1) e então selecionar um dos comandos de
 exportação (`Fluig: Importar Dataset` ou `Fluig: Importar Vários Datasets`).
 
 Após selecionar o servidor é exibido a lista de Datasets do servidor para selecionar qual/quais serão importados.
@@ -169,8 +172,10 @@ ambientes.
 
 ### Snippets para Back-End
 
+- **fluig-consulta-jdbc**: cria uma consulta direta ao Banco de Dados usando JDBC;
 - **fluig-function-data**: cria uma função que retorna a data atual formatada no padrão solicitado;
-- **fluig-paifilho-loop**: cria um loop for percorrendo os elementos de uma tabela pai filho;
+- **fluig-paifilho-loop**: cria um loop for percorrendo os elementos de uma tabela pai filho em evento de Formulário;
+- **fluig-paifilho-loop-workflow**: cria um loop for percorrendo os elementos de uma tabela pai filho em evento de Processo;
 
 ### Snippets para Front-End
 
@@ -183,6 +188,7 @@ ambientes.
 
 ## Todo
 
+- Selecionar automaticamente o Dataset exportar Dataset para Edição;
 - Adicionar importação / exportação de Formulários;
 - Criar comando Novo Widget;
 - Criar comando Novo Layout;

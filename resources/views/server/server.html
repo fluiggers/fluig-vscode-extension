@@ -110,24 +110,28 @@
         }
 
         function validateHost(element) {
-            const url = new URL(element.value);
-            const isSSL = url.protocol.indexOf("https") >= 0;
+            try {
+                const url = new URL(element.value);
+                const isSSL = url.protocol.indexOf("https") >= 0;
 
-            let port = url.port;
+                let port = url.port;
 
-            if (!port) {
-                port = isSSL ? "443" : "80";
+                if (!port) {
+                    port = isSSL ? 443 : 80;
+                }
+
+                const name = document.getElementById("name");
+
+                if (!name.value) {
+                    name.value = url.hostname;
+                }
+
+                document.getElementById("host").value = url.hostname;
+                document.getElementById("ssl").value = isSSL ? "yes" : "no";
+                document.getElementById("port").value = port;
+            } catch (error) {
+
             }
-
-            const name = document.getElementById("name");
-
-            if (!name.value) {
-                name.value = url.hostname;
-            }
-
-            document.getElementById("host").value = url.hostname;
-            document.getElementById("ssl").value = isSSL ? "yes" : "no";
-            document.getElementById("port").value = port;
         }
     </script>
 </html>

@@ -4,6 +4,7 @@ import { ServerDTO } from '../models/ServerDTO';
 import { ServerService } from '../services/ServerService';
 import * as fs from 'fs';
 import { UserService } from '../services/UserService';
+import { Server } from '../models/Server';
 const compile = require('template-literal');
 
 export class ServerView {
@@ -67,20 +68,21 @@ export class ServerView {
             return;
         }
 
-        const server: ServerDTO = {
-            id: obj.id,
-            name: obj.name,
-            host: obj.host,
-            ssl: obj.ssl,
-            port: obj.port,
-            username: obj.username,
-            password: obj.password,
-            confirmExporting: obj.confirmExporting,
-            companyId: 0
-        };
+        const server: ServerDTO =  new Server();
+        server.id = obj.id;
+        server.name = obj.name;
+        server.host = obj.host;
+        server.ssl = obj.ssl;
+        server.port = parseInt(obj.port);
+        server.userCode = "";
+        server.username = obj.username;
+        server.password = obj.password;
+        server.confirmExporting = obj.confirmExporting;
+        server.companyId = 0;
 
         UserService.getUser(server).then((response) => {
             server.companyId = response.data.content.tenantId;
+            server.userCode = response.data.content.userCode;
             ServerService.createOrUpdate(server);
 
             if (this.currentPanel) {
