@@ -2,6 +2,10 @@
 
 Lista de atualizações da Extensão.
 
+## 1.9.1
+
+Melhoria de performance na descriptografia da senha do servidor.
+
 ## 1.9.0
 
 Adicionado o comando "Importar Formulário".

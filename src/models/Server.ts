@@ -16,9 +16,15 @@ export class Server implements ServerDTO {
     public userCode: string = "";
     public username: string = "";
     private _password: string = "";
+    private decryptedPassword: string = "";
 
     get password(): string {
-        return CryptoJS.AES.decrypt(this._password, vscode.env.machineId).toString(CryptoJS.enc.Utf8);
+        if (!this.decryptedPassword) {
+            this.decryptedPassword = CryptoJS.AES.decrypt(this._password, vscode.env.machineId).toString(CryptoJS.enc.Utf8);
+            console.log("Decrypt");
+        }
+
+        return this.decryptedPassword;
     }
 
     set password(password: string) {

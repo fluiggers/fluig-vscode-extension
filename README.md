@@ -35,7 +35,7 @@ aberto.
 - [Novo Evento de Processo](#novo-evento-de-processo);
 - [Importar Dataset e Importar Vários Datasets](#importar-dataset);
 - [Exportar Dataset](#exportar-dataset);
-- [Importar Formulário](#importar-formulário)
+- [Importar Formulário](#importar-formulário);
 - [Snippets para HTML](#snippets-para-html);
 - [Snippets para JavaScript](#snippets-para-javascript);
 
