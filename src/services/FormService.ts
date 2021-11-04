@@ -187,6 +187,34 @@ export class FormService {
     }
 
     /**
+     * Retorna os formulários selecionados
+     */
+     public static async getOptionsSelected(server: ServerDTO) {
+        const forms = await FormService.getForms(server);
+        const items = forms.map(form => ({
+            label: form.documentId + ' - ' + form.documentDescription,
+            detail: form.datasetName
+        }));
+
+        const result = await window.showQuickPick(items, {
+            placeHolder: "Selecione o formulário",
+            canPickMany: true
+        });
+
+        if (!result) {
+            return undefined;
+        }
+
+        return result.map(item => {
+            const endPosition = item.label.indexOf(" - ");
+            const documentId = item.label.substring(0, endPosition);
+            const form = forms.find(form => form.documentId.toString() === documentId);
+
+            return form;
+        });
+    }
+
+    /**
      * Realiza a importação de um formulário específico
      */
      public static async import() {
@@ -225,6 +253,55 @@ export class FormService {
         for (let item of events) {
             FormService.saveFile(folder, item.eventId + ".js", item.eventDescription);
         }
+    }
+
+    /**
+     * Realiza a importação de vários formulários
+     */
+     public static async importMany() {
+        if (!workspace.workspaceFolders) {
+            window.showInformationMessage("Você precisa estar em um diretório / workspace.");
+            return;
+        }
+
+        const server = await ServerService.getSelect();
+
+        if (!server) {
+            return;
+        }
+
+        const forms = await FormService.getOptionsSelected(server);
+
+        if(!forms) {
+            return;
+        }
+
+        forms.map(async form => {
+            if(!form) {
+                return;
+            }
+
+            const folderName = form.documentDescription;
+            const fileNames = await FormService.getFileNames(server, form.documentId);
+
+            for (let fileName of fileNames) {
+                const base64 = await FormService.getFileBase64(server, form.documentId, form.version, fileName);
+
+                if (base64) {
+                    const fileContent = Buffer.from(base64, 'base64').toString('utf-8');
+                    FormService.saveFile(folderName, fileName, fileContent);
+                }
+            }
+
+            const folder = posix.join(folderName, "events");
+            const events = await FormService.getCustomizationEvents(server, form.documentId);
+
+            for (let item of events) {
+                FormService.saveFile(folder, item.eventId + ".js", item.eventDescription);
+            }
+        });
+
+        window.showInformationMessage("Os formulários foram importados com sucesso!");
     }
 
     /**

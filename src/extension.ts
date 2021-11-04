@@ -120,6 +120,13 @@ export function activate(context: vscode.ExtensionContext) {
             () => FormService.import()
         )
     );
+
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
+            "fluig-vscode-extension.importManyForm",
+            () => FormService.importMany()
+        )
+    );
 }
 
 export function deactivate() { }
