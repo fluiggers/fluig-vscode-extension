@@ -219,7 +219,7 @@ export class DatasetService {
     /**
      * Criar ou atualizar dataset no servidor
      */
-    public static async export(fileUri: Uri) {
+     public static async export(fileUri: Uri) {
         const server = await ServerService.getSelect();
 
         if (!server) {
@@ -227,8 +227,27 @@ export class DatasetService {
         }
 
         const datasets = await DatasetService.getDatasetsCustom(server);
-        const items = datasets.map(dataset => ({ label: dataset.datasetId }));
+        const items = [];
+        const path = fileUri.fsPath.split("\\");
+        let datasetIdSelected: string = '';
+        let datasetId: string = '';
+        datasetId = path[path.length - 1];
+        datasetId = datasetId.replace('.js', '');
+
+        for(let dataset of datasets) {
+            if(dataset.datasetId !== datasetId) {
+                items.push({ label: dataset.datasetId });
+            }
+            else {
+                datasetIdSelected = dataset.datasetId;
+            }
+        }
+
         items.unshift({ label: 'Novo dataset' });
+
+        if(datasetIdSelected !== '') {
+            items.unshift({ label: datasetIdSelected });
+        }
 
         const dataset = await window.showQuickPick(items, {
             placeHolder: "Criar ou editar dataset?"
@@ -240,14 +259,9 @@ export class DatasetService {
 
         const isNewDataset = dataset.label === 'Novo dataset';
         let datasetStructure: DatasetStructureDTO | undefined = undefined;
-        let datasetId: string = '';
         let description: string = '';
 
         if (isNewDataset) {
-            const path = fileUri.fsPath.split("\\");
-            datasetId = path[path.length - 1];
-            datasetId = datasetId.replace('.js', '');
-
             let isDatasetExist: boolean = false;
 
             do {
