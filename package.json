@@ -172,54 +172,54 @@
             "explorer/context": [
                 {
                     "command": "fluig-vscode-extension.newDataset",
-                    "group": "navigation@1"
+                    "group": "1_Fluig@1"
                 },
                 {
                     "command": "fluig-vscode-extension.newForm",
-                    "group": "navigation@1"
+                    "group": "1_Fluig@2"
                 },
                 {
                     "command": "fluig-vscode-extension.newGlobalEvent",
-                    "group": "navigation@1"
-                },
-                {
-                    "command": "fluig-vscode-extension.newFormEvent",
-                    "when": "resourcePath =~ /[\\/\\\\]forms[\\/\\\\].+$/",
-                    "group": "navigation@1"
-                },
-                {
-                    "command": "fluig-vscode-extension.newWorkflowEvent",
-                    "when": "resourceExtname == .process",
-                    "group": "navigation@1"
+                    "group": "1_Fluig@3"
                 },
                 {
                     "command": "fluig-vscode-extension.importDataset",
-                    "group": "navigation@2"
+                    "group": "1_Fluig@4"
                 },
                 {
                     "command": "fluig-vscode-extension.importManyDataset",
-                    "group": "navigation@2"
+                    "group": "1_Fluig@5"
                 },
                 {
                     "command": "fluig-vscode-extension.importForm",
-                    "group": "navigation@2"
+                    "group": "1_Fluig@6"
                 },
                 {
                     "command": "fluig-vscode-extension.importManyForm",
-                    "group": "navigation@2"
+                    "group": "1_Fluig@7"
                 },
                 {
                     "command": "fluig-vscode-extension.importGlobalEvent",
-                    "group": "navigation@2"
+                    "group": "1_Fluig@8"
                 },
                 {
                     "command": "fluig-vscode-extension.importManyGlobalEvent",
-                    "group": "navigation@2"
+                    "group": "1_Fluig@9"
                 },
                 {
                     "command": "fluig-vscode-extension.exportDataset",
                     "when": "resourcePath =~ /[\\/\\\\]datasets[\\/\\\\].+$/",
-                    "group": "navigation@2"
+                    "group": "1_Fluig@0"
+                },
+                {
+                    "command": "fluig-vscode-extension.newFormEvent",
+                    "when": "resourcePath =~ /[\\/\\\\]forms[\\/\\\\].+$/",
+                    "group": "1_Fluig@0"
+                },
+                {
+                    "command": "fluig-vscode-extension.newWorkflowEvent",
+                    "when": "resourceExtname == .process",
+                    "group": "1_Fluig@0"
                 }
             ],
             "view/title": [
