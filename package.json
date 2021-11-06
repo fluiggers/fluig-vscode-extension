@@ -41,6 +41,8 @@
         "onCommand:fluig-vscode-extension.importManyDataset",
         "onCommand:fluig-vscode-extension.exportDataset",
         "onCommand:fluig-vscode-extension.importForm",
+        "onCommand:fluig-vscode-extension.importGlobalEvent",
+        "onCommand:fluig-vscode-extension.importManyGlobalEvent",
         "onView:fluig-vscode-extension.servers"
     ],
     "main": "./dist/extension.js",
@@ -126,6 +128,16 @@
                 "command": "fluig-vscode-extension.importForm",
                 "title": "Importar Formulário",
                 "category": "Fluig"
+            },
+            {
+                "command": "fluig-vscode-extension.importGlobalEvent",
+                "title": "Importar Evento Global",
+                "category": "Fluig"
+            },
+            {
+                "command": "fluig-vscode-extension.importManyGlobalEvent",
+                "title": "Importar Vários Eventos Globais",
+                "category": "Fluig"
             }
         ],
         "menus": {
@@ -184,6 +196,14 @@
                 },
                 {
                     "command": "fluig-vscode-extension.importForm",
+                    "group": "navigation@2"
+                },
+                {
+                    "command": "fluig-vscode-extension.importGlobalEvent",
+                    "group": "navigation@2"
+                },
+                {
+                    "command": "fluig-vscode-extension.importManyGlobalEvent",
                     "group": "navigation@2"
                 },
                 {

@@ -5,6 +5,7 @@ import { ServerItem, ServerItemProvider } from "./providers/ServerItemProvider";
 import { glob } from "glob";
 import { DatasetService } from "./services/DatasetService";
 import { FormService } from "./services/FormService";
+import { GlobalEventService } from "./services/GlobalEventService";
 
 interface ExtensionsPath {
     TEMPLATES: string,
@@ -118,6 +119,20 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerCommand(
             "fluig-vscode-extension.importForm",
             () => FormService.import()
+        )
+    );
+
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
+            "fluig-vscode-extension.importGlobalEvent",
+            () => GlobalEventService.import()
+        )
+    );
+
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
+            "fluig-vscode-extension.importManyGlobalEvent",
+            () => GlobalEventService.importMany()
         )
     );
 }

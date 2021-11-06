@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import { ServerDTO } from '../models/ServerDTO';
 
 export class UtilsService {
     public static generateRandomID() {
@@ -15,5 +16,12 @@ export class UtilsService {
         }
 
         return vscode.workspace.workspaceFolders[0].uri.fsPath;
+    }
+
+    public static getHost(server: ServerDTO): string {
+        const schema: string = server.ssl ? "https" : "http";
+        const port: string = [80, 443].includes(server.port) ? "" : `:${server.port}`;
+
+        return `${schema}://${server.host}${port}`;
     }
 }
