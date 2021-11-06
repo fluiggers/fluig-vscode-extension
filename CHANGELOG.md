@@ -2,6 +2,21 @@
 
 Lista de atualizações da Extensão.
 
+## 1.10.0
+
+Adição dos comandos:
+
+- Importar Vários Formulários
+- Importar Evento Global
+- Importar Vários Eventos Globais
+
+Ao exportar um Dataset o nome dele virá em primeiro na listagem caso já exista no servidor, facilitando a exportação
+de Dataset já existente.
+
+Melhor ordenação dos comandos no menu de contexto **File Explorer**.
+
+Correção de vulnerabilidades nas dependências da extensão.
+
 ## 1.9.1
 
 Melhoria de performance na descriptografia da senha do servidor.

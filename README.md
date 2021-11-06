@@ -35,7 +35,8 @@ aberto.
 - [Novo Evento de Processo](#novo-evento-de-processo);
 - [Importar Dataset e Importar Vários Datasets](#importar-dataset);
 - [Exportar Dataset](#exportar-dataset);
-- [Importar Formulário](#importar-formulário);
+- [Importar Formulário e Importar Vários Formulários](#importar-formulário);
+- [Importar Evento Global e Importar Vários Eventos Globais](#importar-evento-global);
 - [Snippets para HTML](#snippets-para-html);
 - [Snippets para JavaScript](#snippets-para-javascript);
 
@@ -158,11 +159,20 @@ Após selecionar o servidor você poderá escolher um Dataset para ser editado o
 ## Importar Formulário
 
 Para importar Formulário é necessário clicar com o botão direito do mouse em qualquer lugar do
-**File Explorer** ou usar o **Command Pallete** (pressionando F1) e então seleciona o comando de
-importação (`Fluig: Importar Formulário`.
+**File Explorer** ou usar o **Command Pallete** (pressionando F1) e então selecionar o comando de
+importação (`Fluig: Importar Formulário` ou `Fluig: Importar Vários Formulários`).
 
-Após selecionar o servidor é exibido a lista de Formulários do servidor para selecionar qual será
-importado.
+Após selecionar o servidor é exibido a lista de Formulários do servidor para selecionar qual/quais serão
+importados.
+
+## Importar Evento Global
+
+Para importar Evento Global é necessário clicar com o botão direito do mouse em qualquer lugar do
+**File Explorer** ou usar o **Command Pallete** (pressionando F1) e então selecionar o comando de
+importação (`Fluig: Importar Evento Global` ou `Fluig: Importar Vários Eventos Globais`).
+
+Após selecionar o servidor é exibido a lista de Eventos Globais do servidor para selecionar qual/quais serão
+importados.
 
 ## Snippets para HTML
 
