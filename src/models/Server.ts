@@ -21,7 +21,6 @@ export class Server implements ServerDTO {
     get password(): string {
         if (!this.decryptedPassword) {
             this.decryptedPassword = CryptoJS.AES.decrypt(this._password, vscode.env.machineId).toString(CryptoJS.enc.Utf8);
-            console.log("Decrypt");
         }
 
         return this.decryptedPassword;
