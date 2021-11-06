@@ -124,6 +124,13 @@ export function activate(context: vscode.ExtensionContext) {
 
     context.subscriptions.push(
         vscode.commands.registerCommand(
+                  "fluig-vscode-extension.importManyForm",
+            () => FormService.importMany()
+        )
+    );
+
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
             "fluig-vscode-extension.importGlobalEvent",
             () => GlobalEventService.import()
         )
