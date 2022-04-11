@@ -6,6 +6,7 @@ import { glob } from "glob";
 import { DatasetService } from "./services/DatasetService";
 import { FormService } from "./services/FormService";
 import { GlobalEventService } from "./services/GlobalEventService";
+import { DatasetItemProvider } from "./providers/DatasetItemProvider";
 
 interface ExtensionsPath {
     TEMPLATES: string,
@@ -140,6 +141,17 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerCommand(
             "fluig-vscode-extension.importManyGlobalEvent",
             () => GlobalEventService.importMany()
+        )
+    );
+
+    // Ações para consultar e visualizar datasets
+    const datasetItemProvider = new DatasetItemProvider(context);
+    vscode.window.registerTreeDataProvider("fluig-vscode-extension.datasetView", datasetItemProvider);
+
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
+            "fluig-vscode-extension.datasetView",
+            () => datasetItemProvider.add()
         )
     );
 }

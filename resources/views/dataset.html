@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consultar dataset</title>
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
+</head>
+    <body class="container-fluid">
+        <div class="row">
+            <div class="col-md-12 form-group">
+                <label for="dataset"><strong>Dataset</strong></label>
+                <div class="input-group mb-3">
+                    <select class="form-control" id="dataset">
+                        <option value="">Selecionar</option>
+                        <option value="">DTS_001</option>
+                        <option value="">DTS_002</option>
+                        <option value="">DTS_003</option>
+                    </select>
+                    <div class="input-group-append">
+                        <button class="btn btn-success" onclick="saveServer()">Atualizar</button>
+                    </div>
+                    <div class="input-group-append">
+                        <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#modalConfigFiltro">Configurar filtro</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <h3 class="col-md-12 form-group">Resultado</h3>
+        </div>
+
+        <!-- Inicio Modal Constraints-->
+        <div class="modal fade" id="modalConfigFiltro" tabindex="-1" role="dialog" aria-labelledby="modalConfigFiltro" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <ul class="nav nav-tabs">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="constraints-tab" data-toggle="tab" href="#tabConstraints" role="tab" aria-controls="tabConstraints" aria-selected="true">Constraints</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="fields-tab" data-toggle="tab" href="#tabFields" role="tab" aria-controls="tabFields" aria-selected="false">Fields</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="orders-tab" data-toggle="tab" href="#tabOrders" role="tab" aria-controls="tabOrders" aria-selected="false">Order</a>
+                            </li>
+                        </ul>
+                        <div class="tab-content" id="myTabContent">
+                            <div id="tabConstraints" class="tab-pane fade show active" role="tabpanel" aria-labelledby="tabConstraints">
+                                <div class="table-responsive">
+                                    <table class="table table-hover table-sm" id="constraints">
+                                        <thead class="thead-light">
+                                            <tr>
+                                                <th scope="col" width="30%">Coluna</th>
+                                                <th scope="col" width="15%">Valor inicial</th>
+                                                <th scope="col" width="15%">Valor final</th>
+                                                <th scope="col" width="15%">Tipo</th>
+                                                <th scope="col" width="15%" colspan="2">Busca usa 'like'</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    <select class="form-control" id="campo___1">
+                                                        <option value="001">userName</option>
+                                                        <option value="001">user</option>
+                                                        <option value="001">mail</option>
+                                                    </select>
+                                                </td>
+                                                <td>
+                                                    <input type="text" class="form-control" id="valor_inicial___1">
+                                                </td>
+                                                <td>
+                                                    <input type="text" class="form-control" id="valor_final___1">
+                                                </td>
+                                                <td>
+                                                    <select class="form-control" id="tipo___1">
+                                                        <option value="MUST">MUST</option>
+                                                        <option value="MUST_NOT">MUST NOT</option>
+                                                        <option value="SHOULD">SHOULD</option>
+                                                    </select>
+                                                </td>
+                                                <td>
+                                                    <select class="form-control" id="like___1">
+                                                        <option value="NAO">Não</option>
+                                                        <option value="SIM">Sim</option>
+                                                    </select>
+                                                </td>
+                                                <td>
+                                                    <a href="#" style="float: left; margin: 5px 0;" onclick="removeConstraints(this);">X</a>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="row">
+                                    <dic class="col-md-12">
+                                        <button type="button" class="btn btn-primary" style="float: right;" onclick="addConstraints();">Adicionar</button>
+                                    </dic>
+                                </div>
+                            </div>
+                            <div id="tabFields" class="tab-pane fade" role="tabpanel" aria-labelledby="tabFields">
+                                <div class="row">
+                                    <div class="col-md-6 form-group">
+                                        <label for="exampleFormControlSelect2">
+                                            <strong>Colunas do dataset</strong>
+                                        </label>
+                                        <select multiple class="form-control" id="exampleFormControlSelect2">
+                                            <option>1</option>
+                                            <option>2</option>
+                                            <option>3</option>
+                                            <option>4</option>
+                                            <option>5</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 form-group">
+                                        <label for="exampleFormControlSelect2">
+                                            <strong>Colunas selecionadas</strong>
+                                        </label>
+                                        <select multiple class="form-control" id="exampleFormControlSelect2">
+                                            <option>1</option>
+                                            <option>2</option>
+                                            <option>3</option>
+                                            <option>4</option>
+                                            <option>5</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="tabOrders" class="tab-pane fade" role="tabpanel" aria-labelledby="tabOrders">
+                                <div class="row">
+                                    <div class="col-md-6 form-group">
+                                        <label for="exampleFormControlSelect2">
+                                            <strong>Colunas do dataset</strong>
+                                        </label>
+                                        <select multiple class="form-control" id="exampleFormControlSelect2">
+                                            <option>1</option>
+                                            <option>2</option>
+                                            <option>3</option>
+                                            <option>4</option>
+                                            <option>5</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 form-group">
+                                        <label for="exampleFormControlSelect2">
+                                            <strong>Colunas selecionadas</strong>
+                                        </label>
+                                        <select multiple class="form-control" id="exampleFormControlSelect2">
+                                            <option>1</option>
+                                            <option>2</option>
+                                            <option>3</option>
+                                            <option>4</option>
+                                            <option>5</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <dic class="col-md-12">
+                                <button type="button" class="btn btn-success" data-dismiss="modal" aria-label="Close">Finalizar</button>
+                            </dic>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Fim Modal Constraints-->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="../js/bootstrap.min.js"></script>
+    </body>
+
+    <script type="text/javascript">
+        function getIndexConstraints() {
+            const linhas = document.querySelectorAll("select[id^='campo___']");
+
+            if(linhas.length < 1) return 1;
+            
+            const ultimaLinha = linhas[linhas.length - 1];
+            const indice = ultimaLinha.id.split("___")[1];
+            return parseInt(indice) + 1;
+        }
+
+        function removeConstraints(element) {
+            element.parentElement.parentElement.remove();
+        }
+
+        function addConstraints() {
+            const indice = getIndexConstraints();
+            const linhaModelo = `
+            <tr>
+                <td>
+                    <select class="form-control" id="campo___${indice}">
+                        <option value="001">userName</option>
+                        <option value="001">user</option>
+                        <option value="001">mail</option>
+                    </select>
+                </td>
+                <td>
+                    <input type="text" class="form-control" id="valor_inicial___${indice}">
+                </td>
+                <td>
+                    <input type="text" class="form-control" id="valor_final___${indice}">
+                </td>
+                <td>
+                    <select class="form-control" id="tipo___${indice}">
+                        <option value="MUST">MUST</option>
+                        <option value="MUST_NOT">MUST NOT</option>
+                        <option value="SHOULD">SHOULD</option>
+                    </select>
+                </td>
+                <td>
+                    <select class="form-control" id="like___${indice}">
+                        <option value="NAO">Não</option>
+                        <option value="SIM">Sim</option>
+                    </select>
+                </td>
+                <td>
+                    <a href="#" style="float: left; margin: 5px 0;" onClick="removeConstraints(this);">X</a>
+                </td>
+            </tr>
+            `;
+
+            $("#constraints tbody").append(linhaModelo);
+        }
+    </script>
+</html>

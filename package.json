@@ -44,7 +44,8 @@
         "onCommand:fluig-vscode-extension.importForm",
         "onCommand:fluig-vscode-extension.importGlobalEvent",
         "onCommand:fluig-vscode-extension.importManyGlobalEvent",
-        "onView:fluig-vscode-extension.servers"
+        "onView:fluig-vscode-extension.servers",
+        "onView:fluig-vscode-extension.datasetView"
     ],
     "main": "./dist/extension.js",
     "contributes": {
@@ -232,6 +233,11 @@
                     "command": "fluig-vscode-extension.refreshServer",
                     "when": "view == fluig-vscode-extension.servers",
                     "group": "navigation"
+                },
+                {
+                    "command": "fluig-vscode-extension.addServer",
+                    "when": "view == fluig-vscode-extension.datasetView",
+                    "group": "navigation"
                 }
             ],
             "view/item/context": [
@@ -261,6 +267,10 @@
                 {
                     "id": "fluig-vscode-extension.servers",
                     "name": "Servidores"
+                },
+                {
+                    "id": "fluig-vscode-extension.datasetView",
+                    "name": "Consultar datasets"
                 }
             ]
         },
@@ -268,6 +278,10 @@
             {
                 "view": "fluig-vscode-extension.servers",
                 "contents": "Nenhum Servidor encontrado.\n[Adicionar Servidor](command:fluig-vscode-extension.addServer)"
+            },
+            {
+                "view": "fluig-vscode-extension.datasetView",
+                "contents": "Nenhuma consulta de dataset encontrada.\n[Consultar dataset](command:fluig-vscode-extension.datasetView)"
             }
         ],
         "snippets": [
