@@ -10,13 +10,8 @@ const compile = require('template-literal');
 export class DatasetView {
 
     private currentPanel: vscode.WebviewPanel | undefined = undefined;
-    private serverData: ServerDTO | undefined = undefined;
 
     constructor(public context: vscode.ExtensionContext) {}
-
-    public setServerData(server: ServerDTO) {
-        this.serverData = server;
-    }
 
     public show() {
         this.currentPanel = this.createWebViewPanel();
@@ -35,16 +30,19 @@ export class DatasetView {
 
     private getWebViewContent() {
         const htmlPath = vscode.Uri.file(path.join(this.context.extensionPath, 'resources', 'views', 'dataset.html'));
-        // const cssPath = vscode.Uri.file(path.join(this.context.extensionPath, 'resources', 'css', 'bootstrap.min.css'));
+        const bootstrapCssPath = vscode.Uri.file(path.join(this.context.extensionPath, 'resources', 'css', 'bootstrap.min.css'));
+        const bootstrapJsPath = vscode.Uri.file(path.join(this.context.extensionPath, 'resources', 'js', 'bootstrap.min.js'));
+        const jqueryPath = vscode.Uri.file(path.join(this.context.extensionPath, 'resources', 'js', 'jquery.min.js'));
         const htmlContent = fs.readFileSync(htmlPath.with({ scheme: 'vscode-resource' }).fsPath);
-        // const cssContent = fs.readFileSync(cssPath.with({ scheme: 'vscode-resource' }).fsPath);
+        const bootstrapCssContent = fs.readFileSync(bootstrapCssPath.with({ scheme: 'vscode-resource' }).fsPath);
+        const bootstrapJsContent = fs.readFileSync(bootstrapJsPath.with({ scheme: 'vscode-resource' }).fsPath);
+        const jqueryContent = fs.readFileSync(jqueryPath.with({ scheme: 'vscode-resource' }).fsPath);
         let runTemplate = compile(htmlContent);
 
         return runTemplate({
-            // css: cssContent,
-            serverData: this.serverData,
-            // ssl: (this.serverData && this.serverData.ssl) ? this.serverData.ssl : false,
-            // confirmExporting: (this.serverData && this.serverData.confirmExporting) ? this.serverData.confirmExporting : false,
+            bootstrapCss: bootstrapCssContent,
+            bootstrapJs: bootstrapJsContent,
+            jquery: jqueryContent,
         });
     }
 

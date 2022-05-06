@@ -5,11 +5,20 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Consultar dataset</title>
-    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        ${d.bootstrapCss}
+    </style>
 </head>
     <body class="container-fluid">
         <div class="row">
-            <div class="col-md-12 form-group">
+            <div class="col-md-4 form-group">
+                <label for="servidor"><strong>Servidor</strong></label>
+                <select class="form-control" id="servidor">
+                    <option value="">Selecionar</option>
+                </select>
+            </div>
+
+            <div class="col-md-8 form-group">
                 <label for="dataset"><strong>Dataset</strong></label>
                 <div class="input-group mb-3">
                     <select class="form-control" id="dataset">
@@ -170,62 +179,60 @@
             </div>
         </div>
         <!-- Fim Modal Constraints-->
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <script src="../js/bootstrap.min.js"></script>
+        <script type="text/javascript">${d.jquery}</script>
+        <script type="text/javascript">${d.bootstrapJs}</script>
+        <script type="text/javascript">
+            function getIndexConstraints() {
+                const linhas = document.querySelectorAll("select[id^='campo___']");
+    
+                if(linhas.length < 1) return 1;
+                
+                const ultimaLinha = linhas[linhas.length - 1];
+                const indice = ultimaLinha.id.split("___")[1];
+                return parseInt(indice) + 1;
+            }
+    
+            function removeConstraints(element) {
+                element.parentElement.parentElement.remove();
+            }
+    
+            function addConstraints() {
+                const indice = getIndexConstraints();
+                let linhaModelo = "";
+                linhaModelo += '<tr> ';
+                linhaModelo += '    <td> ';
+                linhaModelo += '        <select class="form-control" id="campo___' + indice + '"> ';
+                linhaModelo += '            <option value="001">userName</option> ';
+                linhaModelo += '            <option value="001">user</option> ';
+                linhaModelo += '            <option value="001">mail</option> ';
+                linhaModelo += '        </select> ';
+                linhaModelo += '    </td> ';
+                linhaModelo += '    <td> ';
+                linhaModelo += '        <input type="text" class="form-control" id="valor_inicial___' + indice + '"> ';
+                linhaModelo += '    </td> ';
+                linhaModelo += '    <td> ';
+                linhaModelo += '        <input type="text" class="form-control" id="valor_final___' + indice + '"> ';
+                linhaModelo += '    </td> ';
+                linhaModelo += '    <td> ';
+                linhaModelo += '        <select class="form-control" id="tipo___' + indice + '"> ';
+                linhaModelo += '            <option value="MUST">MUST</option> ';
+                linhaModelo += '            <option value="MUST_NOT">MUST NOT</option> ';
+                linhaModelo += '            <option value="SHOULD">SHOULD</option> ';
+                linhaModelo += '        </select> ';
+                linhaModelo += '    </td> ';
+                linhaModelo += '    <td> ';
+                linhaModelo += '        <select class="form-control" id="like___' + indice + '"> ';
+                linhaModelo += '            <option value="NAO">Não</option> ';
+                linhaModelo += '            <option value="SIM">Sim</option> ';
+                linhaModelo += '        </select> ';
+                linhaModelo += '    </td> ';
+                linhaModelo += '    <td> ';
+                linhaModelo += '        <a href="#" style="float: left; margin: 5px 0;" onClick="removeConstraints(this);">X</a> ';
+                linhaModelo += '    </td> ';
+                linhaModelo += '</tr> ';
+    
+                $("#constraints tbody").append(linhaModelo);
+            }
+        </script>
     </body>
-
-    <script type="text/javascript">
-        function getIndexConstraints() {
-            const linhas = document.querySelectorAll("select[id^='campo___']");
-
-            if(linhas.length < 1) return 1;
-            
-            const ultimaLinha = linhas[linhas.length - 1];
-            const indice = ultimaLinha.id.split("___")[1];
-            return parseInt(indice) + 1;
-        }
-
-        function removeConstraints(element) {
-            element.parentElement.parentElement.remove();
-        }
-
-        function addConstraints() {
-            const indice = getIndexConstraints();
-            const linhaModelo = `
-            <tr>
-                <td>
-                    <select class="form-control" id="campo___${indice}">
-                        <option value="001">userName</option>
-                        <option value="001">user</option>
-                        <option value="001">mail</option>
-                    </select>
-                </td>
-                <td>
-                    <input type="text" class="form-control" id="valor_inicial___${indice}">
-                </td>
-                <td>
-                    <input type="text" class="form-control" id="valor_final___${indice}">
-                </td>
-                <td>
-                    <select class="form-control" id="tipo___${indice}">
-                        <option value="MUST">MUST</option>
-                        <option value="MUST_NOT">MUST NOT</option>
-                        <option value="SHOULD">SHOULD</option>
-                    </select>
-                </td>
-                <td>
-                    <select class="form-control" id="like___${indice}">
-                        <option value="NAO">Não</option>
-                        <option value="SIM">Sim</option>
-                    </select>
-                </td>
-                <td>
-                    <a href="#" style="float: left; margin: 5px 0;" onClick="removeConstraints(this);">X</a>
-                </td>
-            </tr>
-            `;
-
-            $("#constraints tbody").append(linhaModelo);
-        }
-    </script>
 </html>
