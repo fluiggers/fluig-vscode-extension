@@ -146,7 +146,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     // Ações para consultar e visualizar datasets
     const datasetItemProvider = new DatasetItemProvider(context);
-    vscode.window.registerTreeDataProvider("fluig-vscode-extension.datasetView", datasetItemProvider);
+    vscode.window.registerTreeDataProvider("fluig-vscode-extension.datasetViewList", datasetItemProvider);
 
     context.subscriptions.push(
         vscode.commands.registerCommand(

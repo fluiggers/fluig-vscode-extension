@@ -81,6 +81,11 @@ export class ServerService {
         return servers.configurations.find(server => server.name == name);
     }
 
+    public static findById(id: string): ServerDTO|undefined {
+        const servers = ServerService.getServerConfig();
+        return servers.configurations.find(server => server.id == id);
+    }
+
     public static async getSelect() {
         const serversConfig = ServerService.getServerConfig();
         const servers = serversConfig.configurations.map(server => ({ label: server.name }));

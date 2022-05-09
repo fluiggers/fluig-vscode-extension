@@ -5,13 +5,17 @@ import { ServerService } from '../services/ServerService';
 import * as fs from 'fs';
 import { UserService } from '../services/UserService';
 import { Server } from '../models/Server';
+import { DatasetService } from '../services/DatasetService';
 const compile = require('template-literal');
 
 export class DatasetView {
 
     private currentPanel: vscode.WebviewPanel | undefined = undefined;
+    private servers;
 
-    constructor(public context: vscode.ExtensionContext) {}
+    constructor(public context: vscode.ExtensionContext) {
+        this.servers = ServerService.getServerConfig();
+    }
 
     public show() {
         this.currentPanel = this.createWebViewPanel();
@@ -39,10 +43,18 @@ export class DatasetView {
         const jqueryContent = fs.readFileSync(jqueryPath.with({ scheme: 'vscode-resource' }).fsPath);
         let runTemplate = compile(htmlContent);
 
+        let serverOptions = ``;
+        if(this.servers && this.servers.configurations) {
+            for(let server of this.servers.configurations) {
+                serverOptions += `<option value="${server.id}">${server.name}</option>`;
+            }
+        }
+
         return runTemplate({
             bootstrapCss: bootstrapCssContent,
             bootstrapJs: bootstrapJsContent,
             jquery: jqueryContent,
+            servidores: serverOptions
         });
     }
 
@@ -62,32 +74,25 @@ export class DatasetView {
     }
 
     private messageListener(obj: any) {
-        if (!obj.name || !obj.host || !obj.port || !obj.username || !obj.password) {
-            return;
-        }
+        switch(obj.command) {
+            case 'list_dataset':
+                this.getlistDataset(obj.serverId);
+                break;
+        } 
+    }
 
-        const server: ServerDTO =  new Server();
-        server.id = obj.id;
-        server.name = obj.name;
-        server.host = obj.host;
-        server.ssl = obj.ssl;
-        server.port = parseInt(obj.port);
-        server.userCode = "";
-        server.username = obj.username;
-        server.password = obj.password;
-        server.confirmExporting = obj.confirmExporting;
-        server.companyId = 0;
+    private async getlistDataset(serverId: string) {
+        if(!this.currentPanel) return;
 
-        UserService.getUser(server).then((response) => {
-            server.companyId = response.data.content.tenantId;
-            server.userCode = response.data.content.userCode;
-            ServerService.createOrUpdate(server);
+        const server:ServerDTO | undefined = ServerService.findById(serverId);
+        if(!server) return;
 
-            if (this.currentPanel) {
-                this.currentPanel.dispose();
-            }
-        }).catch((e) => {
-            vscode.window.showErrorMessage(`Falha na conexão com o servidor ${server.name}`);
+        const serverObj = new Server(server)
+        const listDataset = await DatasetService.getDatasets(serverObj);
+
+        this.currentPanel.webview.postMessage({
+            command: 'list_dataset',
+            listDataset: listDataset
         });
     }
 }

@@ -13,8 +13,9 @@
         <div class="row">
             <div class="col-md-4 form-group">
                 <label for="servidor"><strong>Servidor</strong></label>
-                <select class="form-control" id="servidor">
+                <select class="form-control" id="servidor" onchange="selectServerAction(this);">
                     <option value="">Selecionar</option>
+                    ${d.servidores}
                 </select>
             </div>
 
@@ -23,9 +24,6 @@
                 <div class="input-group mb-3">
                     <select class="form-control" id="dataset">
                         <option value="">Selecionar</option>
-                        <option value="">DTS_001</option>
-                        <option value="">DTS_002</option>
-                        <option value="">DTS_003</option>
                     </select>
                     <div class="input-group-append">
                         <button class="btn btn-success" onclick="saveServer()">Atualizar</button>
@@ -182,6 +180,23 @@
         <script type="text/javascript">${d.jquery}</script>
         <script type="text/javascript">${d.bootstrapJs}</script>
         <script type="text/javascript">
+            const vscode = acquireVsCodeApi();
+
+            window.addEventListener('message', event => {
+                const message = event.data;
+                switch (message.command) {
+                    case 'list_dataset':
+                        const select = document.getElementById("dataset");
+                        const datasets = message.listDataset;
+
+                        for(let dataset of datasets) {
+                            const option = new Option(dataset.datasetId, dataset.datasetId);
+                            select.add(option);
+                        }
+                        break;
+                }
+            });
+
             function getIndexConstraints() {
                 const linhas = document.querySelectorAll("select[id^='campo___']");
     
@@ -232,6 +247,24 @@
                 linhaModelo += '</tr> ';
     
                 $("#constraints tbody").append(linhaModelo);
+            }
+
+            function selectServerAction(element) {
+                const select = document.getElementById("dataset");
+
+                for(let indice = (select.length - 1); indice >= 0; indice--) {
+                    select.remove(indice);
+                }
+                
+                const option = new Option("Selecionar", "");
+                select.add(option);
+
+                if(!element.value) return;
+
+                vscode.postMessage({
+                    command: 'list_dataset',
+                    serverId: element.value
+                });
             }
         </script>
     </body>

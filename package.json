@@ -45,7 +45,8 @@
         "onCommand:fluig-vscode-extension.importGlobalEvent",
         "onCommand:fluig-vscode-extension.importManyGlobalEvent",
         "onView:fluig-vscode-extension.servers",
-        "onView:fluig-vscode-extension.datasetView"
+        "onView:fluig-vscode-extension.datasetViewList",
+        "onCommand:fluig-vscode-extension.datasetView"
     ],
     "main": "./dist/extension.js",
     "contributes": {
@@ -145,6 +146,15 @@
                 "command": "fluig-vscode-extension.importManyGlobalEvent",
                 "title": "Importar Vários Eventos Globais",
                 "category": "Fluig"
+            },
+            {
+                "command": "fluig-vscode-extension.datasetView",
+                "title": "Visualizar dataset",
+                "category": "Fluig",
+                "icon": {
+                    "light": "resources/images/light/add.svg",
+                    "dark": "resources/images/dark/add.svg"
+                }
             }
         ],
         "menus": {
@@ -235,8 +245,8 @@
                     "group": "navigation"
                 },
                 {
-                    "command": "fluig-vscode-extension.addServer",
-                    "when": "view == fluig-vscode-extension.datasetView",
+                    "command": "fluig-vscode-extension.datasetView",
+                    "when": "view == fluig-vscode-extension.datasetViewList",
                     "group": "navigation"
                 }
             ],
@@ -269,7 +279,7 @@
                     "name": "Servidores"
                 },
                 {
-                    "id": "fluig-vscode-extension.datasetView",
+                    "id": "fluig-vscode-extension.datasetViewList",
                     "name": "Consultar datasets"
                 }
             ]
@@ -280,7 +290,7 @@
                 "contents": "Nenhum Servidor encontrado.\n[Adicionar Servidor](command:fluig-vscode-extension.addServer)"
             },
             {
-                "view": "fluig-vscode-extension.datasetView",
+                "view": "fluig-vscode-extension.datasetViewList",
                 "contents": "Nenhuma consulta de dataset encontrada.\n[Consultar dataset](command:fluig-vscode-extension.datasetView)"
             }
         ],
