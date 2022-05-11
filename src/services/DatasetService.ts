@@ -27,8 +27,12 @@ export class DatasetService {
             password: server.password
         };
 
+        const wsdlOptions = {
+            handleNilAsNull: true
+        };
+
         const datasets: any = await new Promise((accept, reject) => {
-            soap.createClient(uri, (err: any, client: soap.Client) => {
+            soap.createClient(uri, wsdlOptions, (err: any, client: soap.Client) => {
                 if (err) {
                     reject(err);
                     return;
@@ -76,6 +80,77 @@ export class DatasetService {
         return await axios.get(uri, {
             httpsAgent: agent
         });
+    }
+
+    public static async getResultDataset(server: ServerDTO, datasetId: string, fields: any, constraints: any, order: any) {
+        const uri = (server.ssl ? "https://" : "http://")
+            + server.host
+            + ":" + server.port
+            + "/webdesk/ECMDatasetService?wsdl"
+        ;
+
+        const params = {
+            companyId: server.companyId,
+            username: server.username,
+            password: server.password,
+            name: datasetId,
+            fields: [],
+            constraints: [],
+            order: []
+        };
+
+        const wsdlOptions = {
+            handleNilAsNull: true
+        };
+
+        const result: any = await new Promise((accept, reject) => {
+
+            soap.createClient(uri, wsdlOptions, (err: any, client: soap.Client) => {
+                if (err) {
+                    reject(err);
+                    return;
+                }
+
+                client.getDataset(params, (err: any, response: any) => {
+                    if (err) {
+                        reject(err);
+                        return;
+                    }
+
+                    accept(response);
+                });
+            });
+        });
+
+        const columns = result.dataset.columns.map((item: any) => {
+            const pointIndex = (item.indexOf(".") + 1);
+            return pointIndex > 0 ? item.substring(pointIndex, item.length) : item;
+        });
+
+        const values = result.dataset.values.map((item: any) => {
+            let valueObj: any = {};
+
+            for(let index = 0; index < columns.length; index++) {
+                const column = columns[index];
+                let value = item.value[index];
+
+                if(value != null && value['$value'] != undefined) {
+                    value = value['$value'];
+                }
+                else {
+                    value = "";
+                }
+
+                valueObj[column] = value;
+            }
+
+            return valueObj;
+        });
+
+        return {
+            columns,
+            values
+        }
     }
 
     /**

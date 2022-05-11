@@ -26,7 +26,7 @@
                         <option value="">Selecionar</option>
                     </select>
                     <div class="input-group-append">
-                        <button class="btn btn-success" onclick="saveServer()">Atualizar</button>
+                        <button class="btn btn-success" onclick="getResultQuery();">Atualizar</button>
                     </div>
                     <div class="input-group-append">
                         <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#modalConfigFiltro">Configurar filtro</button>
@@ -194,8 +194,35 @@
                             select.add(option);
                         }
                         break;
+                    case 'query_result': 
+                        // Atualizar as constraints
+                        // Atualizar as fields
+                        // Atualizar as orders
+                        // Atualizar grid
+                        break;
                 }
             });
+
+            function getResultQuery() {
+                debugger;
+                const server = document.getElementById("servidor");
+                if(!server.value) {
+                    // Erro: Por favor, informar um servidor fluig
+                    return;
+                }
+
+                const dataset = document.getElementById("dataset");
+                if(!dataset.value) {
+                    // Erro: Por favor, informar um dataset
+                    return;
+                }
+
+                vscode.postMessage({
+                    command: 'consult_dataset',
+                    serverId: server.value,
+                    datasetId: dataset.value
+                });
+            }
 
             function getIndexConstraints() {
                 const linhas = document.querySelectorAll("select[id^='campo___']");

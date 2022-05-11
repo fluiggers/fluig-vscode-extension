@@ -78,6 +78,9 @@ export class DatasetView {
             case 'list_dataset':
                 this.getlistDataset(obj.serverId);
                 break;
+            case 'consult_dataset':
+                this.consultDataset(obj);
+                break;
         } 
     }
 
@@ -93,6 +96,23 @@ export class DatasetView {
         this.currentPanel.webview.postMessage({
             command: 'list_dataset',
             listDataset: listDataset
+        });
+    }
+
+    private async consultDataset(queryInformation: any) {
+        if(!this.currentPanel || !queryInformation || !queryInformation.serverId) return;
+
+        const server:ServerDTO | undefined = ServerService.findById(queryInformation.serverId);
+        if(!server) return;
+
+        const serverObj = new Server(server);
+        const queryResult = await DatasetService.getResultDataset(serverObj, queryInformation.datasetId, null, null, null);
+
+        
+
+        this.currentPanel.webview.postMessage({
+            command: 'query_result',
+            queryResult: queryResult
         });
     }
 }
