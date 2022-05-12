@@ -127,9 +127,9 @@ export class DatasetService {
             return pointIndex > 0 ? item.substring(pointIndex, item.length) : item;
         });
 
-        const values = result.dataset.values.map((item: any) => {
+        const mountValue = (item: any) => {
             let valueObj: any = {};
-
+    
             for(let index = 0; index < columns.length; index++) {
                 const column = columns[index];
                 let value = item.value[index];
@@ -145,7 +145,20 @@ export class DatasetService {
             }
 
             return valueObj;
-        });
+        }
+
+        const retValues = result.dataset.values;
+        let values = [];
+
+        if(Array.isArray(retValues)) {
+            values = retValues.map((item: any) => {
+                return mountValue(item);
+            });
+        }
+        else if(retValues !== undefined && retValues !== null) {
+            const item = retValues;
+            values.push(mountValue(item));
+        }
 
         return {
             columns,
