@@ -106,7 +106,7 @@ export class DatasetView {
         if(!server) return;
 
         const serverObj = new Server(server);
-        const queryResult = await DatasetService.getResultDataset(serverObj, queryInformation.datasetId, null, null, null);
+        const queryResult = await DatasetService.getResultDataset(serverObj, queryInformation.datasetId, null, queryInformation.constraints, null);
 
         
 

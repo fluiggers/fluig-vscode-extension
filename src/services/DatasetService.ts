@@ -82,7 +82,7 @@ export class DatasetService {
         });
     }
 
-    public static async getResultDataset(server: ServerDTO, datasetId: string, fields: any, constraints: any, order: any) {
+    public static async getResultDataset(server: ServerDTO, datasetId: string, fields: any, constraints: [], order: any) {
         const uri = (server.ssl ? "https://" : "http://")
             + server.host
             + ":" + server.port
@@ -95,7 +95,7 @@ export class DatasetService {
             password: server.password,
             name: datasetId,
             fields: [],
-            constraints: [],
+            constraints: {item: constraints},
             order: []
         };
 
