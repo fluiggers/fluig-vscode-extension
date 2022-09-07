@@ -33,14 +33,19 @@ export class DatasetView {
     }
 
     private getWebViewContent() {
-        const htmlPath = vscode.Uri.file(path.join(this.context.extensionPath, 'resources', 'views', 'dataset', 'dataset.html'));
+        const jqueryPath = vscode.Uri.file(path.join(this.context.extensionPath, 'resources', 'js', 'jquery.min.js'));
         const bootstrapCssPath = vscode.Uri.file(path.join(this.context.extensionPath, 'resources', 'css', 'bootstrap.min.css'));
         const bootstrapJsPath = vscode.Uri.file(path.join(this.context.extensionPath, 'resources', 'js', 'bootstrap.min.js'));
-        const jqueryPath = vscode.Uri.file(path.join(this.context.extensionPath, 'resources', 'js', 'jquery.min.js'));
-        const htmlContent = fs.readFileSync(htmlPath.with({ scheme: 'vscode-resource' }).fsPath);
+        const datatablesCssPath = vscode.Uri.file(path.join(this.context.extensionPath, 'resources', 'css', 'datatables.min.css'));
+        const datatablesJsPath = vscode.Uri.file(path.join(this.context.extensionPath, 'resources', 'js', 'datatables.min.js'));
+        const htmlPath = vscode.Uri.file(path.join(this.context.extensionPath, 'resources', 'views', 'dataset', 'dataset.html'));
+        const jqueryContent = fs.readFileSync(jqueryPath.with({ scheme: 'vscode-resource' }).fsPath);
         const bootstrapCssContent = fs.readFileSync(bootstrapCssPath.with({ scheme: 'vscode-resource' }).fsPath);
         const bootstrapJsContent = fs.readFileSync(bootstrapJsPath.with({ scheme: 'vscode-resource' }).fsPath);
-        const jqueryContent = fs.readFileSync(jqueryPath.with({ scheme: 'vscode-resource' }).fsPath);
+        const datatablesCssContent = fs.readFileSync(datatablesCssPath.with({ scheme: 'vscode-resource' }).fsPath);
+        const datatablesJsContent = fs.readFileSync(datatablesJsPath.with({ scheme: 'vscode-resource' }).fsPath);
+        const htmlContent = fs.readFileSync(htmlPath.with({ scheme: 'vscode-resource' }).fsPath);
+
         let runTemplate = compile(htmlContent);
 
         let serverOptions = ``;
@@ -51,9 +56,11 @@ export class DatasetView {
         }
 
         return runTemplate({
+            jquery: jqueryContent,
             bootstrapCss: bootstrapCssContent,
             bootstrapJs: bootstrapJsContent,
-            jquery: jqueryContent,
+            datatablesCss: datatablesCssContent,
+            datatablesJs: datatablesJsContent,
             servidores: serverOptions
         });
     }
