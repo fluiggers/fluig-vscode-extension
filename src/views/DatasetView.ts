@@ -33,7 +33,7 @@ export class DatasetView {
     }
 
     private getWebViewContent() {
-        const htmlPath = vscode.Uri.file(path.join(this.context.extensionPath, 'resources', 'views', 'dataset.html'));
+        const htmlPath = vscode.Uri.file(path.join(this.context.extensionPath, 'resources', 'views', 'dataset', 'dataset.html'));
         const bootstrapCssPath = vscode.Uri.file(path.join(this.context.extensionPath, 'resources', 'css', 'bootstrap.min.css'));
         const bootstrapJsPath = vscode.Uri.file(path.join(this.context.extensionPath, 'resources', 'js', 'bootstrap.min.js'));
         const jqueryPath = vscode.Uri.file(path.join(this.context.extensionPath, 'resources', 'js', 'jquery.min.js'));
@@ -59,7 +59,7 @@ export class DatasetView {
     }
 
     private createWebViewPanel() {
-        const file = vscode.Uri.file(path.join(this.context.extensionPath, 'resources', 'views'));
+        const file = vscode.Uri.file(path.join(this.context.extensionPath, 'resources', 'views', 'dataset'));
 
         return vscode.window.createWebviewPanel(
             "fluig-vscode-extension.consultarDataset",
@@ -81,7 +81,7 @@ export class DatasetView {
             case 'consult_dataset':
                 this.consultDataset(obj);
                 break;
-        } 
+        }
     }
 
     private async getlistDataset(serverId: string) {
@@ -108,7 +108,7 @@ export class DatasetView {
         const serverObj = new Server(server);
         const queryResult = await DatasetService.getResultDataset(serverObj, queryInformation.datasetId, null, queryInformation.constraints, null);
 
-        
+
 
         this.currentPanel.webview.postMessage({
             command: 'query_result',
