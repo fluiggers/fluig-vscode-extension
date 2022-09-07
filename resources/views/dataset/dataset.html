@@ -8,6 +8,10 @@
     <style>
         ${d.bootstrapCss}
         ${d.datatablesCss}
+
+        #tbResultDataset th, #tbResultDataset td {
+            white-space: nowrap;
+        }
     </style>
 </head>
     <body class="container-fluid">
@@ -36,10 +40,7 @@
             </div>
         </div>
 
-        <div class="table-responsive">
-            <table id="tbResultDataset" class="table table-striped table-sm">
-            </table>
-        </div>
+        <table id="tbResultDataset" class="table table-striped table-sm table-bordered"></table>
 
         <!-- Inicio Modal Constraints-->
         <div class="modal fade" id="modalConfigFiltro" tabindex="-1" role="dialog" aria-labelledby="modalConfigFiltro" aria-hidden="true">
@@ -230,7 +231,7 @@
                 dataTable = $tbResult.DataTable({
                     order: [],
                     fixedHeader: true,
-                    dom: 'lfrtBip',
+                    dom: '<lf><rt><ip><B>',
                     buttons: ['copy', 'excel'],
                 });
             }

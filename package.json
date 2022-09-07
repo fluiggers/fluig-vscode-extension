@@ -44,9 +44,8 @@
         "onCommand:fluig-vscode-extension.importForm",
         "onCommand:fluig-vscode-extension.importGlobalEvent",
         "onCommand:fluig-vscode-extension.importManyGlobalEvent",
-        "onView:fluig-vscode-extension.servers",
-        "onView:fluig-vscode-extension.datasetViewList",
-        "onCommand:fluig-vscode-extension.datasetView"
+        "onCommand:fluig-vscode-extension.datasetView",
+        "onView:fluig-vscode-extension.servers"
     ],
     "main": "./dist/extension.js",
     "contributes": {
@@ -149,11 +148,11 @@
             },
             {
                 "command": "fluig-vscode-extension.datasetView",
-                "title": "Visualizar dataset",
+                "title": "Consultar Dataset",
                 "category": "Fluig",
                 "icon": {
-                    "light": "resources/images/light/add.svg",
-                    "dark": "resources/images/dark/add.svg"
+                    "light": "resources/images/light/preview.svg",
+                    "dark": "resources/images/dark/preview.svg"
                 }
             }
         ],
@@ -260,6 +259,24 @@
                     "command": "fluig-vscode-extension.editServer",
                     "when": "view == fluig-vscode-extension.servers && viewItem == serverItem",
                     "group": "inline"
+                },
+                {
+                    "command": "fluig-vscode-extension.deleteServer",
+                    "when": "view == fluig-vscode-extension.servers && viewItem == serverItem"
+                },
+                {
+                    "command": "fluig-vscode-extension.editServer",
+                    "when": "view == fluig-vscode-extension.servers && viewItem == serverItem"
+                },
+
+                {
+                    "command": "fluig-vscode-extension.datasetView",
+                    "when": "view == fluig-vscode-extension.servers && viewItem == DatasetItem",
+                    "group": "inline"
+                },
+                {
+                    "command": "fluig-vscode-extension.datasetView",
+                    "when": "view == fluig-vscode-extension.servers && viewItem == DatasetItem"
                 }
             ]
         },
@@ -277,10 +294,6 @@
                 {
                     "id": "fluig-vscode-extension.servers",
                     "name": "Servidores"
-                },
-                {
-                    "id": "fluig-vscode-extension.datasetViewList",
-                    "name": "Consultar datasets"
                 }
             ]
         },
@@ -288,10 +301,6 @@
             {
                 "view": "fluig-vscode-extension.servers",
                 "contents": "Nenhum Servidor encontrado.\n[Adicionar Servidor](command:fluig-vscode-extension.addServer)"
-            },
-            {
-                "view": "fluig-vscode-extension.datasetViewList",
-                "contents": "Nenhuma consulta de dataset encontrada.\n[Consultar dataset](command:fluig-vscode-extension.datasetView)"
             }
         ],
         "snippets": [

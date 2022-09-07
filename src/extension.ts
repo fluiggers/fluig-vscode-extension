@@ -6,7 +6,6 @@ import { glob } from "glob";
 import { DatasetService } from "./services/DatasetService";
 import { FormService } from "./services/FormService";
 import { GlobalEventService } from "./services/GlobalEventService";
-import { DatasetItemProvider } from "./providers/DatasetItemProvider";
 
 interface ExtensionsPath {
     TEMPLATES: string,
@@ -64,6 +63,7 @@ export function activate(context: vscode.ExtensionContext) {
     EVENTS_NAMES.WORKFLOW = getTemplatesNameFromPath(EXTENSION_PATHS.WORKFLOW_EVENTS);
     EVENTS_NAMES.GLOBAL = getTemplatesNameFromPath(EXTENSION_PATHS.GLOBAL_EVENTS);
 
+    // Servidores
     const serverItemProvider = new ServerItemProvider(context);
     vscode.window.registerTreeDataProvider("fluig-vscode-extension.servers", serverItemProvider);
 
@@ -78,6 +78,27 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerCommand(
             "fluig-vscode-extension.refreshServer",
             () => serverItemProvider.refresh()
+        )
+    );
+
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
+            "fluig-vscode-extension.editServer",
+            (serverItem: ServerItem) => serverItemProvider.update(serverItem)
+        )
+    );
+
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
+            "fluig-vscode-extension.deleteServer",
+            (serverItem: ServerItem) => serverItemProvider.delete(serverItem)
+        )
+    );
+
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
+            "fluig-vscode-extension.datasetView",
+            () => serverItemProvider.datasetView()
         )
     );
 
@@ -99,20 +120,6 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerCommand(
             "fluig-vscode-extension.exportDataset",
             (fileUri: vscode.Uri) => DatasetService.export(fileUri)
-        )
-    );
-
-    context.subscriptions.push(
-        vscode.commands.registerCommand(
-            "fluig-vscode-extension.editServer",
-            (serverItem: ServerItem) => serverItemProvider.update(serverItem)
-        )
-    );
-
-    context.subscriptions.push(
-        vscode.commands.registerCommand(
-            "fluig-vscode-extension.deleteServer",
-            (serverItem: ServerItem) => serverItemProvider.delete(serverItem)
         )
     );
 
@@ -141,17 +148,6 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerCommand(
             "fluig-vscode-extension.importManyGlobalEvent",
             () => GlobalEventService.importMany()
-        )
-    );
-
-    // Ações para consultar e visualizar datasets
-    const datasetItemProvider = new DatasetItemProvider(context);
-    vscode.window.registerTreeDataProvider("fluig-vscode-extension.datasetViewList", datasetItemProvider);
-
-    context.subscriptions.push(
-        vscode.commands.registerCommand(
-            "fluig-vscode-extension.datasetView",
-            () => datasetItemProvider.add()
         )
     );
 }
