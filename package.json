@@ -44,6 +44,7 @@
         "onCommand:fluig-vscode-extension.importForm",
         "onCommand:fluig-vscode-extension.importGlobalEvent",
         "onCommand:fluig-vscode-extension.importManyGlobalEvent",
+        "onCommand:fluig-vscode-extension.datasetView",
         "onView:fluig-vscode-extension.servers"
     ],
     "main": "./dist/extension.js",
@@ -144,6 +145,15 @@
                 "command": "fluig-vscode-extension.importManyGlobalEvent",
                 "title": "Importar Vários Eventos Globais",
                 "category": "Fluig"
+            },
+            {
+                "command": "fluig-vscode-extension.datasetView",
+                "title": "Consultar Dataset",
+                "category": "Fluig",
+                "icon": {
+                    "light": "resources/images/light/preview.svg",
+                    "dark": "resources/images/dark/preview.svg"
+                }
             }
         ],
         "menus": {
@@ -232,6 +242,11 @@
                     "command": "fluig-vscode-extension.refreshServer",
                     "when": "view == fluig-vscode-extension.servers",
                     "group": "navigation"
+                },
+                {
+                    "command": "fluig-vscode-extension.datasetView",
+                    "when": "view == fluig-vscode-extension.datasetViewList",
+                    "group": "navigation"
                 }
             ],
             "view/item/context": [
@@ -244,6 +259,24 @@
                     "command": "fluig-vscode-extension.editServer",
                     "when": "view == fluig-vscode-extension.servers && viewItem == serverItem",
                     "group": "inline"
+                },
+                {
+                    "command": "fluig-vscode-extension.deleteServer",
+                    "when": "view == fluig-vscode-extension.servers && viewItem == serverItem"
+                },
+                {
+                    "command": "fluig-vscode-extension.editServer",
+                    "when": "view == fluig-vscode-extension.servers && viewItem == serverItem"
+                },
+
+                {
+                    "command": "fluig-vscode-extension.datasetView",
+                    "when": "view == fluig-vscode-extension.servers && viewItem == DatasetItem",
+                    "group": "inline"
+                },
+                {
+                    "command": "fluig-vscode-extension.datasetView",
+                    "when": "view == fluig-vscode-extension.servers && viewItem == DatasetItem"
                 }
             ]
         },

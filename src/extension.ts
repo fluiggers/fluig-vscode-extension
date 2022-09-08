@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { posix } from "path";
 import { readFileSync } from "fs";
-import { ServerItem, ServerItemProvider } from "./providers/ServerItemProvider";
+import { DatasetItem, ServerItem, ServerItemProvider } from "./providers/ServerItemProvider";
 import { glob } from "glob";
 import { DatasetService } from "./services/DatasetService";
 import { FormService } from "./services/FormService";
@@ -63,6 +63,7 @@ export function activate(context: vscode.ExtensionContext) {
     EVENTS_NAMES.WORKFLOW = getTemplatesNameFromPath(EXTENSION_PATHS.WORKFLOW_EVENTS);
     EVENTS_NAMES.GLOBAL = getTemplatesNameFromPath(EXTENSION_PATHS.GLOBAL_EVENTS);
 
+    // Servidores
     const serverItemProvider = new ServerItemProvider(context);
     vscode.window.registerTreeDataProvider("fluig-vscode-extension.servers", serverItemProvider);
 
@@ -77,6 +78,27 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerCommand(
             "fluig-vscode-extension.refreshServer",
             () => serverItemProvider.refresh()
+        )
+    );
+
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
+            "fluig-vscode-extension.editServer",
+            (serverItem: ServerItem) => serverItemProvider.update(serverItem)
+        )
+    );
+
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
+            "fluig-vscode-extension.deleteServer",
+            (serverItem: ServerItem) => serverItemProvider.delete(serverItem)
+        )
+    );
+
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
+            "fluig-vscode-extension.datasetView",
+            (datasetItem: DatasetItem) => serverItemProvider.datasetView(datasetItem)
         )
     );
 
@@ -98,20 +120,6 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerCommand(
             "fluig-vscode-extension.exportDataset",
             (fileUri: vscode.Uri) => DatasetService.export(fileUri)
-        )
-    );
-
-    context.subscriptions.push(
-        vscode.commands.registerCommand(
-            "fluig-vscode-extension.editServer",
-            (serverItem: ServerItem) => serverItemProvider.update(serverItem)
-        )
-    );
-
-    context.subscriptions.push(
-        vscode.commands.registerCommand(
-            "fluig-vscode-extension.deleteServer",
-            (serverItem: ServerItem) => serverItemProvider.delete(serverItem)
         )
     );
 

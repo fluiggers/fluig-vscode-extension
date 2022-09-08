@@ -5,6 +5,8 @@ import { ServerService } from '../services/ServerService';
 import * as fs from 'fs';
 import { ServerView } from '../views/ServerView';
 import { Server } from '../models/Server';
+import { DatasetView } from '../views/DatasetView';
+
 
 export class ServerItem extends vscode.TreeItem {
     constructor(
@@ -16,11 +18,28 @@ export class ServerItem extends vscode.TreeItem {
     }
 
     iconPath = {
-        light: path.join(__filename, '..', '..', 'resources', 'images', 'light', 'server.svg'),
-        dark: path.join(__filename, '..', '..', 'resources', 'images', 'dark', 'server.svg')
+        light: path.join(__filename, '..', '..', 'resources', 'images', 'light', 'server-environment.svg'),
+        dark: path.join(__filename, '..', '..', 'resources', 'images', 'dark', 'server-environment.svg')
     };
 
     contextValue = 'serverItem';
+}
+
+export class DatasetItem extends ServerItem {
+    constructor(
+        public readonly label: string,
+        public readonly collapsibleState: vscode.TreeItemCollapsibleState,
+        public server: ServerDTO
+    ) {
+        super(label, collapsibleState, server);
+    }
+
+    iconPath = {
+        light: path.join(__filename, '..', '..', 'resources', 'images', 'light', 'database.svg'),
+        dark: path.join(__filename, '..', '..', 'resources', 'images', 'dark', 'database.svg')
+    };
+
+    contextValue = 'DatasetItem';
 }
 
 export class ServerItemProvider implements vscode.TreeDataProvider<ServerItem> {
@@ -34,18 +53,18 @@ export class ServerItemProvider implements vscode.TreeDataProvider<ServerItem> {
         this.serverConfigListener();
     }
 
-    public getTreeItem(element: ServerItem): vscode.TreeItem | Thenable<vscode.TreeItem> {
+    public getTreeItem(element: ServerItem): vscode.TreeItem {
         return element;
     }
 
     public getChildren(element?: ServerItem): vscode.ProviderResult<ServerItem[]> {
-        return Promise.resolve(this.serverItems.sort((srv1, srv2) => {
-            const label1 = srv1.label.toLowerCase();
-            const label2 = srv2.label.toLowerCase();
-            if (label1 > label2) { return 1; }
-            if (label1 < label2) { return -1; }
-            return 0;
-        }));
+        if (element) {
+            return Promise.resolve([
+                new DatasetItem("Dataset", vscode.TreeItemCollapsibleState.None, element.server),
+            ]);
+        } else {
+            return Promise.resolve(this.serverItems);
+        }
     }
 
     public refresh(): void {
@@ -78,6 +97,11 @@ export class ServerItemProvider implements vscode.TreeDataProvider<ServerItem> {
         serverView.show();
     }
 
+    public datasetView(datasetItem: DatasetItem): void {
+        const datasetView = new DatasetView(this.context, datasetItem.server);
+        datasetView.show();
+    }
+
     private getServers(): ServerItem[] {
         const serverConfig = ServerService.getServerConfig();
         const listServer = new Array<ServerItem>();
@@ -85,14 +109,20 @@ export class ServerItemProvider implements vscode.TreeDataProvider<ServerItem> {
         serverConfig.configurations.forEach((element: ServerDTO) => {
             const serverItem = new ServerItem(
                 element.name,
-                vscode.TreeItemCollapsibleState.None,
+                vscode.TreeItemCollapsibleState.Collapsed,
                 element
             );
 
             listServer.push(serverItem);
         });
 
-        return listServer;
+        return listServer.sort((srv1, srv2) => {
+            const label1 = srv1.label.toLowerCase();
+            const label2 = srv2.label.toLowerCase();
+            if (label1 > label2) { return 1; }
+            if (label1 < label2) { return -1; }
+            return 0;
+        });
     }
 
     private serverConfigListener(): void {

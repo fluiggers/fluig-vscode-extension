@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consultar dataset</title>
+    <style>
+        ${d.bootstrapCss}
+        ${d.datatablesCss}
+        ${d.select2Css}
+
+        #tbResultDataset th, #tbResultDataset td {
+            white-space: nowrap;
+        }
+    </style>
+</head>
+    <body class="container-fluid">
+        <h1>${d.serverName}</h1>
+        <div class="row">
+            <div class="col-md-8 p-2">
+                <select class="form-control" id="dataset" style="width: 100%;">
+                    <option value=""></option>
+                    ${d.datasets}
+                </select>
+            </div>
+            <div class="col-md-4">
+                <button class="btn btn-success mt-2 mb-2" onclick="getResultQuery();">Consultar</button>
+                <button type="button" class="btn btn-secondary mt-2 mb-2" data-toggle="modal" data-target="#modalConfigFiltro">Configurar Parâmetros</button>
+            </div>
+        </div>
+
+        <table id="tbResultDataset" class="table table-striped table-sm table-bordered"></table>
+
+        <!-- Inicio Modal Constraints-->
+        <div class="modal fade" id="modalConfigFiltro" tabindex="-1" role="dialog" aria-labelledby="modalConfigFiltro" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <ul class="nav nav-tabs">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="constraints-tab" data-toggle="tab" href="#tabConstraints" role="tab" aria-controls="tabConstraints" aria-selected="true">Constraints</a>
+                            </li>
+                        </ul>
+                        <div class="tab-content">
+                            <div id="tabConstraints" class="tab-pane fade show active" role="tabpanel" aria-labelledby="tabConstraints">
+                                <div class="table-responsive">
+                                    <table class="table table-hover table-sm">
+                                        <thead class="thead-light">
+                                            <tr>
+                                                <th scope="col" width="30%">Coluna</th>
+                                                <th scope="col" width="15%">Valor inicial</th>
+                                                <th scope="col" width="15%">Valor final</th>
+                                                <th scope="col" width="15%">Tipo</th>
+                                                <th scope="col" width="15%" colspan="2">Usa 'like'</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="constraints">
+                                            <tr>
+                                                <td><input type="text" list="fieldsList" class="form-control" name="campo" value="sqlLimit"></td>
+                                                <td><input type="text" class="form-control" name="valor_inicial" value="100"></td>
+                                                <td><input type="text" class="form-control" name="valor_final" value="100"></td>
+                                                <td>
+                                                    <select class="form-control" name="tipo">
+                                                        <option value="MUST" selected>MUST</option>
+                                                        <option value="MUST_NOT">MUST NOT</option>
+                                                        <option value="SHOULD">SHOULD</option>
+                                                    </select>
+                                                </td>
+                                                <td>
+                                                    <select class="form-control" name="like">
+                                                        <option value="NAO" selected>Não</option>
+                                                        <option value="SIM">Sim</option>
+                                                    </select>
+                                                </td>
+                                                <td class="text-center"><a href="#" onclick="removeConstraints(this);">X</a></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="row">
+                                    <dic class="col-md-12 text-right">
+                                        <button type="button" class="btn btn-primary" onclick="addConstraints();">Adicionar</button>
+                                    </dic>
+                                </div>
+                            </div>
+                            <div id="tabFields" class="tab-pane fade" role="tabpanel" aria-labelledby="tabFields">
+                                <div class="row">
+                                    <div class="col-md-6 form-group">
+                                        <label for="fields">
+                                            <strong>Colunas do dataset</strong>
+                                        </label>
+                                        <select multiple class="form-control" id="fields">
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 form-group">
+                                        <label for="fieldsSelected">
+                                            <strong>Colunas selecionadas</strong>
+                                        </label>
+                                        <select multiple class="form-control" id="fieldsSelected">
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="tabOrders" class="tab-pane fade" role="tabpanel" aria-labelledby="tabOrders">
+                                <div class="row">
+                                    <div class="col-md-6 form-group">
+                                        <label for="order">
+                                            <strong>Colunas do dataset</strong>
+                                        </label>
+                                        <select multiple class="form-control" id="order">
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 form-group">
+                                        <label for="orderSelected">
+                                            <strong>Colunas selecionadas</strong>
+                                        </label>
+                                        <select multiple class="form-control" id="orderSelected">
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <dic class="col-md-12">
+                                <button type="button" class="btn btn-danger" data-dismiss="modal" aria-label="Close">Fechar</button>
+                                <button type="button" class="btn btn-info" data-dismiss="modal" aria-label="Close" onclick="getResultQuery();">Atualizar</button>
+                            </dic>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <datalist id="fieldsList">
+            <option value="sqlLimit">
+            <option value="tablename">
+        </datalist>
+
+        <!-- Fim Modal Constraints-->
+        <script type="text/javascript">${d.jquery}</script>
+        <script type="text/javascript">${d.bootstrapJs}</script>
+        <script type="text/javascript">${d.select2Js}</script>
+        <script type="text/javascript">${d.datatablesJs}</script>
+        <script type="text/javascript">
+            const vscode = acquireVsCodeApi();
+
+            let dataTable = null;
+            let currentDataset = "";
+            let FIELDS = [];
+            let $constraints = null;
+
+            $(function () {
+                $("#dataset").select2({
+                    placeholder: "Selecione o Dataset"
+                });
+                $constraints = $("#constraints");
+            });
+
+            window.addEventListener('message', event => {
+                const message = event.data;
+
+                switch (message.command) {
+                    case 'query_result':
+                        const queryResult = message.queryResult
+                        setFields(queryResult);
+                        updateTableResult(queryResult);
+                        break;
+                }
+            });
+
+            function updateTableResult(queryResult) {
+                const {columns, values} = queryResult;
+
+                const tbResult = document.getElementById('tbResultDataset');
+                const $tbResult = $(tbResult);
+
+                if (dataTable) {
+                    dataTable.destroy();
+                    $tbResult.empty();
+                    dataTable = null;
+                }
+
+                tbResult.innerHTML = "";
+
+                // Montando cabeçalho da tabela
+                const header = tbResult.createTHead();
+                const title = header.insertRow();
+
+                for (let columnName of columns) {
+                    const column = document.createElement('th');
+                    column.innerHTML = columnName;
+                    title.appendChild(column);
+                }
+
+                // Listando os registros
+                const records = tbResult.appendChild(document.createElement('tbody'));
+
+                for(let value of values) {
+                    const row = records.insertRow();
+
+                    for(let columnName of columns) {
+                        row.insertCell().innerHTML = value[columnName];
+                    }
+                }
+
+                tbResult.appendChild(records);
+
+                dataTable = $tbResult.DataTable({
+                    order: [],
+                    fixedHeader: true,
+                    dom: '<lf><rt><ip><B>',
+                    buttons: ['copy', 'excel'],
+                    scrollX: true,
+                });
+            }
+
+            function getResultQuery() {
+                const dataset = document.getElementById("dataset").value;
+
+                if (!dataset) {
+                    return;
+                }
+
+                if (currentDataset != dataset) {
+                    currentDataset = dataset;
+                    resetConstraints();
+                }
+
+                const _constraints = getConstraints();
+
+                vscode.postMessage({
+                    command: 'consult_dataset',
+                    datasetId: dataset,
+                    constraints: _constraints
+                });
+            }
+
+            function resetConstraints() {
+                $constraints.empty();
+                addConstraints(true);
+            }
+
+            function removeConstraints(element) {
+                element.parentElement.parentElement.remove();
+            }
+
+            function addConstraints(isReset) {
+                isReset = isReset || false;
+
+                $constraints.append(
+                    '<tr>'
+                    + '<td><input type="text" list="fieldsList" class="form-control" name="campo" ' + (isReset ? 'value="sqlLimit"' : '') + '></td>'
+                    + '<td><input type="text" class="form-control" name="valor_inicial" ' + (isReset ? 'value="100"' : '') + '></td>'
+                    + '<td><input type="text" class="form-control" name="valor_final" ' + (isReset ? 'value="100"' : '') + '></td>'
+                    + '<td>'
+                        + '<select class="form-control" name="tipo">'
+                            + '<option value="1">MUST</option>'
+                            + '<option value="3">MUST NOT</option>'
+                            + '<option value="2">SHOULD</option>'
+                        + '</select>'
+                    + '</td>'
+                    + '<td>'
+                        + '<select class="form-control" name="like">'
+                            + '<option value="NAO">Não</option>'
+                            + '<option value="SIM">Sim</option>'
+                        + '</select>'
+                    + '</td>'
+                    + '<td class="text-center"><a href="#" onClick="removeConstraints(this);">X</a></td>'
+                    + '</tr>'
+                );
+            }
+
+            function getConstraints() {
+                const rows = $constraints.find("tr");
+
+                let datasetConstraints = [];
+
+                for (let row of rows) {
+                    const fields = $(row).find(".form-control");
+
+                    datasetConstraints.push({
+                        fieldName: fields[0].value,
+                        initialValue: fields[1].value,
+                        finalValue: fields[2].value,
+                        contraintType: fields[3].value,
+                        likeSearch: fields[4].value == "SIM"
+                    });
+                }
+
+                return datasetConstraints;
+            }
+
+            function setFields(queryResult) {
+                const {columns} = queryResult;
+
+                FIELDS = columns;
+
+                const selectFields = document.getElementById("fields");
+                const selectOrder = document.getElementById("order");
+                const fieldsList = $("#fieldsList");
+
+                $(selectFields).empty();
+                $(selectOrder).empty();
+                fieldsList.empty();
+
+                for (let optionName of columns) {
+                    const option = new Option(optionName, optionName);
+                    selectFields.add(option);
+                    selectOrder.add(option);
+                    fieldsList.append(option);
+                }
+
+                fieldsList.append(new Option("sqlLimit", "sqlLimit"));
+                fieldsList.append(new Option("tablename", "tablename"));
+            }
+        </script>
+    </body>
+</html>
