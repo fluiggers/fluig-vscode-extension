@@ -30,6 +30,11 @@
             </div>
         </div>
 
+        <div class="text-center mt-5 d-none" id="loading">
+            <div class="spinner-border text-primary ml-auto" style="width: 3rem; height: 3rem;" role="status" aria-hidden="true"></div>
+            <p>Carregando</p>
+        </div>
+
         <table id="tbResultDataset" class="table table-striped table-sm table-bordered"></table>
 
         <!-- Inicio Modal Constraints-->
@@ -149,6 +154,7 @@
             let dataTable = null;
             let currentDataset = "";
             let FIELDS = [];
+            let $loading = null;
             let $constraints = null;
 
             $(function () {
@@ -156,6 +162,7 @@
                     placeholder: "Selecione o Dataset"
                 });
                 $constraints = $("#constraints");
+                $loading = $("#loading");
             });
 
             window.addEventListener('message', event => {
@@ -163,6 +170,7 @@
 
                 switch (message.command) {
                     case 'query_result':
+                        $loading.addClass("d-none");
                         const queryResult = message.queryResult
                         setFields(queryResult);
                         updateTableResult(queryResult);
@@ -222,6 +230,8 @@
                 if (!dataset) {
                     return;
                 }
+
+                $loading.removeClass("d-none");
 
                 if (currentDataset != dataset) {
                     currentDataset = dataset;
