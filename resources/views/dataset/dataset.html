@@ -8,6 +8,7 @@
     <style>
         ${d.bootstrapCss}
         ${d.datatablesCss}
+        ${d.select2Css}
 
         #tbResultDataset th, #tbResultDataset td {
             white-space: nowrap;
@@ -15,28 +16,17 @@
     </style>
 </head>
     <body class="container-fluid">
+        <h1>${d.serverName}</h1>
         <div class="row">
-            <div class="col-md-4 form-group">
-                <label for="servidor"><strong>Servidor</strong></label>
-                <select class="form-control" id="servidor" onchange="selectServerAction(this);">
-                    <option value="">Selecionar</option>
-                    ${d.servidores}
+            <div class="col-md-8 p-2">
+                <select class="form-control" id="dataset" style="width: 100%;">
+                    <option value=""></option>
+                    ${d.datasets}
                 </select>
             </div>
-
-            <div class="col-md-8 form-group">
-                <label for="dataset"><strong>Dataset</strong></label>
-                <div class="input-group mb-3">
-                    <select class="form-control" id="dataset">
-                        <option value="">Selecionar</option>
-                    </select>
-                    <div class="input-group-append">
-                        <button class="btn btn-success" onclick="getResultQuery();">Atualizar</button>
-                    </div>
-                    <div class="input-group-append">
-                        <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#modalConfigFiltro">Configurar filtro</button>
-                    </div>
-                </div>
+            <div class="col-md-4">
+                <button class="btn btn-success mt-2 mb-2" onclick="getResultQuery();">Consultar</button>
+                <button type="button" class="btn btn-secondary mt-2 mb-2" data-toggle="modal" data-target="#modalConfigFiltro">Configurar Parâmetros</button>
             </div>
         </div>
 
@@ -51,62 +41,46 @@
                             <li class="nav-item">
                                 <a class="nav-link active" id="constraints-tab" data-toggle="tab" href="#tabConstraints" role="tab" aria-controls="tabConstraints" aria-selected="true">Constraints</a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link" id="fields-tab" data-toggle="tab" href="#tabFields" role="tab" aria-controls="tabFields" aria-selected="false">Fields</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" id="orders-tab" data-toggle="tab" href="#tabOrders" role="tab" aria-controls="tabOrders" aria-selected="false">Order</a>
-                            </li>
                         </ul>
-                        <div class="tab-content" id="myTabContent">
+                        <div class="tab-content">
                             <div id="tabConstraints" class="tab-pane fade show active" role="tabpanel" aria-labelledby="tabConstraints">
                                 <div class="table-responsive">
-                                    <table class="table table-hover table-sm" id="constraints">
+                                    <table class="table table-hover table-sm">
                                         <thead class="thead-light">
                                             <tr>
                                                 <th scope="col" width="30%">Coluna</th>
                                                 <th scope="col" width="15%">Valor inicial</th>
                                                 <th scope="col" width="15%">Valor final</th>
                                                 <th scope="col" width="15%">Tipo</th>
-                                                <th scope="col" width="15%" colspan="2">Busca usa 'like'</th>
+                                                <th scope="col" width="15%" colspan="2">Usa 'like'</th>
                                             </tr>
                                         </thead>
-                                        <tbody>
+                                        <tbody id="constraints">
                                             <tr>
+                                                <td><input type="text" list="fieldsList" class="form-control" name="campo" value="sqlLimit"></td>
+                                                <td><input type="text" class="form-control" name="valor_inicial" value="100"></td>
+                                                <td><input type="text" class="form-control" name="valor_final" value="100"></td>
                                                 <td>
-                                                    <select class="form-control" id="campo___1">
-                                                        <option value="sqlLimit" selected>sqlLimit</option>
-                                                    </select>
-                                                </td>
-                                                <td>
-                                                    <input type="text" class="form-control" id="valor_inicial___1" value="100">
-                                                </td>
-                                                <td>
-                                                    <input type="text" class="form-control" id="valor_final___1" value="100">
-                                                </td>
-                                                <td>
-                                                    <select class="form-control" id="tipo___1">
+                                                    <select class="form-control" name="tipo">
                                                         <option value="MUST" selected>MUST</option>
                                                         <option value="MUST_NOT">MUST NOT</option>
                                                         <option value="SHOULD">SHOULD</option>
                                                     </select>
                                                 </td>
                                                 <td>
-                                                    <select class="form-control" id="like___1">
+                                                    <select class="form-control" name="like">
                                                         <option value="NAO" selected>Não</option>
                                                         <option value="SIM">Sim</option>
                                                     </select>
                                                 </td>
-                                                <td>
-                                                    <a href="#" style="float: left; margin: 5px 0;" onclick="removeConstraints(this);">X</a>
-                                                </td>
+                                                <td class="text-center"><a href="#" onclick="removeConstraints(this);">X</a></td>
                                             </tr>
                                         </tbody>
                                     </table>
                                 </div>
                                 <div class="row">
-                                    <dic class="col-md-12">
-                                        <button type="button" class="btn btn-primary" style="float: right;" onclick="addConstraints();">Adicionar</button>
+                                    <dic class="col-md-12 text-right">
+                                        <button type="button" class="btn btn-primary" onclick="addConstraints();">Adicionar</button>
                                     </dic>
                                 </div>
                             </div>
@@ -158,33 +132,39 @@
                 </div>
             </div>
         </div>
+
+        <datalist id="fieldsList">
+            <option value="sqlLimit">
+            <option value="tablename">
+        </datalist>
+
         <!-- Fim Modal Constraints-->
         <script type="text/javascript">${d.jquery}</script>
         <script type="text/javascript">${d.bootstrapJs}</script>
+        <script type="text/javascript">${d.select2Js}</script>
         <script type="text/javascript">${d.datatablesJs}</script>
         <script type="text/javascript">
             const vscode = acquireVsCodeApi();
+
             let dataTable = null;
+            let currentDataset = "";
             let FIELDS = [];
+            let $constraints = null;
+
+            $(function () {
+                $("#dataset").select2({
+                    placeholder: "Selecione o Dataset"
+                });
+                $constraints = $("#constraints");
+            });
 
             window.addEventListener('message', event => {
                 const message = event.data;
-                switch (message.command) {
-                    case 'list_dataset':
-                        const select = document.getElementById("dataset");
-                        const datasets = message.listDataset;
 
-                        for(let dataset of datasets) {
-                            const option = new Option(dataset.datasetId, dataset.datasetId);
-                            select.add(option);
-                        }
-                        break;
+                switch (message.command) {
                     case 'query_result':
                         const queryResult = message.queryResult
-                        // Atualizar as fields
-                        // Atualizar as orders
                         setFields(queryResult);
-                        setConstraints(queryResult);
                         updateTableResult(queryResult);
                         break;
                 }
@@ -198,10 +178,9 @@
 
                 if (dataTable) {
                     dataTable.destroy();
-                    $tbResult.find("body").empty();
+                    $tbResult.empty();
                     dataTable = null;
                 }
-
 
                 tbResult.innerHTML = "";
 
@@ -237,127 +216,79 @@
             }
 
             function getResultQuery() {
-                const server = document.getElementById("servidor");
-                if(!server.value) {
-                    // Erro: Por favor, informar um servidor fluig
+                const dataset = document.getElementById("dataset").value;
+
+                if (!dataset) {
                     return;
                 }
 
-                const dataset = document.getElementById("dataset");
-                if(!dataset.value) {
-                    // Erro: Por favor, informar um dataset
-                    return;
+                if (currentDataset != dataset) {
+                    currentDataset = dataset;
+                    resetConstraints();
                 }
 
                 const _constraints = getConstraints();
 
                 vscode.postMessage({
                     command: 'consult_dataset',
-                    serverId: server.value,
-                    datasetId: dataset.value,
+                    datasetId: dataset,
                     constraints: _constraints
                 });
             }
 
-            function getIndexConstraints() {
-                const linhas = document.querySelectorAll('select[id^="campo___"]');
-
-                if(linhas.length < 1) return 1;
-
-                const ultimaLinha = linhas[linhas.length - 1];
-                const indice = ultimaLinha.id.split("___")[1];
-                return parseInt(indice) + 1;
+            function resetConstraints() {
+                $constraints.empty();
+                addConstraints(true);
             }
 
             function removeConstraints(element) {
                 element.parentElement.parentElement.remove();
             }
 
-            function addConstraints() {
-                const indice = getIndexConstraints();
-                let linhaModelo = "";
-                linhaModelo += '<tr> ';
-                linhaModelo += '    <td> ';
-                linhaModelo += '        <select class="form-control" id="campo___' + indice + '"> ';
-                linhaModelo += '        </select> ';
-                linhaModelo += '    </td> ';
-                linhaModelo += '    <td> ';
-                linhaModelo += '        <input type="text" class="form-control" id="valor_inicial___' + indice + '"> ';
-                linhaModelo += '    </td> ';
-                linhaModelo += '    <td> ';
-                linhaModelo += '        <input type="text" class="form-control" id="valor_final___' + indice + '"> ';
-                linhaModelo += '    </td> ';
-                linhaModelo += '    <td> ';
-                linhaModelo += '        <select class="form-control" id="tipo___' + indice + '"> ';
-                linhaModelo += '            <option value="1">MUST</option> ';
-                linhaModelo += '            <option value="3">MUST NOT</option> ';
-                linhaModelo += '            <option value="2">SHOULD</option> ';
-                linhaModelo += '        </select> ';
-                linhaModelo += '    </td> ';
-                linhaModelo += '    <td> ';
-                linhaModelo += '        <select class="form-control" id="like___' + indice + '"> ';
-                linhaModelo += '            <option value="NAO">Não</option> ';
-                linhaModelo += '            <option value="SIM">Sim</option> ';
-                linhaModelo += '        </select> ';
-                linhaModelo += '    </td> ';
-                linhaModelo += '    <td> ';
-                linhaModelo += '        <a href="#" style="float: left; margin: 5px 0;" onClick="removeConstraints(this);">X</a> ';
-                linhaModelo += '    </td> ';
-                linhaModelo += '</tr> ';
+            function addConstraints(isReset) {
+                isReset = isReset || false;
 
-                $("#constraints tbody").append(linhaModelo);
-
-                const select = document.getElementById("campo___" + indice);
-                const optionsName = FIELDS.slice();
-
-                // OPCOES QUE PODEM SER PASSADA VIA CONSTRAINTS
-                optionsName.push(
-                    "sqlLimit",
-                    "tablename"
+                $constraints.append(
+                    '<tr>'
+                    + '<td><input type="text" list="fieldsList" class="form-control" name="campo" ' + (isReset ? 'value="sqlLimit"' : '') + '></td>'
+                    + '<td><input type="text" class="form-control" name="valor_inicial" ' + (isReset ? 'value="100"' : '') + '></td>'
+                    + '<td><input type="text" class="form-control" name="valor_final" ' + (isReset ? 'value="100"' : '') + '></td>'
+                    + '<td>'
+                        + '<select class="form-control" name="tipo">'
+                            + '<option value="1">MUST</option>'
+                            + '<option value="3">MUST NOT</option>'
+                            + '<option value="2">SHOULD</option>'
+                        + '</select>'
+                    + '</td>'
+                    + '<td>'
+                        + '<select class="form-control" name="like">'
+                            + '<option value="NAO">Não</option>'
+                            + '<option value="SIM">Sim</option>'
+                        + '</select>'
+                    + '</td>'
+                    + '<td class="text-center"><a href="#" onClick="removeConstraints(this);">X</a></td>'
+                    + '</tr>'
                 );
-
-                for(let optionName of optionsName) {
-                    const option = new Option(optionName, optionName);
-                    select.add(option);
-                }
-
-                return indice;
-            }
-
-            function setConstraints(queryResult) {
-                const {values} = queryResult;
-
-                // REMOVER AS CONSTRAINTS
-                document.querySelectorAll('select[id^="campo___"]').forEach((item) => {
-                    removeConstraints(item);
-                });
-
-                const index = addConstraints();
-
-                document.getElementById("campo___" + index).value = "sqlLimit"
-                document.getElementById("valor_inicial___" + index).value = "100";
-                document.getElementById("valor_final___" + index).value = "100";
-                document.getElementById("tipo___" + index).value == "1";
-                document.getElementById("like___" + index).value == "NAO";
             }
 
             function getConstraints() {
-                const fields = document.querySelectorAll('select[id^="campo___"]');
-                const constraints = [];
+                const rows = $constraints.find("tr");
 
-                for(let field of fields) {
-                    const index = field.id.replace("campo___", "");
+                let datasetConstraints = [];
 
-                    constraints.push({
-                        fieldName: field.value,
-                        initialValue: document.getElementById("valor_inicial___" + index).value,
-                        finalValue: document.getElementById("valor_final___" + index).value,
-                        contraintType: document.getElementById("tipo___" + index).value,
-                        likeSearch: (document.getElementById("like___" + index).value == "SIM")
+                for (let row of rows) {
+                    const fields = $(row).find(".form-control");
+
+                    datasetConstraints.push({
+                        fieldName: fields[0].value,
+                        initialValue: fields[1].value,
+                        finalValue: fields[2].value,
+                        contraintType: fields[3].value,
+                        likeSearch: fields[4].value == "SIM"
                     });
                 }
 
-                return constraints;
+                return datasetConstraints;
             }
 
             function setFields(queryResult) {
@@ -366,34 +297,22 @@
                 FIELDS = columns;
 
                 const selectFields = document.getElementById("fields");
-                for(let optionName of columns) {
+                const selectOrder = document.getElementById("order");
+                const fieldsList = $("#fieldsList");
+
+                $(selectFields).empty();
+                $(selectOrder).empty();
+                fieldsList.empty();
+
+                for (let optionName of columns) {
                     const option = new Option(optionName, optionName);
                     selectFields.add(option);
-                }
-
-                const selectOrder = document.getElementById("order");
-                for(let optionName of columns) {
-                    const option = new Option(optionName, optionName);
                     selectOrder.add(option);
-                }
-            }
-
-            function selectServerAction(element) {
-                const select = document.getElementById("dataset");
-
-                for(let indice = (select.length - 1); indice >= 0; indice--) {
-                    select.remove(indice);
+                    fieldsList.append(option);
                 }
 
-                const option = new Option("Selecionar", "");
-                select.add(option);
-
-                if(!element.value) return;
-
-                vscode.postMessage({
-                    command: 'list_dataset',
-                    serverId: element.value
-                });
+                fieldsList.append(new Option("sqlLimit", "sqlLimit"));
+                fieldsList.append(new Option("tablename", "tablename"));
             }
         </script>
     </body>

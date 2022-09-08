@@ -97,8 +97,8 @@ export class ServerItemProvider implements vscode.TreeDataProvider<ServerItem> {
         serverView.show();
     }
 
-    public datasetView(): void {
-        const datasetView = new DatasetView(this.context);
+    public datasetView(datasetItem: DatasetItem): void {
+        const datasetView = new DatasetView(this.context, datasetItem.server);
         datasetView.show();
     }
 

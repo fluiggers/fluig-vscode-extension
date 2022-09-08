@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { posix } from "path";
 import { readFileSync } from "fs";
-import { ServerItem, ServerItemProvider } from "./providers/ServerItemProvider";
+import { DatasetItem, ServerItem, ServerItemProvider } from "./providers/ServerItemProvider";
 import { glob } from "glob";
 import { DatasetService } from "./services/DatasetService";
 import { FormService } from "./services/FormService";
@@ -98,7 +98,7 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(
         vscode.commands.registerCommand(
             "fluig-vscode-extension.datasetView",
-            () => serverItemProvider.datasetView()
+            (datasetItem: DatasetItem) => serverItemProvider.datasetView(datasetItem)
         )
     );
 
