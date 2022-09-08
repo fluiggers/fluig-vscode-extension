@@ -1,7 +1,6 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import { ServerDTO } from '../models/ServerDTO';
-import { ServerService } from '../services/ServerService';
 import * as fs from 'fs';
 import { Server } from '../models/Server';
 import { DatasetService } from '../services/DatasetService';
@@ -30,6 +29,15 @@ export class DatasetView {
     }
 
     private async getWebViewContent() {
+        let datasets = null;
+
+        try {
+            datasets = await DatasetService.getDatasets(this.server);
+        } catch (error) {
+            this.showError(error);
+            throw error;
+        }
+
         const jqueryPath = vscode.Uri.file(path.join(this.context.extensionPath, 'resources', 'js', 'jquery.min.js'));
         const bootstrapCssPath = vscode.Uri.file(path.join(this.context.extensionPath, 'resources', 'css', 'bootstrap.min.css'));
         const select2CssPath = vscode.Uri.file(path.join(this.context.extensionPath, 'resources', 'css', 'select2.min.css'));
@@ -50,7 +58,7 @@ export class DatasetView {
 
         let runTemplate = compile(htmlContent);
 
-        let datasets = await DatasetService.getDatasets(this.server);
+        datasets = await DatasetService.getDatasets(this.server);
         let datasetOptions = ``;
 
         for (let dataset of datasets) {
@@ -90,6 +98,10 @@ export class DatasetView {
             case 'consult_dataset':
                 this.consultDataset(obj);
                 break;
+
+            case 'error':
+                vscode.window.showErrorMessage(obj.message);
+                break;
         }
     }
 
@@ -98,11 +110,30 @@ export class DatasetView {
             return;
         }
 
-        const queryResult = await DatasetService.getResultDataset(this.server, queryInformation.datasetId, null, queryInformation.constraints, null);
+        try {
+            const queryResult = await DatasetService.getResultDataset(this.server, queryInformation.datasetId, null, queryInformation.constraints, null);
 
-        this.currentPanel.webview.postMessage({
-            command: 'query_result',
-            queryResult: queryResult
-        });
+            this.currentPanel.webview.postMessage({
+                command: 'query_result',
+                queryResult: queryResult
+            });
+
+        } catch (error) {
+            this.showError(error);
+        }
+    }
+
+    private showError(error: any) {
+        let message = "";
+
+        if (typeof error === "string") {
+            message = error;
+        } else if (error instanceof Error) {
+            message = error.message;
+        }
+
+        if (message) {
+            vscode.window.showErrorMessage(message);
+        }
     }
 }
