@@ -37,6 +37,7 @@ export class DatasetView {
         const bootstrapJsPath = vscode.Uri.file(path.join(this.context.extensionPath, 'resources', 'js', 'bootstrap.min.js'));
         const datatablesCssPath = vscode.Uri.file(path.join(this.context.extensionPath, 'resources', 'css', 'datatables.min.css'));
         const datatablesJsPath = vscode.Uri.file(path.join(this.context.extensionPath, 'resources', 'js', 'datatables.min.js'));
+        const html5SortableJsPath = vscode.Uri.file(path.join(this.context.extensionPath, 'resources', 'js', 'html5sortable.min.js'));
         const htmlPath = vscode.Uri.file(path.join(this.context.extensionPath, 'resources', 'views', 'dataset', 'dataset.html'));
 
         const jqueryContent = fs.readFileSync(jqueryPath.with({ scheme: 'vscode-resource' }).fsPath);
@@ -46,6 +47,7 @@ export class DatasetView {
         const datatablesJsContent = fs.readFileSync(datatablesJsPath.with({ scheme: 'vscode-resource' }).fsPath);
         const select2CssContent = fs.readFileSync(select2CssPath.with({ scheme: 'vscode-resource' }).fsPath);
         const select2JsContent = fs.readFileSync(select2JsPath.with({ scheme: 'vscode-resource' }).fsPath);
+        const html5SortableJsContent = fs.readFileSync(html5SortableJsPath.with({ scheme: 'vscode-resource' }).fsPath);
         const htmlContent = fs.readFileSync(htmlPath.with({ scheme: 'vscode-resource' }).fsPath);
 
         let runTemplate = compile(htmlContent);
@@ -65,6 +67,7 @@ export class DatasetView {
             select2Js: select2JsContent,
             datatablesCss: datatablesCssContent,
             datatablesJs: datatablesJsContent,
+            html5SortableJs: html5SortableJsContent,
             datasets: datasetOptions,
             serverName: this.server.name,
         });

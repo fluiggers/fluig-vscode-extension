@@ -39,7 +39,10 @@
                     <div class="modal-body">
                         <ul class="nav nav-tabs">
                             <li class="nav-item">
-                                <a class="nav-link active" id="constraints-tab" data-toggle="tab" href="#tabConstraints" role="tab" aria-controls="tabConstraints" aria-selected="true">Constraints</a>
+                                <a class="nav-link active" data-toggle="tab" href="#tabConstraints" role="tab" aria-controls="tabConstraints" aria-selected="true">Constraints</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-toggle="tab" href="#tabFields" role="tab" aria-controls="tabConstraints" aria-selected="true">Campos</a>
                             </li>
                         </ul>
                         <div class="tab-content">
@@ -87,18 +90,12 @@
                             <div id="tabFields" class="tab-pane fade" role="tabpanel" aria-labelledby="tabFields">
                                 <div class="row">
                                     <div class="col-md-6 form-group">
-                                        <label for="fields">
-                                            <strong>Colunas do dataset</strong>
-                                        </label>
-                                        <select multiple class="form-control" id="fields">
-                                        </select>
+                                        <label><strong>Colunas do dataset</strong></label>
+                                        <ul id="fieldsToSelect"></ul>
                                     </div>
                                     <div class="col-md-6 form-group">
-                                        <label for="fieldsSelected">
-                                            <strong>Colunas selecionadas</strong>
-                                        </label>
-                                        <select multiple class="form-control" id="fieldsSelected">
-                                        </select>
+                                        <label><strong>Colunas selecionadas</strong></label>
+                                        <ul id="fieldsSelected"></ul>
                                     </div>
                                 </div>
                             </div>
@@ -143,8 +140,11 @@
         <script type="text/javascript">${d.bootstrapJs}</script>
         <script type="text/javascript">${d.select2Js}</script>
         <script type="text/javascript">${d.datatablesJs}</script>
+        <script type="text/javascript">${d.html5SortableJs}</script>
         <script type="text/javascript">
             const vscode = acquireVsCodeApi();
+            const FIELDS_TO_SELECT = "#fieldsToSelect";
+            const FIELDS_SELECTED = "#fieldsSelected";
 
             let dataTable = null;
             let currentDataset = "";
@@ -226,6 +226,7 @@
                 if (currentDataset != dataset) {
                     currentDataset = dataset;
                     resetConstraints();
+                    resetFieldsSelect();
                 }
 
                 const _constraints = getConstraints();
@@ -240,6 +241,24 @@
             function resetConstraints() {
                 $constraints.empty();
                 addConstraints(true);
+            }
+
+            function resetFieldsSelect() {
+                $(FIELDS_TO_SELECT).empty();
+                $(FIELDS_SELECTED).empty();
+            }
+
+            function initFieldsSelect() {
+                let sortableConfig = {
+                    forcePlaceholderSize: true,
+                    acceptFrom: FIELDS_TO_SELECT + ", " + FIELDS_SELECTED,
+                    items: "li",
+                    hoverClass: 'is-hovered is-hovered-class',
+                    dropTargetContainerClass: 'is-drop-target',
+                };
+                sortable(FIELDS_TO_SELECT, sortableConfig);
+                sortable(FIELDS_SELECTED, sortableConfig);
+                console.log(sortableConfig);
             }
 
             function removeConstraints(element) {
@@ -296,24 +315,23 @@
                 const {columns} = queryResult;
 
                 FIELDS = columns;
+                let fieldsToSelect = [];
 
-                const selectFields = document.getElementById("fields");
-                const selectOrder = document.getElementById("order");
                 const fieldsList = $("#fieldsList");
 
-                $(selectFields).empty();
-                $(selectOrder).empty();
                 fieldsList.empty();
 
                 for (let optionName of columns) {
                     const option = new Option(optionName, optionName);
-                    selectFields.add(option);
-                    selectOrder.add(option);
                     fieldsList.append(option);
+                    fieldsToSelect.push("<li>"+ optionName + "</li>");
                 }
 
                 fieldsList.append(new Option("sqlLimit", "sqlLimit"));
                 fieldsList.append(new Option("tablename", "tablename"));
+                $(FIELDS_TO_SELECT).append(fieldsToSelect);
+
+                initFieldsSelect();
             }
         </script>
     </body>
