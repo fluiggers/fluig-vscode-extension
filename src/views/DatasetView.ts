@@ -101,7 +101,13 @@ export class DatasetView {
             return;
         }
 
-        const queryResult = await DatasetService.getResultDataset(this.server, queryInformation.datasetId, null, queryInformation.constraints, null);
+        const queryResult = await DatasetService.getResultDataset(
+            this.server,
+            queryInformation.datasetId,
+            queryInformation.fields,
+            queryInformation.constraints,
+            null
+        );
 
         this.currentPanel.webview.postMessage({
             command: 'query_result',

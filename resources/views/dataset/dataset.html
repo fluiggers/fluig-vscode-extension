@@ -13,6 +13,31 @@
         #tbResultDataset th, #tbResultDataset td {
             white-space: nowrap;
         }
+
+        .selecionarCampos {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-auto-rows: minmax(200px, auto);
+            column-gap: 20px;
+        }
+
+        .list-sortable {
+            list-style: none;
+            padding-left: 0;
+            border: 1px solid #17a2b8;
+        }
+
+        .list-sortable li {
+            padding: .5rem;
+            margin-bottom: .5rem;
+            background-color: #17a2b8;
+            color: #f8f9fa;
+        }
+
+        .sortable-hover {
+            cursor: move;
+            background-color: #28a745 !important;
+        }
     </style>
 </head>
     <body class="container-fluid">
@@ -42,7 +67,7 @@
                                 <a class="nav-link active" data-toggle="tab" href="#tabConstraints" role="tab" aria-controls="tabConstraints" aria-selected="true">Constraints</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" data-toggle="tab" href="#tabFields" role="tab" aria-controls="tabConstraints" aria-selected="true">Campos</a>
+                                <a class="nav-link" data-toggle="tab" href="#tabFields" role="tab" aria-controls="tabFields" aria-selected="true">Campos</a>
                             </li>
                         </ul>
                         <div class="tab-content">
@@ -89,14 +114,16 @@
                             </div>
                             <div id="tabFields" class="tab-pane fade" role="tabpanel" aria-labelledby="tabFields">
                                 <div class="row">
-                                    <div class="col-md-6 form-group">
-                                        <label><strong>Colunas do dataset</strong></label>
-                                        <ul id="fieldsToSelect"></ul>
+                                    <div class="col-md-6">
+                                        <p class="text-center mt-3"><strong>Campos do Dataset</strong></p>
                                     </div>
-                                    <div class="col-md-6 form-group">
-                                        <label><strong>Colunas selecionadas</strong></label>
-                                        <ul id="fieldsSelected"></ul>
+                                    <div class="col-md-6">
+                                        <p class="text-center mt-3"><strong>Campos a Exibir</strong></p>
                                     </div>
+                                </div>
+                                <div class="selecionarCampos">
+                                    <ul id="fieldsToSelect" class="list-sortable"></ul>
+                                    <ul id="fieldsSelected" class="list-sortable"></ul>
                                 </div>
                             </div>
                             <div id="tabOrders" class="tab-pane fade" role="tabpanel" aria-labelledby="tabOrders">
@@ -155,7 +182,26 @@
                 $("#dataset").select2({
                     placeholder: "Selecione o Dataset"
                 });
+
                 $constraints = $("#constraints");
+
+                sortable(FIELDS_TO_SELECT, {
+                    forcePlaceholderSize: true,
+                    acceptFrom: FIELDS_TO_SELECT + "," + FIELDS_SELECTED,
+                    hoverClass: "sortable-hover",
+                });
+
+                sortable(FIELDS_SELECTED, {
+                    forcePlaceholderSize: true,
+                    acceptFrom: FIELDS_TO_SELECT + "," + FIELDS_SELECTED,
+                    hoverClass: "sortable-hover",
+
+                    itemSerializer: (serializedItem, sortableContainer) => {
+                        return {
+                            field: serializedItem.html.replace(/<[^>]+>([^>]+)<.*>/, '$1'),
+                        }
+                    },
+                });
             });
 
             window.addEventListener('message', event => {
@@ -229,12 +275,11 @@
                     resetFieldsSelect();
                 }
 
-                const _constraints = getConstraints();
-
                 vscode.postMessage({
                     command: 'consult_dataset',
                     datasetId: dataset,
-                    constraints: _constraints
+                    fields: getFields(),
+                    constraints: getConstraints()
                 });
             }
 
@@ -248,17 +293,9 @@
                 $(FIELDS_SELECTED).empty();
             }
 
-            function initFieldsSelect() {
-                let sortableConfig = {
-                    forcePlaceholderSize: true,
-                    acceptFrom: FIELDS_TO_SELECT + ", " + FIELDS_SELECTED,
-                    items: "li",
-                    hoverClass: 'is-hovered is-hovered-class',
-                    dropTargetContainerClass: 'is-drop-target',
-                };
-                sortable(FIELDS_TO_SELECT, sortableConfig);
-                sortable(FIELDS_SELECTED, sortableConfig);
-                console.log(sortableConfig);
+            function reloadFieldsSelectSortable() {
+                sortable(FIELDS_TO_SELECT);
+                sortable(FIELDS_SELECTED);
             }
 
             function removeConstraints(element) {
@@ -311,6 +348,11 @@
                 return datasetConstraints;
             }
 
+            function getFields() {
+                let items = sortable(FIELDS_SELECTED, "serialize")[0].items;
+                return items.map(item => item.field);
+            }
+
             function setFields(queryResult) {
                 const {columns} = queryResult;
 
@@ -331,7 +373,7 @@
                 fieldsList.append(new Option("tablename", "tablename"));
                 $(FIELDS_TO_SELECT).append(fieldsToSelect);
 
-                initFieldsSelect();
+                reloadFieldsSelectSortable();
             }
         </script>
     </body>

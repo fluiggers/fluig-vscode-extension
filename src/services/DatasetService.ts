@@ -82,7 +82,7 @@ export class DatasetService {
         });
     }
 
-    public static async getResultDataset(server: ServerDTO, datasetId: string, fields: any, constraints: [], order: any) {
+    public static async getResultDataset(server: ServerDTO, datasetId: string, fields: string[], constraints: [], order: any) {
         const uri = (server.ssl ? "https://" : "http://")
             + server.host
             + ":" + server.port
@@ -94,7 +94,8 @@ export class DatasetService {
             username: server.username,
             password: server.password,
             name: datasetId,
-            fields: [],
+            // fields: [],
+            fields: {item: fields},
             constraints: {item: constraints},
             order: []
         };
@@ -122,17 +123,21 @@ export class DatasetService {
             });
         });
 
-        const columns = result.dataset.columns.map((item: any) => {
-            const pointIndex = (item.indexOf(".") + 1);
-            return pointIndex > 0 ? item.substring(pointIndex, item.length) : item;
-        });
+        const columns = Array.isArray(result.dataset.columns)
+            ? result.dataset.columns.map((item: any) => {
+                const pointIndex = (item.indexOf(".") + 1);
+                return pointIndex > 0 ? item.substring(pointIndex, item.length) : item;
+            })
+            : [result.dataset.columns]
+        ;
 
         const mountValue = (item: any) => {
             let valueObj: any = {};
-    
+
             for(let index = 0; index < columns.length; index++) {
                 const column = columns[index];
-                let value = item.value[index];
+
+                let value = Array.isArray(item.value) ? item.value[index] : item.value;
 
                 if(value != null && value['$value'] != undefined) {
                     value = value['$value'];
@@ -154,8 +159,7 @@ export class DatasetService {
             values = retValues.map((item: any) => {
                 return mountValue(item);
             });
-        }
-        else if(retValues !== undefined && retValues !== null) {
+        } else if(retValues !== undefined && retValues !== null) {
             const item = retValues;
             values.push(mountValue(item));
         }
