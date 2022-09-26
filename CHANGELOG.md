@@ -2,6 +2,10 @@
 
 Lista de atualizações da Extensão.
 
+## 1.12.0
+
+Adiciona a Consulta de Dataset no gerenciamento dos Servidores.
+
 ## 1.10.0
 
 Adição dos comandos:

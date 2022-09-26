@@ -28,6 +28,7 @@ Para utilizar os comandos de criação de arquivos é obrigatório estar com um 
 aberto.
 
 - [Gerenciar Servidores](#gerenciar-servidores);
+- [Consultar Dataset](#consultar-dataset);
 - [Novo Dataset](#novo-dataset);
 - [Novo Formulário](#novo-formulário);
 - [Novo Evento Global](#novo-evento-global);
@@ -46,6 +47,18 @@ Com a extensão instalada será adicionada a visão de gerenciamento de servidor
 adicionar, editar e remover servidores Fluig.
 
 ![Gerenciando Servidores](images/gerenciar_servidores.jpg)
+
+Ao clicar em um servidor é possível visualizar alguns comandos disponíveis. Com eles podemos consultar dataset, serviços etc.
+
+### Consultar Dataset
+
+Ao clicar no servidor será disponibilizada a opção Dataset. Nela você pode consultar um dataset do servidor.
+
+![Opção Dataset](images/dataset_consultar_menu.jpg)
+
+![Tela de Consulta](images/dataset_consultar_resultado.jpg)
+
+Por enquanto não há a opção de passar os Campos e a Ordem do resultado.
 
 ## Novo Dataset
 

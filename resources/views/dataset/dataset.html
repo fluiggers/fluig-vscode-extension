@@ -55,6 +55,11 @@
             </div>
         </div>
 
+        <div class="text-center mt-5 d-none" id="loading">
+            <div class="spinner-border text-primary ml-auto" style="width: 3rem; height: 3rem;" role="status" aria-hidden="true"></div>
+            <p>Carregando</p>
+        </div>
+
         <table id="tbResultDataset" class="table table-striped table-sm table-bordered"></table>
 
         <!-- Inicio Modal Constraints-->
@@ -101,7 +106,7 @@
                                                         <option value="SIM">Sim</option>
                                                     </select>
                                                 </td>
-                                                <td class="text-center"><a href="#" onclick="removeConstraints(this);">X</a></td>
+                                                <td class="text-center" style="vertical-align:middle"><a class="btn btn-sm btn-danger" href="#" onClick="removeConstraints(this);">X</a></td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -177,6 +182,7 @@
             let currentDataset = "";
             let resetItems = true;
             let FIELDS = [];
+            let $loading = null;
             let $constraints = null;
 
             $(function () {
@@ -201,6 +207,8 @@
                         }
                     },
                 });
+
+                $loading = $("#loading");
             });
 
             window.addEventListener('message', event => {
@@ -208,6 +216,7 @@
 
                 switch (message.command) {
                     case 'query_result':
+                        $loading.addClass("d-none");
                         const queryResult = message.queryResult
 
                         if (resetItems) {
@@ -272,6 +281,8 @@
                     return;
                 }
 
+                $loading.removeClass("d-none");
+
                 if (currentDataset != dataset) {
                     currentDataset = dataset;
                     resetItems = true;
@@ -329,7 +340,7 @@
                             + '<option value="SIM">Sim</option>'
                         + '</select>'
                     + '</td>'
-                    + '<td class="text-center"><a href="#" onClick="removeConstraints(this);">X</a></td>'
+                    + '<td class="text-center" style="vertical-align:middle"><a class="btn btn-sm btn-danger" href="#" onClick="removeConstraints(this);">X</a></td>'
                     + '</tr>'
                 );
             }
