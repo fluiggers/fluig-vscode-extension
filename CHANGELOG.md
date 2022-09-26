@@ -2,6 +2,10 @@
 
 Lista de atualizações da Extensão.
 
+## 1.13.0
+
+Permite selecionar os campos que serão retornados do Dataset ao Consultar Dataset.
+
 ## 1.12.0
 
 Adiciona a Consulta de Dataset no gerenciamento dos Servidores.
