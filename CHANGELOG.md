@@ -2,6 +2,10 @@
 
 Lista de atualizações da Extensão.
 
+## 1.13.1
+
+Melhoria visual da seleção de campos ao visualizar Dataset.
+
 ## 1.13.0
 
 Permite selecionar os campos que serão retornados do Dataset ao Consultar Dataset.
