@@ -175,6 +175,7 @@
 
             let dataTable = null;
             let currentDataset = "";
+            let resetItems = true;
             let FIELDS = [];
             let $constraints = null;
 
@@ -186,13 +187,11 @@
                 $constraints = $("#constraints");
 
                 sortable(FIELDS_TO_SELECT, {
-                    forcePlaceholderSize: true,
                     acceptFrom: FIELDS_TO_SELECT + "," + FIELDS_SELECTED,
                     hoverClass: "sortable-hover",
                 });
 
                 sortable(FIELDS_SELECTED, {
-                    forcePlaceholderSize: true,
                     acceptFrom: FIELDS_TO_SELECT + "," + FIELDS_SELECTED,
                     hoverClass: "sortable-hover",
 
@@ -210,7 +209,11 @@
                 switch (message.command) {
                     case 'query_result':
                         const queryResult = message.queryResult
-                        setFields(queryResult);
+
+                        if (resetItems) {
+                            setFields(queryResult);
+                        }
+
                         updateTableResult(queryResult);
                         break;
                 }
@@ -271,8 +274,11 @@
 
                 if (currentDataset != dataset) {
                     currentDataset = dataset;
+                    resetItems = true;
                     resetConstraints();
                     resetFieldsSelect();
+                } else {
+                    resetItems = false;
                 }
 
                 vscode.postMessage({
