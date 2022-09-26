@@ -58,7 +58,7 @@ Ao clicar no servidor será disponibilizada a opção Dataset. Nela você pode c
 
 ![Tela de Consulta](images/dataset_consultar_resultado.jpg)
 
-Por enquanto não há a opção de passar os Campos e a Ordem do resultado.
+Por enquanto não há a opção de passar a Ordem do resultado.
 
 ## Novo Dataset
 
