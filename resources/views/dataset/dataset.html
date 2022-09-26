@@ -108,6 +108,9 @@
                             <li class="nav-item">
                                 <a class="nav-link" data-toggle="tab" href="#tabFields" role="tab" aria-controls="tabFields" aria-selected="true">Campos</a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-toggle="tab" href="#tabOrders" role="tab" aria-controls="tabOrders" aria-selected="true">Ordem</a>
+                            </li>
                         </ul>
                         <div class="tab-content">
                             <div id="tabConstraints" class="tab-pane fade show active" role="tabpanel" aria-labelledby="tabConstraints">
@@ -167,20 +170,16 @@
                             </div>
                             <div id="tabOrders" class="tab-pane fade" role="tabpanel" aria-labelledby="tabOrders">
                                 <div class="row">
-                                    <div class="col-md-6 form-group">
-                                        <label for="order">
-                                            <strong>Colunas do dataset</strong>
-                                        </label>
-                                        <select multiple class="form-control" id="order">
-                                        </select>
+                                    <div class="col-md-6">
+                                        <p class="text-center mt-3"><strong>Campos do Dataset</strong></p>
                                     </div>
-                                    <div class="col-md-6 form-group">
-                                        <label for="orderSelected">
-                                            <strong>Colunas selecionadas</strong>
-                                        </label>
-                                        <select multiple class="form-control" id="orderSelected">
-                                        </select>
+                                    <div class="col-md-6">
+                                        <p class="text-center mt-3"><strong>Ordem</strong></p>
                                     </div>
+                                </div>
+                                <div class="selecionarCampos">
+                                    <ul id="fieldsToOrder" class="list-sortable"></ul>
+                                    <ul id="fieldsOrdered" class="list-sortable"></ul>
                                 </div>
                             </div>
                         </div>
@@ -211,6 +210,9 @@
             const FIELDS_TO_SELECT = "#fieldsToSelect";
             const FIELDS_SELECTED = "#fieldsSelected";
 
+            const FIELDS_TO_ORDER = "#fieldsToOrder";
+            const FIELDS_ORDERED = "#fieldsOrdered";
+
             let dataTable = null;
             let currentDataset = "";
             let resetItems = true;
@@ -233,12 +235,19 @@
                 sortable(FIELDS_SELECTED, {
                     acceptFrom: FIELDS_TO_SELECT + "," + FIELDS_SELECTED,
                     hoverClass: "sortable-hover",
+                    itemSerializer: itemSerializer,
+                });
 
-                    itemSerializer: (serializedItem, sortableContainer) => {
-                        return {
-                            field: serializedItem.html.replace(/<[^>]+>([^>]+)<.*>/, '$1'),
-                        }
-                    },
+                sortable(FIELDS_TO_ORDER, {
+                    acceptFrom: FIELDS_TO_ORDER + "," + FIELDS_ORDERED,
+                    hoverClass: "sortable-hover",
+                });
+
+                sortable(FIELDS_ORDERED, {
+                    acceptFrom: FIELDS_TO_ORDER + "," + FIELDS_ORDERED,
+                    hoverClass: "sortable-hover",
+                    maxItems: 2,
+                    itemSerializer: itemSerializer,
                 });
 
                 $loading = $("#loading");
@@ -329,7 +338,8 @@
                     command: 'consult_dataset',
                     datasetId: dataset,
                     fields: getFields(),
-                    constraints: getConstraints()
+                    constraints: getConstraints(),
+                    order: getOrders()
                 });
             }
 
@@ -341,11 +351,15 @@
             function resetFieldsSelect() {
                 $(FIELDS_TO_SELECT).empty();
                 $(FIELDS_SELECTED).empty();
+                $(FIELDS_TO_ORDER).empty();
+                $(FIELDS_ORDERED).empty();
             }
 
             function reloadFieldsSelectSortable() {
                 sortable(FIELDS_TO_SELECT);
                 sortable(FIELDS_SELECTED);
+                sortable(FIELDS_TO_ORDER);
+                sortable(FIELDS_ORDERED);
             }
 
             function removeConstraints(element) {
@@ -403,6 +417,11 @@
                 return items.map(item => item.field);
             }
 
+            function getOrders() {
+                let items = sortable(FIELDS_ORDERED, "serialize")[0].items;
+                return items.map(item => item.field);
+            }
+
             function setFields(queryResult) {
                 const {columns} = queryResult;
 
@@ -422,8 +441,15 @@
                 fieldsList.append(new Option("sqlLimit", "sqlLimit"));
                 fieldsList.append(new Option("tablename", "tablename"));
                 $(FIELDS_TO_SELECT).append(fieldsToSelect);
+                $(FIELDS_TO_ORDER).append(fieldsToSelect);
 
                 reloadFieldsSelectSortable();
+            }
+
+            function itemSerializer(serializedItem, sortableContainer) {
+                return {
+                    field: serializedItem.html.replace(/<[^>]+>([^>]+)<.*>/, '$1'),
+                }
             }
         </script>
     </body>

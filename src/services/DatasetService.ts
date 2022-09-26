@@ -82,7 +82,7 @@ export class DatasetService {
         });
     }
 
-    public static async getResultDataset(server: ServerDTO, datasetId: string, fields: string[], constraints: [], order: any) {
+    public static async getResultDataset(server: ServerDTO, datasetId: string, fields: string[], constraints: [], order: string[]) {
         const uri = (server.ssl ? "https://" : "http://")
             + server.host
             + ":" + server.port
@@ -94,10 +94,9 @@ export class DatasetService {
             username: server.username,
             password: server.password,
             name: datasetId,
-            // fields: [],
             fields: {item: fields},
             constraints: {item: constraints},
-            order: []
+            order: {item: order}
         };
 
         const wsdlOptions = {

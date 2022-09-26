@@ -122,7 +122,7 @@ export class DatasetView {
                 queryInformation.datasetId,
                 queryInformation.fields,
                 queryInformation.constraints,
-                null
+                queryInformation.order
             );
 
             this.currentPanel.webview.postMessage({
