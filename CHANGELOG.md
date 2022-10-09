@@ -2,6 +2,10 @@
 
 Lista de atualizações da Extensão.
 
+## 1.13.2
+
+Melhoria visual aplicando o tema configurado no VS Code à Extensão.
+
 ## 1.13.1
 
 Melhoria visual da seleção de campos ao visualizar Dataset.
