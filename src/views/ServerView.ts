@@ -34,14 +34,19 @@ export class ServerView {
     }
 
     private getWebViewContent() {
+        const bootstrapCssPath = vscode.Uri.file(path.join(this.context.extensionPath, 'resources', 'css', 'bootstrap.min.css'));
+        const themeCssPath = vscode.Uri.file(path.join(this.context.extensionPath, 'resources', 'css', 'theme.css'));
         const htmlPath = vscode.Uri.file(path.join(this.context.extensionPath, 'resources', 'views', 'server', 'server.html'));
-        const cssPath = vscode.Uri.file(path.join(this.context.extensionPath, 'resources', 'css', 'bootstrap.min.css'));
+
+        const bootstrapCssContent = fs.readFileSync(bootstrapCssPath.with({ scheme: 'vscode-resource' }).fsPath);
+        const themeCssContent = fs.readFileSync(themeCssPath.with({ scheme: 'vscode-resource' }).fsPath);
         const htmlContent = fs.readFileSync(htmlPath.with({ scheme: 'vscode-resource' }).fsPath);
-        const cssContent = fs.readFileSync(cssPath.with({ scheme: 'vscode-resource' }).fsPath);
+
         let runTemplate = compile(htmlContent);
 
         return runTemplate({
-            css: cssContent,
+            bootstrapCss: bootstrapCssContent,
+            themeCss: themeCssContent,
             serverData: this.serverData,
             ssl: (this.serverData && this.serverData.ssl) ? this.serverData.ssl : false,
             confirmExporting: (this.serverData && this.serverData.confirmExporting) ? this.serverData.confirmExporting : false,

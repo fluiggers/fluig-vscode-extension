@@ -1,0 +1,147 @@
+body {
+    background-color: var(--vscode-editor-background);
+    color: var(--vscode-editor-foreground);
+    font-family: var(--vscode-font-family);
+    font-size: var(--vscode-editor-font-size);
+}
+
+::placeholder {
+    color: var(--vscode-input-placeholderForeground);
+}
+
+.form-control, .select2-container--bootstrap .select2-search--dropdown .select2-search__field {
+    background-color: var(--vscode-input-background);
+    color: var(--vscode-input-foreground);
+    border: 1px solid var(--vscode-input-border, var(--gray));
+    font-size: var(--vscode-editor-font-size);
+}
+
+.form-control:focus, .select2-container--bootstrap .select2-search--dropdown .select2-search__field {
+    background-color: var(--vscode-input-background);
+    color: var(--vscode-input-foreground);
+    border-color: var(--vscode-focusBorder);
+}
+
+.btn-primary {
+    color: var(--vscode-button-foreground);
+    background-color: var(--vscode-button-background);
+    border-color: var(--vscode-button-separator);
+}
+
+.btn-primary:hover,
+.btn-primary.focus, .btn-primary:focus,
+.btn-primary:not(:disabled):not(.disabled).active, .btn-primary:not(:disabled):not(.disabled):active, .show>.btn-primary.dropdown-toggle {
+    color: #fff;
+    background-color: var(--vscode-button-hoverBackground, var(--primary));
+    border-color: var(--vscode-button-separator);
+}
+
+.btn-secondary {
+    color: var(--vscode-button-secondaryForeground);
+    background-color: var(--vscode-button-secondaryBackground);
+    border-color: var(--vscode-button-separator);
+}
+
+.btn-secondary:hover,
+.btn-secondary.focus, .btn-secondary:focus,
+.btn-secondary:not(:disabled):not(.disabled).active, .btn-secondary:not(:disabled):not(.disabled):active, .show>.btn-secondary.dropdown-toggle {
+    border-color: var(--vscode-button-separator);
+    color: var(--vscode-button-secondaryForeground);
+    background-color: var(--vscode-button-hoverBackground, var(--secondary));
+}
+
+.select2-container--bootstrap .select2-selection, .select2-dropdown {
+    background-color: var(--vscode-editor-background);
+    border: 1px solid var(--vscode-input-border, var(--gray));
+    color: var(--vscode-editor-foreground);
+    font-size: var(--vscode-font-size);
+}
+
+.select2-container--bootstrap.select2-container--focus .select2-selection, .select2-container--bootstrap.select2-container--open .select2-selection,
+.select2-container--bootstrap .select2-dropdown {
+    border-color: var(--vscode-focusBorder);
+}
+
+.select2-container--bootstrap .select2-selection--single .select2-selection__rendered,
+.select2-container--bootstrap .select2-selection {
+    background-color: var(--vscode-input-background);
+    color: var(--vscode-input-foreground);
+}
+
+.page-link {
+    background-color: var(--vscode-button-hoverBackground, var(--primary));
+    color: var(--vscode-button-foreground);
+    border: 1px solid var(--vscode-input-border, var(--gray));
+}
+
+.page-link:hover {
+    background-color: var(--vscode-button-background);
+    color: var(--vscode-button-foreground);
+    border: 1px solid var(--vscode-input-border, var(--gray));
+}
+
+.page-item.disabled .page-link {
+    color: var(--vscode-disabledForeground);
+    background-color: var(--vscode-tab-inactiveBackground);
+    border: 1px solid var(--vscode-input-border, var(--gray));
+}
+
+.table thead th, .table tbody td {
+    border-bottom: 1px solid var(--vscode-input-border, var(--gray));
+}
+
+div.dt-button-info {
+    background-color: var(--vscode-editor-background);
+    border: 2px solid var(--vscode-input-border, var(--gray));
+}
+
+div.dt-button-info h2 {
+    border-bottom: 1px solid #ddd;
+    background-color: var(--vscode-editor-background);
+}
+
+.table-bordered, .table-bordered td, .table-bordered th {
+    border: 1px solid var(--vscode-input-border, var(--gray));
+}
+
+.table {
+    color: var(--vscode-editor-foreground);
+}
+
+.modal-header {
+    border-bottom-color: var(--vscode-input-border, var(--gray));
+}
+
+.modal-header .close {
+    color: var(--vscode-editor-foreground);
+}
+
+.modal-content, .tab-content {
+    background-color: var(--vscode-editor-background);
+    border: 1px solid var(--vscode-input-border, var(--gray));
+}
+
+.tab-content {
+    border-top: none;
+}
+
+.nav-tabs {
+    border-bottom: 1px solid var(--vscode-input-border, var(--gray));
+}
+
+.nav-tabs .nav-link {
+    background-color: var(--vscode-tab-inactiveBackground);
+    color: var(--vscode-tab-inactiveForeground);
+    border: 1px solid var(--vscode-input-border, var(--gray));
+}
+
+.nav-tabs .nav-link.active {
+    background-color: var(--vscode-tab-activeBackground);
+    color: var(--vscode-tab-activeForeground);
+    border: 1px solid var(--vscode-input-border, var(--gray));
+    border-bottom-color: transparent;
+}
+
+.nav-tabs .nav-link:focus, .nav-tabs .nav-link:hover {
+    border-color: var(--vscode-input-border, var(--gray)) var(--vscode-input-border, var(--gray)) var(--vscode-input-border, var(--gray));
+}

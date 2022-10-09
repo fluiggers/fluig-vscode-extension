@@ -9,6 +9,23 @@
         ${d.bootstrapCss}
         ${d.datatablesCss}
         ${d.select2Css}
+        ${d.themeCss}
+
+        #tabConstraints {
+            padding: 10px 0;
+        }
+
+        .tab-content {
+            margin-bottom: 15px;
+        }
+
+        #tabConstraints .table thead th {
+            border-top: none;
+        }
+
+        #addConstraint {
+            margin-right: 10px;
+        }
 
         #tbResultDataset th, #tbResultDataset td {
             white-space: nowrap;
@@ -24,21 +41,32 @@
         .list-sortable {
             list-style: none;
             padding-left: 0;
-            border: 1px solid #17a2b8;
+            border: 1px solid var(--vscode-input-border, var(--gray));
             max-height: 400px;
             overflow: scroll;
+        }
+
+        .list-sortable:first-child {
+            border-left: none;
+        }
+
+        .list-sortable:last-child {
+            border-right: none;
         }
 
         .list-sortable li {
             padding: .5rem;
             margin-bottom: .5rem;
-            background-color: #17a2b8;
-            color: #f8f9fa;
+            color: var(--vscode-button-foreground);
+            background-color: var(--vscode-button-background);
+            border-color: var(--vscode-button-separator);
         }
 
         .sortable-hover {
             cursor: move;
-            background-color: #28a745 !important;
+            color: #fff;
+            background-color: var(--vscode-button-hoverBackground, var(--primary));
+            border-color: var(--vscode-button-separator);
         }
     </style>
 </head>
@@ -52,8 +80,8 @@
                 </select>
             </div>
             <div class="col-md-4">
-                <button class="btn btn-success mt-2 mb-2" onclick="getResultQuery();">Consultar</button>
-                <button type="button" class="btn btn-secondary mt-2 mb-2" data-toggle="modal" data-target="#modalConfigFiltro">Configurar Parâmetros</button>
+                <button class="btn btn-primary mt-2 mb-2" onclick="getResultQuery();">Consultar</button>
+                <button type="button" class="btn btn-primary mt-2 mb-2" data-toggle="modal" data-target="#modalConfigFiltro">Configurar Parâmetros</button>
             </div>
         </div>
 
@@ -68,6 +96,10 @@
         <div class="modal fade" id="modalConfigFiltro" tabindex="-1" role="dialog" aria-labelledby="modalConfigFiltro" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
                 <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Parâmetros da Consulta</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    </div>
                     <div class="modal-body">
                         <ul class="nav nav-tabs">
                             <li class="nav-item">
@@ -81,7 +113,7 @@
                             <div id="tabConstraints" class="tab-pane fade show active" role="tabpanel" aria-labelledby="tabConstraints">
                                 <div class="table-responsive">
                                     <table class="table table-hover table-sm">
-                                        <thead class="thead-light">
+                                        <thead>
                                             <tr>
                                                 <th scope="col" width="30%">Coluna</th>
                                                 <th scope="col" width="15%">Valor inicial</th>
@@ -108,15 +140,15 @@
                                                         <option value="SIM">Sim</option>
                                                     </select>
                                                 </td>
-                                                <td class="text-center" style="vertical-align:middle"><a class="btn btn-sm btn-danger" href="#" onClick="removeConstraints(this);">X</a></td>
+                                                <td class="text-center" style="vertical-align:middle"><a class="btn btn-sm btn-secondary" href="#" onClick="removeConstraints(this);">X</a></td>
                                             </tr>
                                         </tbody>
                                     </table>
                                 </div>
                                 <div class="row">
-                                    <dic class="col-md-12 text-right">
-                                        <button type="button" class="btn btn-primary" onclick="addConstraints();">Adicionar</button>
-                                    </dic>
+                                    <div class="col-md-12 text-right">
+                                        <button type="button" id="addConstraint" class="btn btn-primary" onclick="addConstraints();">Adicionar</button>
+                                    </div>
                                 </div>
                             </div>
                             <div id="tabFields" class="tab-pane fade" role="tabpanel" aria-labelledby="tabFields">
@@ -155,8 +187,7 @@
 
                         <div class="row">
                             <dic class="col-md-12">
-                                <button type="button" class="btn btn-danger" data-dismiss="modal" aria-label="Close">Fechar</button>
-                                <button type="button" class="btn btn-info" data-dismiss="modal" aria-label="Close" onclick="getResultQuery();">Atualizar</button>
+                                <button type="button" class="btn btn-primary" data-dismiss="modal" aria-label="Close" onclick="getResultQuery();">Atualizar Consulta</button>
                             </dic>
                         </div>
                     </div>
@@ -342,7 +373,7 @@
                             + '<option value="SIM">Sim</option>'
                         + '</select>'
                     + '</td>'
-                    + '<td class="text-center" style="vertical-align:middle"><a class="btn btn-sm btn-danger" href="#" onClick="removeConstraints(this);">X</a></td>'
+                    + '<td class="text-center" style="vertical-align:middle"><a class="btn btn-sm btn-secondary" href="#" onClick="removeConstraints(this);">X</a></td>'
                     + '</tr>'
                 );
             }
