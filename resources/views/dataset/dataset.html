@@ -68,6 +68,43 @@
             background-color: var(--vscode-button-hoverBackground, var(--primary));
             border-color: var(--vscode-button-separator);
         }
+
+        #tabOrders .custom-control-input {
+            display: none;
+        }
+
+        #tabOrders .custom-switch {
+            padding-left: 1.25rem;
+        }
+
+        #tabOrders .custom-control-label {
+            cursor: pointer;
+        }
+
+        #tabOrders .custom-switch .custom-control-label::before {
+            content: none;
+        }
+
+        #tabOrders .custom-switch .custom-control-label::after {
+            top: 6px;
+            left: -20px;
+            width: 0px;
+            height: 0px;
+            border-style: solid;
+            border-width: 0 7.5px 10px 7.5px;
+            border-color: transparent transparent var(--vscode-editor-foreground) transparent;
+            transform: rotate(0deg);
+            border-radius: unset;
+            background: none;
+            cursor: pointer;
+            transition: none;
+        }
+
+        #tabOrders .custom-switch .custom-control-input:checked~.custom-control-label::after {
+            background: none;
+            -webkit-transform: rotate(180deg);
+            transform: rotate(180deg);
+        }
     </style>
 </head>
     <body class="container-fluid">
@@ -235,7 +272,7 @@
                 sortable(FIELDS_SELECTED, {
                     acceptFrom: FIELDS_TO_SELECT + "," + FIELDS_SELECTED,
                     hoverClass: "sortable-hover",
-                    itemSerializer: itemSerializer,
+                    itemSerializer: fieldsSelectedSerializer,
                 });
 
                 sortable(FIELDS_TO_ORDER, {
@@ -247,7 +284,7 @@
                     acceptFrom: FIELDS_TO_ORDER + "," + FIELDS_ORDERED,
                     hoverClass: "sortable-hover",
                     maxItems: 2,
-                    itemSerializer: itemSerializer,
+                    itemSerializer: fieldsOrderedSerializer,
                 });
 
                 $loading = $("#loading");
@@ -427,6 +464,7 @@
 
                 FIELDS = columns;
                 let fieldsToSelect = [];
+                let fieldsToOrder = [];
 
                 const fieldsList = $("#fieldsList");
 
@@ -436,19 +474,37 @@
                     const option = new Option(optionName, optionName);
                     fieldsList.append(option);
                     fieldsToSelect.push("<li>"+ optionName + "</li>");
+                    fieldsToOrder.push('<li><div class="custom-control custom-switch">'
+                        + '<input type="checkbox" class="custom-control-input" id="' + optionName + '">'
+                        + '<label class="custom-control-label" for="' + optionName + '">' + optionName + '</label>'
+                        + '</div></li>'
+                    );
                 }
 
                 fieldsList.append(new Option("sqlLimit", "sqlLimit"));
                 fieldsList.append(new Option("tablename", "tablename"));
                 $(FIELDS_TO_SELECT).append(fieldsToSelect);
-                $(FIELDS_TO_ORDER).append(fieldsToSelect);
+                $(FIELDS_TO_ORDER).append(fieldsToOrder);
 
                 reloadFieldsSelectSortable();
             }
 
-            function itemSerializer(serializedItem, sortableContainer) {
+            function fieldsSelectedSerializer(serializedItem, sortableContainer) {
                 return {
                     field: serializedItem.html.replace(/<[^>]+>([^>]+)<.*>/, '$1'),
+                }
+            }
+
+            function fieldsOrderedSerializer(serializedItem, sortableContainer) {
+                let field = serializedItem.html.replace(/.*<label[^>]+>([^>]+)<.*>.*/, '$1');
+                let checkbox = document.getElementById(field);
+
+                if (checkbox && checkbox.checked) {
+                    field += ";desc";
+                }
+
+                return {
+                    field,
                 }
             }
         </script>
