@@ -2,6 +2,10 @@
 
 Lista de atualizações da Extensão.
 
+## 1.14.0
+
+Adicionada a opção de efetuar a consulta a um Dataset indicando quais colunas devem vir ordenadas.
+
 ## 1.13.2
 
 Melhoria visual aplicando o tema configurado no VS Code à Extensão.
