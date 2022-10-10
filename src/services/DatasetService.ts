@@ -123,10 +123,7 @@ export class DatasetService {
         });
 
         const columns = Array.isArray(result.dataset.columns)
-            ? result.dataset.columns.map((item: any) => {
-                const pointIndex = (item.indexOf(".") + 1);
-                return pointIndex > 0 ? item.substring(pointIndex, item.length) : item;
-            })
+            ? result.dataset.columns
             : [result.dataset.columns]
         ;
 
@@ -138,10 +135,9 @@ export class DatasetService {
 
                 let value = Array.isArray(item.value) ? item.value[index] : item.value;
 
-                if(value != null && value['$value'] != undefined) {
+                if (value !== null && value['$value'] !== undefined) {
                     value = value['$value'];
-                }
-                else {
+                } else {
                     value = "";
                 }
 
