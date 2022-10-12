@@ -5,13 +5,11 @@ import { ServerService } from "./ServerService";
 import { DocumentDTO } from "../models/DocumentDTO";
 import { posix } from "path";
 import { CustomizationEventsDTO } from "../models/CustomizationEventsDTO";
+import { UtilsService } from "./UtilsService";
 
 export class FormService {
     private static getUri(server: ServerDTO): string {
-        const schema: string = server.ssl ? "https" : "http";
-        const port: string = [80, 443].includes(server.port) ? "" : `:${server.port}`;
-
-        return `${schema}://${server.host}${port}/webdesk/ECMCardIndexService?wsdl`
+        return UtilsService.getHost(server) +  "/webdesk/ECMCardIndexService?wsdl";
     }
 
     /**

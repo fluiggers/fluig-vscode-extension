@@ -6,6 +6,7 @@ import { window, workspace, Uri } from "vscode";
 import { posix } from "path";
 import { DatasetDTO } from "../models/DatasetDTO";
 import { DatasetStructureDTO } from "../models/DatasetStructureDTO";
+import { UtilsService } from "./UtilsService";
 import { readFileSync } from "fs";
 import * as soap from 'soap';
 
@@ -15,11 +16,7 @@ export class DatasetService {
      * Retorna uma lista com todos os datasets
      */
     public static async getDatasets(server: ServerDTO): Promise<DatasetDTO[]> {
-        const uri = (server.ssl ? "https://" : "http://")
-            + server.host
-            + ":" + server.port
-            + "/webdesk/ECMDatasetService?wsdl"
-        ;
+        const uri = UtilsService.getHost(server) + "/webdesk/ECMDatasetService?wsdl";
 
         const params = {
             companyId: server.companyId,
@@ -64,9 +61,7 @@ export class DatasetService {
      * Retorna as informações e estrutura de um dataset específico
      */
     public static async getDataset(server: ServerDTO, datasetId: string) {
-        const uri = (server.ssl ? "https://" : "http://")
-            + server.host
-            + ":" + server.port
+        const uri = UtilsService.getHost(server)
             + "/ecm/api/rest/ecm/dataset/loadDataset"
             + "?username=" + server.username
             + "&password=" + server.password
@@ -83,11 +78,7 @@ export class DatasetService {
     }
 
     public static async getResultDataset(server: ServerDTO, datasetId: string, fields: string[], constraints: [], order: string[]) {
-        const uri = (server.ssl ? "https://" : "http://")
-            + server.host
-            + ":" + server.port
-            + "/webdesk/ECMDatasetService?wsdl"
-        ;
+        const uri = UtilsService.getHost(server) + "/webdesk/ECMDatasetService?wsdl";
 
         const params = {
             companyId: server.companyId,
@@ -169,9 +160,7 @@ export class DatasetService {
      * Exportar novo dataset
      */
     public static async createDataset(server: ServerDTO, dataset: DatasetStructureDTO) {
-        const uri = (server.ssl ? "https://" : "http://")
-            + server.host
-            + ":" + server.port
+        const uri = UtilsService.getHost(server)
             + "/ecm/api/rest/ecm/dataset/createDataset"
             + "?username=" + server.username
             + "&password=" + server.password
@@ -190,9 +179,7 @@ export class DatasetService {
      * Exportar dataset existente
      */
     public static async updateDataset(server: ServerDTO, dataset: DatasetStructureDTO) {
-        const uri = (server.ssl ? "https://" : "http://")
-            + server.host
-            + ":" + server.port
+        const uri = UtilsService.getHost(server)
             + "/ecm/api/rest/ecm/dataset/editDataset"
             + "?username=" + server.username
             + "&password=" + server.password
