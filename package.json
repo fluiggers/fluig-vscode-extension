@@ -80,8 +80,8 @@
                 "title": "Adicionar Servidor",
                 "category": "Fluig",
                 "icon": {
-                    "light": "resources/images/light/add.svg",
-                    "dark": "resources/images/dark/add.svg"
+                    "light": "dist/assets/images/light/add.svg",
+                    "dark": "dist/assets/images/dark/add.svg"
                 }
             },
             {
@@ -89,8 +89,8 @@
                 "title": "Excluir Servidor",
                 "category": "Fluig",
                 "icon": {
-                    "light": "resources/images/light/trash.svg",
-                    "dark": "resources/images/dark/trash.svg"
+                    "light": "dist/assets/images/light/trash.svg",
+                    "dark": "dist/assets/images/dark/trash.svg"
                 }
             },
             {
@@ -98,8 +98,8 @@
                 "title": "Atualizar",
                 "category": "Fluig",
                 "icon": {
-                    "light": "resources/images/light/refresh.svg",
-                    "dark": "resources/images/dark/refresh.svg"
+                    "light": "dist/assets/images/light/refresh.svg",
+                    "dark": "dist/assets/images/dark/refresh.svg"
                 }
             },
             {
@@ -107,8 +107,8 @@
                 "title": "Editar Servidor",
                 "category": "Fluig",
                 "icon": {
-                    "light": "resources/images/light/edit.svg",
-                    "dark": "resources/images/dark/edit.svg"
+                    "light": "dist/assets/images/light/edit.svg",
+                    "dark": "dist/assets/images/dark/edit.svg"
                 }
             },
             {
@@ -151,8 +151,8 @@
                 "title": "Consultar Dataset",
                 "category": "Fluig",
                 "icon": {
-                    "light": "resources/images/light/preview.svg",
-                    "dark": "resources/images/dark/preview.svg"
+                    "light": "dist/assets/images/light/preview.svg",
+                    "dark": "dist/assets/images/dark/preview.svg"
                 }
             }
         ],
@@ -268,7 +268,6 @@
                     "command": "fluig-vscode-extension.editServer",
                     "when": "view == fluig-vscode-extension.servers && viewItem == serverItem"
                 },
-
                 {
                     "command": "fluig-vscode-extension.datasetView",
                     "when": "view == fluig-vscode-extension.servers && viewItem == DatasetItem",
@@ -285,7 +284,7 @@
                 {
                     "id": "fluig-config",
                     "title": "Fluig",
-                    "icon": "resources/images/icon-brand.png"
+                    "icon": "dist/assets/images/icon-brand.png"
                 }
             ]
         },
@@ -316,9 +315,12 @@
     },
     "scripts": {
         "vscode:prepublish": "npm run package",
+        "precompile": "gulp",
+        "buildResources": "gulp buildResources",
+        "buildLibrarys": "gulp buildLibrarys",
         "compile": "webpack",
-        "watch": "webpack --watch",
-        "package": "webpack --mode production --devtool hidden-source-map",
+        "watch": "npm run precompile && webpack --watch",
+        "package": "npm run precompile && webpack --mode production --devtool hidden-source-map",
         "test-compile": "tsc -p ./",
         "test-watch": "tsc -watch -p ./",
         "pretest": "npm run test-compile && npm run lint",
@@ -326,26 +328,43 @@
         "test": "node ./out/test/runTest.js"
     },
     "devDependencies": {
+        "@popperjs/core": "^2.11.6",
+        "@types/crypto-js": "^4.0.2",
         "@types/glob": "^7.1.3",
         "@types/mocha": "^8.0.4",
         "@types/node": "^12.20.14",
         "@types/vscode": "^1.56.0",
         "@typescript-eslint/eslint-plugin": "^4.26.0",
         "@typescript-eslint/parser": "^4.26.0",
+        "axios": "^0.21.1",
+        "bootstrap": "^5.2.2",
+        "crypto-js": "^4.1.1",
+        "datatables.net-bs5": "^1.12.1",
+        "datatables.net-buttons-bs5": "^2.2.3",
+        "datatables.net-fixedheader-bs5": "^3.2.4",
+        "datatables.net-plugins": "^1.11.5",
+        "datatables.net-scroller-bs5": "^2.0.7",
         "eslint": "^7.28.0",
         "glob": "^7.1.7",
+        "gulp": "^4.0.2",
+        "gulp-clean-css": "^4.3.0",
+        "gulp-cli": "^2.3.0",
+        "gulp-concat": "^2.6.1",
+        "gulp-footer": "^2.1.0",
+        "gulp-rename": "^2.0.0",
+        "gulp-uglify": "^3.0.2",
+        "html5sortable": "^0.13.3",
+        "jquery": "^3.6.1",
+        "jszip": "^3.10.1",
         "mocha": "^8.4.0",
+        "select2": "^4.1.0-rc.0",
+        "select2-bootstrap-5-theme": "^1.3.0",
+        "soap": "^0.37.0",
+        "template-literal": "^1.0.3",
         "ts-loader": "^8.3.0",
         "typescript": "^4.3.2",
         "vscode-test": "^1.5.0",
         "webpack": "^5.38.1",
         "webpack-cli": "^4.7.0"
-    },
-    "dependencies": {
-        "@types/crypto-js": "^4.0.2",
-        "axios": "^0.21.1",
-        "crypto-js": "^4.1.1",
-        "soap": "^0.37.0",
-        "template-literal": "^1.0.3"
     }
 }

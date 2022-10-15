@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consultar Dataset</title>
+    <link rel="stylesheet" href="${d.bootstrapCss}">
+    <link rel="stylesheet" href="${d.datatablesCss}">
+    <link rel="stylesheet" href="${d.select2Css}">
+    <link rel="stylesheet" href="${d.themeCss}">
+    <link rel="stylesheet" href="${d.datasetCss}">
+</head>
+    <body class="container-fluid">
+        <h1>${d.serverName}: Consultar Dataset</h1>
+        <div class="row">
+            <div class="col-md-8 p-2">
+                <select class="form-control" id="dataset" style="width: 100%;">
+                    <option value=""></option>
+                    ${d.datasets}
+                </select>
+            </div>
+            <div class="col-md-4">
+                <button class="btn btn-primary mt-2 mb-2" id="consultarDataset">Consultar</button>
+                <button type="button" class="btn btn-secondary mt-2 mb-2" data-bs-toggle="modal" data-bs-target="#modalConfigFiltro">Configurar Parâmetros</button>
+            </div>
+        </div>
+
+        <div class="text-center mt-5 d-none" id="loading">
+            <div class="spinner-border text-primary ml-auto" style="width: 3rem; height: 3rem;" role="status" aria-hidden="true"></div>
+            <p>Carregando</p>
+        </div>
+
+        <table id="tbResultDataset" class="table table-striped table-sm table-bordered"></table>
+
+        <!-- Inicio Modal Constraints-->
+        <div class="modal fade" id="modalConfigFiltro" tabindex="-1" role="dialog" aria-labelledby="modalConfigFiltro" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Parâmetros da Consulta</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <ul class="nav nav-tabs">
+                            <li class="nav-item">
+                                <a class="nav-link active" data-bs-toggle="tab" href="#tabConstraints" role="tab" aria-controls="tabConstraints" aria-selected="true">Constraints</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="tab" href="#tabFields" role="tab" aria-controls="tabFields" aria-selected="true">Campos</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="tab" href="#tabOrders" role="tab" aria-controls="tabOrders" aria-selected="true">Ordem</a>
+                            </li>
+                        </ul>
+                        <div class="tab-content">
+                            <div id="tabConstraints" class="tab-pane fade show active" role="tabpanel" aria-labelledby="tabConstraints">
+                                <div class="table-responsive">
+                                    <table class="table table-hover table-sm">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col" width="30%">Coluna</th>
+                                                <th scope="col" width="15%">Valor inicial</th>
+                                                <th scope="col" width="15%">Valor final</th>
+                                                <th scope="col" width="15%">Tipo</th>
+                                                <th scope="col" width="15%" colspan="2">Usa 'like'</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="constraints">
+                                            <tr>
+                                                <td><input type="text" list="fieldsList" class="form-control" name="campo" value="sqlLimit"></td>
+                                                <td><input type="text" class="form-control" name="valor_inicial" value="100"></td>
+                                                <td><input type="text" class="form-control" name="valor_final" value="100"></td>
+                                                <td>
+                                                    <select class="form-control" name="tipo">
+                                                        <option value="MUST" selected>MUST</option>
+                                                        <option value="MUST_NOT">MUST NOT</option>
+                                                        <option value="SHOULD">SHOULD</option>
+                                                    </select>
+                                                </td>
+                                                <td>
+                                                    <select class="form-control" name="like">
+                                                        <option value="NAO" selected>Não</option>
+                                                        <option value="SIM">Sim</option>
+                                                    </select>
+                                                </td>
+                                                <td class="text-center" style="vertical-align:middle"><a class="btn btn-sm btn-secondary removeConstraint" href="#">X</a></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12 text-right">
+                                        <button type="button" id="addConstraint" class="btn btn-primary">Adicionar</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="tabFields" class="tab-pane fade" role="tabpanel" aria-labelledby="tabFields">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p class="text-center mt-3"><strong>Campos do Dataset</strong></p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p class="text-center mt-3"><strong>Campos a Exibir</strong></p>
+                                    </div>
+                                </div>
+                                <div class="selecionarCampos">
+                                    <ul id="fieldsToSelect" class="list-sortable"></ul>
+                                    <ul id="fieldsSelected" class="list-sortable"></ul>
+                                </div>
+                            </div>
+                            <div id="tabOrders" class="tab-pane fade" role="tabpanel" aria-labelledby="tabOrders">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p class="text-center mt-3"><strong>Campos do Dataset</strong></p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p class="text-center mt-3"><strong>Ordem</strong></p>
+                                    </div>
+                                </div>
+                                <div class="selecionarCampos">
+                                    <ul id="fieldsToOrder" class="list-sortable"></ul>
+                                    <ul id="fieldsOrdered" class="list-sortable"></ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <dic class="col-md-12">
+                                <button type="button" id="atualizaConsulta" class="btn btn-primary" data-bs-dismiss="modal" aria-label="Close">Atualizar Consulta</button>
+                            </dic>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <datalist id="fieldsList">
+            <option value="sqlLimit">
+            <option value="tablename">
+        </datalist>
+
+        <!-- Fim Modal Constraints-->
+        <script src="${d.jquery}"></script>
+        <script src="${d.bootstrapJs}"></script>
+        <script src="${d.select2Js}"></script>
+        <script src="${d.datatablesJs}"></script>
+        <script src="${d.html5SortableJs}"></script>
+        <script src="${d.datasetJs}"></script>
+    </body>
+</html>

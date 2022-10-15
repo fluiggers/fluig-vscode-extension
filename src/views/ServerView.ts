@@ -12,7 +12,7 @@ export class ServerView {
     private currentPanel: vscode.WebviewPanel | undefined = undefined;
     private serverData: ServerDTO | undefined = undefined;
 
-    constructor(public context: vscode.ExtensionContext) {}
+    constructor(private context: vscode.ExtensionContext) {}
 
     public setServerData(server: ServerDTO) {
         this.serverData = server;
@@ -34,35 +34,28 @@ export class ServerView {
     }
 
     private getWebViewContent() {
-        const bootstrapCssPath = vscode.Uri.file(path.join(this.context.extensionPath, 'resources', 'css', 'bootstrap.min.css'));
-        const themeCssPath = vscode.Uri.file(path.join(this.context.extensionPath, 'resources', 'css', 'theme.css'));
-        const htmlPath = vscode.Uri.file(path.join(this.context.extensionPath, 'resources', 'views', 'server', 'server.html'));
-
-        const bootstrapCssContent = fs.readFileSync(bootstrapCssPath.with({ scheme: 'vscode-resource' }).fsPath);
-        const themeCssContent = fs.readFileSync(themeCssPath.with({ scheme: 'vscode-resource' }).fsPath);
-        const htmlContent = fs.readFileSync(htmlPath.with({ scheme: 'vscode-resource' }).fsPath);
-
-        let runTemplate = compile(htmlContent);
+        const htmlPath = vscode.Uri.file(path.join(this.context.extensionPath, 'dist', 'assets', 'server', 'server.html'));
+        const runTemplate = compile(fs.readFileSync(htmlPath.with({ scheme: 'vscode-resource' }).fsPath));
 
         return runTemplate({
-            bootstrapCss: bootstrapCssContent,
-            themeCss: themeCssContent,
+            jquery: this.currentPanel?.webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'assets', 'jquery.min.js')),
+            bootstrapCss: this.currentPanel?.webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'assets', 'bootstrap.min.css')),
+            themeCss: this.currentPanel?.webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'assets', 'css', 'theme.css')),
+            serverJs: this.currentPanel?.webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'assets', 'server', 'server.js')),
             serverData: this.serverData,
             ssl: (this.serverData && this.serverData.ssl) ? this.serverData.ssl : false,
-            confirmExporting: (this.serverData && this.serverData.confirmExporting) ? this.serverData.confirmExporting : false,
+            confirmExporting: (this.serverData && this.serverData.confirmExporting) ? this.serverData.confirmExporting : false
         });
     }
 
     private createWebViewPanel() {
-        const file = vscode.Uri.file(path.join(this.context.extensionPath, 'resources', 'views', 'server'));
-
         return vscode.window.createWebviewPanel(
             "fluig-vscode-extension.addServer",
             this.serverData != undefined ? "Editar Servidor" : "Adicionar Servidor",
             vscode.ViewColumn.One,
             {
                 enableScripts: true,
-                localResourceRoots: [file],
+                localResourceRoots: [this.context.extensionUri],
                 retainContextWhenHidden: true
             }
         );

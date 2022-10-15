@@ -5,10 +5,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Adicionar servidor</title>
-    <style>
-        ${d.bootstrapCss}
-        ${d.themeCss}
-    </style>
+    <link rel="stylesheet" href="${d.bootstrapCss}">
+    <link rel="stylesheet" href="${d.themeCss}">
 </head>
 <body class="container-fluid">
     <h1>${d.serverData ? 'Editar Servidor' : 'Adicionar Servidor'}</h1>
@@ -28,7 +26,6 @@
                 id="host"
                 placeholder="Exemplo: fluig.com.br"
                 value="${d.serverData ? d.serverData.host : ''}"
-                onchange="validateHost(this)"
             >
         </div>
 
@@ -82,59 +79,11 @@
 
     <div class="row">
         <div class="col-md-2 form-group">
-            <button class="btn btn-primary" onclick="saveServer()">Salvar</button>
+            <button class="btn btn-primary" type="button" id="saveServer">Salvar</button>
         </div>
     </div>
 
-    <script>
-        const vscode = acquireVsCodeApi();
-
-        function saveServer(close = true) {
-            const id = document.getElementById("id").value;
-            const name = document.getElementById("name").value;
-            const host  = document.getElementById("host").value;
-            const ssl = document.getElementById("ssl").value == "yes";
-            const port = document.getElementById("port").value;
-            const username = document.getElementById("username").value;
-            const password = document.getElementById("password").value;
-            const confirmExporting = document.getElementById("confirm_pass_exporting").value == "yes";
-
-            vscode.postMessage({
-                id,
-                name,
-                host,
-                ssl,
-                port,
-                username,
-                password,
-                confirmExporting
-            });
-        }
-
-        function validateHost(element) {
-            try {
-                const url = new URL(element.value);
-                const isSSL = url.protocol.indexOf("https") >= 0;
-
-                let port = url.port;
-
-                if (!port) {
-                    port = isSSL ? 443 : 80;
-                }
-
-                const name = document.getElementById("name");
-
-                if (!name.value) {
-                    name.value = url.hostname;
-                }
-
-                document.getElementById("host").value = url.hostname;
-                document.getElementById("ssl").value = isSSL ? "yes" : "no";
-                document.getElementById("port").value = port;
-            } catch (error) {
-
-            }
-        }
-    </script>
+    <script src="${d.jquery}"></script>
+    <script src="${d.serverJs}"></script>
 </body>
 </html>

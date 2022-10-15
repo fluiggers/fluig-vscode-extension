@@ -11,7 +11,7 @@ export class DatasetView {
     private currentPanel: vscode.WebviewPanel | undefined = undefined;
     private server: Server;
 
-    constructor(public context: vscode.ExtensionContext, serverDto: ServerDTO) {
+    constructor(private context: vscode.ExtensionContext, serverDto: ServerDTO) {
         this.server = new Server(serverDto);
     }
 
@@ -38,30 +38,6 @@ export class DatasetView {
             throw error;
         }
 
-        const jqueryPath = vscode.Uri.file(path.join(this.context.extensionPath, 'resources', 'js', 'jquery.min.js'));
-        const bootstrapCssPath = vscode.Uri.file(path.join(this.context.extensionPath, 'resources', 'css', 'bootstrap.min.css'));
-        const select2CssPath = vscode.Uri.file(path.join(this.context.extensionPath, 'resources', 'css', 'select2.min.css'));
-        const select2JsPath = vscode.Uri.file(path.join(this.context.extensionPath, 'resources', 'js', 'select2.min.js'));
-        const bootstrapJsPath = vscode.Uri.file(path.join(this.context.extensionPath, 'resources', 'js', 'bootstrap.min.js'));
-        const datatablesCssPath = vscode.Uri.file(path.join(this.context.extensionPath, 'resources', 'css', 'datatables.min.css'));
-        const datatablesJsPath = vscode.Uri.file(path.join(this.context.extensionPath, 'resources', 'js', 'datatables.min.js'));
-        const html5SortableJsPath = vscode.Uri.file(path.join(this.context.extensionPath, 'resources', 'js', 'html5sortable.min.js'));
-        const themeCssPath = vscode.Uri.file(path.join(this.context.extensionPath, 'resources', 'css', 'theme.css'));
-        const htmlPath = vscode.Uri.file(path.join(this.context.extensionPath, 'resources', 'views', 'dataset', 'dataset.html'));
-
-        const jqueryContent = fs.readFileSync(jqueryPath.with({ scheme: 'vscode-resource' }).fsPath);
-        const bootstrapCssContent = fs.readFileSync(bootstrapCssPath.with({ scheme: 'vscode-resource' }).fsPath);
-        const bootstrapJsContent = fs.readFileSync(bootstrapJsPath.with({ scheme: 'vscode-resource' }).fsPath);
-        const datatablesCssContent = fs.readFileSync(datatablesCssPath.with({ scheme: 'vscode-resource' }).fsPath);
-        const datatablesJsContent = fs.readFileSync(datatablesJsPath.with({ scheme: 'vscode-resource' }).fsPath);
-        const select2CssContent = fs.readFileSync(select2CssPath.with({ scheme: 'vscode-resource' }).fsPath);
-        const select2JsContent = fs.readFileSync(select2JsPath.with({ scheme: 'vscode-resource' }).fsPath);
-        const html5SortableJsContent = fs.readFileSync(html5SortableJsPath.with({ scheme: 'vscode-resource' }).fsPath);
-        const themeCssContent = fs.readFileSync(themeCssPath.with({ scheme: 'vscode-resource' }).fsPath);
-        const htmlContent = fs.readFileSync(htmlPath.with({ scheme: 'vscode-resource' }).fsPath);
-
-        let runTemplate = compile(htmlContent);
-
         datasets = await DatasetService.getDatasets(this.server);
         let datasetOptions = ``;
 
@@ -69,31 +45,34 @@ export class DatasetView {
             datasetOptions += `<option value="${dataset.datasetId}">${dataset.datasetId}</option>`;
         }
 
+        const htmlPath = vscode.Uri.file(path.join(this.context.extensionPath, 'dist', 'assets', 'dataset', 'dataset.html'));
+        const runTemplate = compile(fs.readFileSync(htmlPath.with({ scheme: 'vscode-resource' }).fsPath));
+
         return runTemplate({
-            jquery: jqueryContent,
-            bootstrapCss: bootstrapCssContent,
-            bootstrapJs: bootstrapJsContent,
-            select2Css: select2CssContent,
-            select2Js: select2JsContent,
-            datatablesCss: datatablesCssContent,
-            datatablesJs: datatablesJsContent,
-            html5SortableJs: html5SortableJsContent,
-            themeCss: themeCssContent,
+            jquery: this.currentPanel?.webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'assets', 'jquery.min.js')),
+            bootstrapCss: this.currentPanel?.webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'assets', 'bootstrap.min.css')),
+            bootstrapJs: this.currentPanel?.webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'assets', 'bootstrap.min.js')),
+            select2Css: this.currentPanel?.webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'assets', 'select2.min.css')),
+            select2Js: this.currentPanel?.webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'assets', 'select2.min.js')),
+            datatablesCss: this.currentPanel?.webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'assets', 'datatables.min.css')),
+            datatablesJs: this.currentPanel?.webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'assets', 'datatables.min.js')),
+            html5SortableJs: this.currentPanel?.webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'assets', 'html5sortable.min.js')),
+            themeCss: this.currentPanel?.webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'assets', 'css', 'theme.css')),
+            datasetCss: this.currentPanel?.webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'assets', 'dataset', 'dataset.css')),
+            datasetJs: this.currentPanel?.webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'assets', 'dataset', 'dataset.js')),
             datasets: datasetOptions,
-            serverName: this.server.name,
+            serverName: this.server.name
         });
     }
 
     private createWebViewPanel() {
-        const file = vscode.Uri.file(path.join(this.context.extensionPath, 'resources', 'views', 'dataset'));
-
         return vscode.window.createWebviewPanel(
             "fluig-vscode-extension.consultarDataset",
             `${this.server.name}: Consultar Dataset`,
             vscode.ViewColumn.One,
             {
                 enableScripts: true,
-                localResourceRoots: [file],
+                localResourceRoots: [this.context.extensionUri],
                 retainContextWhenHidden: true
             }
         );
