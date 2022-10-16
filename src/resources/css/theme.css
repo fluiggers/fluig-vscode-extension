@@ -50,6 +50,14 @@ body {
     background-color: var(--vscode-button-hoverBackground, var(--secondary));
 }
 
+.btn.disabled, .btn:disabled, fieldset:disabled .btn {
+    color: inherit;
+    pointer-events: none;
+    background-color: inherit;
+    border-color: inherit;
+}
+
+
 .select2-container--bootstrap .select2-selection, .select2-dropdown {
     background-color: var(--vscode-editor-background);
     border: 1px solid var(--vscode-input-border, var(--gray));
