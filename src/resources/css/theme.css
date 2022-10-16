@@ -35,7 +35,7 @@ body.vscode-dark .form-select, body.vscode-high-contrast:not(.vscode-high-contra
 .btn-primary:hover,
 .btn-primary.focus, .btn-primary:focus,
 .btn-primary:not(:disabled):not(.disabled).active, .btn-primary:not(:disabled):not(.disabled):active, .show>.btn-primary.dropdown-toggle {
-    background-color: var(--vscode-button-hoverBackground, var(--primary));
+    background-color: var(--vscode-button-hoverBackground, var(--bs-primary));
     border-color: var(--vscode-button-separator);
 }
 
@@ -50,7 +50,7 @@ body.vscode-dark .form-select, body.vscode-high-contrast:not(.vscode-high-contra
 .btn-secondary:not(:disabled):not(.disabled).active, .btn-secondary:not(:disabled):not(.disabled):active, .show>.btn-secondary.dropdown-toggle {
     border-color: var(--vscode-button-separator);
     color: var(--vscode-button-secondaryForeground);
-    background-color: var(--vscode-button-hoverBackground, var(--secondary));
+    background-color: var(--vscode-button-hoverBackground, var(--bs-secondary));
 }
 
 .btn.disabled, .btn:disabled, fieldset:disabled .btn {
@@ -63,6 +63,10 @@ body.vscode-dark .form-select, body.vscode-high-contrast:not(.vscode-high-contra
 .select2-container--default .select2-selection--single {
     background-color: var(--vscode-editor-background);
     border: 1px solid var(--vscode-input-border, var(--bs-gray));
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow b {
+    border-color: var(--vscode-editor-foreground, var(--bs-gray)) transparent transparent transparent;
 }
 
 .select2-dropdown {
@@ -78,7 +82,7 @@ body.vscode-dark .form-select, body.vscode-high-contrast:not(.vscode-high-contra
 
 .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable,
 .select2-container--default .select2-results__option--selected {
-    background-color: var(--vscode-button-hoverBackground, var(--primary));
+    background-color: var(--vscode-button-hoverBackground, var(--bs-primary));
     color: var(--vscode-button-foreground);
 }
 
@@ -97,7 +101,7 @@ body.vscode-dark .form-select, body.vscode-high-contrast:not(.vscode-high-contra
 
 
 .page-link {
-    background-color: var(--vscode-button-hoverBackground, var(--primary));
+    background-color: var(--vscode-button-hoverBackground, var(--bs-primary));
     color: var(--vscode-button-foreground);
     border: 1px solid var(--vscode-input-border, var(--bs-gray));
 }
@@ -133,6 +137,10 @@ div.dt-button-info h2 {
 }
 
 .table {
+    color: var(--vscode-editor-foreground);
+}
+
+.table-striped>tbody>tr:nth-of-type(odd)>* {
     color: var(--vscode-editor-foreground);
 }
 
@@ -172,4 +180,13 @@ div.dt-button-info h2 {
 
 .nav-tabs .nav-link:focus, .nav-tabs .nav-link:hover {
     border-color: var(--vscode-input-border, var(--bs-gray)) var(--vscode-input-border, var(--bs-gray)) var(--vscode-input-border, var(--bs-gray));
+}
+
+table.dataTable thead>tr>th.sorting:before, table.dataTable thead>tr>th.sorting:after, table.dataTable thead>tr>th.sorting_asc:before, table.dataTable thead>tr>th.sorting_asc:after, table.dataTable thead>tr>th.sorting_desc:before, table.dataTable thead>tr>th.sorting_desc:after, table.dataTable thead>tr>th.sorting_asc_disabled:before, table.dataTable thead>tr>th.sorting_asc_disabled:after, table.dataTable thead>tr>th.sorting_desc_disabled:before, table.dataTable thead>tr>th.sorting_desc_disabled:after, table.dataTable thead>tr>td.sorting:before, table.dataTable thead>tr>td.sorting:after, table.dataTable thead>tr>td.sorting_asc:before, table.dataTable thead>tr>td.sorting_asc:after, table.dataTable thead>tr>td.sorting_desc:before, table.dataTable thead>tr>td.sorting_desc:after, table.dataTable thead>tr>td.sorting_asc_disabled:before, table.dataTable thead>tr>td.sorting_asc_disabled:after, table.dataTable thead>tr>td.sorting_desc_disabled:before, table.dataTable thead>tr>td.sorting_desc_disabled:after {
+    opacity: 1;
+}
+
+body.vscode-dark .modal-header .btn-close,
+body.vscode-high-contrast:not(.vscode-high-contrast-light) .modal-header .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
 }

@@ -20,7 +20,7 @@
 
         $("#consultarDataset").on("click", getResultQuery);
         $("#atualizaConsulta").on("click", getResultQuery);
-        $("#addConstraint").on("click", addConstraints);
+        $("#addConstraint").on("click", () => addConstraints(false));
 
         $("#constraints").on("click", ".removeConstraint", removeConstraints);
 
@@ -237,9 +237,9 @@
             const option = new Option(optionName, optionName);
             fieldsList.append(option);
             fieldsToSelect.push("<li>"+ optionName + "</li>");
-            fieldsToOrder.push('<li><div class="custom-control custom-switch">'
-                + '<input type="checkbox" class="custom-control-input" id="' + optionName + '">'
-                + '<label class="custom-control-label" for="' + optionName + '">' + optionName + '</label>'
+            fieldsToOrder.push('<li><div class="form-check form-switch">'
+                + '<input type="checkbox" class="form-check-input" id="' + optionName + '">'
+                + '<label class="form-check-label" for="' + optionName + '">' + optionName + '</label>'
                 + '</div></li>'
             );
         }
