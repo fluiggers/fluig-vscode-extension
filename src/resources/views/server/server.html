@@ -7,80 +7,104 @@
     <title>Adicionar servidor</title>
     <link rel="stylesheet" href="${d.bootstrapCss}">
     <link rel="stylesheet" href="${d.themeCss}">
+    <style>
+        #btnSalvar span {
+            display: none;
+        }
+
+        #btnSalvar.loading span {
+            display: inline-block;
+        }
+    </style>
 </head>
-<body class="container-fluid">
-    <h1>${d.serverData ? 'Editar Servidor' : 'Adicionar Servidor'}</h1>
+<body>
+    <div class="container-fluid">
+        <h1>${d.serverData ? 'Editar Servidor' : 'Adicionar Servidor'}</h1>
 
-    <div class="row">
-        <div class="col-md-12 form-group">
-            <label for="name"><strong>Nome</strong></label>
-            <input type="text" class="form-control" id="name" value="${d.serverData ? d.serverData.name : ''}">
-            <input type="hidden" class="form-control" id="id" value="${d.serverData ? d.serverData.id : ''}">
-        </div>
+        <form id="formServer">
+            <div class="row g-3">
+                <div class="col-md-12 form-group">
+                    <label for="name" class="form-label">Nome</label>
+                    <input type="text" class="form-control" id="name" name="name" required value="${d.serverData ? d.serverData.name : ''}">
+                    <input type="hidden" class="form-control" id="id" value="${d.serverData ? d.serverData.id : ''}">
+                </div>
 
-        <div class="col-md-8 form-group">
-            <label for="host"><strong>Host</strong></label>
-            <input
-                type="text"
-                class="form-control"
-                id="host"
-                placeholder="Exemplo: fluig.com.br"
-                value="${d.serverData ? d.serverData.host : ''}"
-            >
-        </div>
+                <div class="col-md-8 form-group">
+                    <label for="host" class="form-label">Host</label>
+                    <input
+                        type="text"
+                        class="form-control"
+                        id="host"
+                        name="host"
+                        required
+                        placeholder="Exemplo: fluig.com.br"
+                        value="${d.serverData ? d.serverData.host : ''}"
+                    >
+                </div>
 
-        <div class="col-md-2 form-group">
-            <label for="ssl"><strong>SSL</strong></label>
-            <select class="form-control" id="ssl">
-                <option value="yes" ${d.ssl ? "selected" : ""}>Sim</option>
-                <option value="no" ${!d.ssl ? "selected" : ""}>Não</option>
-            </select>
-        </div>
+                <div class="col-md-2 form-group">
+                    <label for="ssl" class="form-label">SSL</label>
+                    <select class="form-control" id="ssl">
+                        <option value="yes" ${d.ssl ? "selected" : ""}>Sim</option>
+                        <option value="no" ${!d.ssl ? "selected" : ""}>Não</option>
+                    </select>
+                </div>
 
-        <div class="col-md-2 form-group">
-            <label for="port"><strong>Porta</strong></label>
-            <input
-                type="text"
-                class="form-control"
-                id="port"
-                placeholder="443"
-                value="${d.serverData ? d.serverData.port : ''}"
-            >
-        </div>
+                <div class="col-md-2 form-group">
+                    <label for="port" class="form-label">Porta</label>
+                    <input
+                        type="number"
+                        class="form-control"
+                        id="port"
+                        name="port"
+                        required=""
+                        placeholder="443"
+                        min="0"
+                        step="1"
+                        value="${d.serverData ? d.serverData.port : ''}"
+                    >
+                </div>
 
-        <div class="col-md-6 form-group">
-            <label for="username"><strong>Usuário</strong></label>
-            <input
-                type="text"
-                class="form-control"
-                id="username"
-                value="${d.serverData ? d.serverData.username : ''}"
-            >
-        </div>
+                <div class="col-md-6 form-group">
+                    <label for="username" class="form-label">Usuário</label>
+                    <input
+                        type="text"
+                        class="form-control"
+                        id="username"
+                        name="username"
+                        required
+                        value="${d.serverData ? d.serverData.username : ''}"
+                    >
+                </div>
 
-        <div class="col-md-6 form-group">
-            <label for="password"><strong>Senha</strong></label>
-            <input
-                type="password"
-                class="form-control"
-                id="password"
-                value="${d.serverData ? d.serverData.password : ''}"
-            >
-        </div>
+                <div class="col-md-6 form-group">
+                    <label for="password" class="form-label">Senha</label>
+                    <input
+                        type="password"
+                        class="form-control"
+                        id="password"
+                        name="password"
+                        required
+                        value="${d.serverData ? d.serverData.password : ''}"
+                    >
+                </div>
 
-        <div class="col-md-5 form-group">
-            <label for="confirm_pass_exporting"><strong>Confirmar senha quando exportar</strong></label>
-            <select class="form-control" id="confirm_pass_exporting">
-                <option value="yes" ${d.confirmExporting ? "selected" : ""}>Sim</option>
-                <option value="no" ${!d.confirmExporting ? "selected" : ""}>Não</option>
-            </select>
-        </div>
-    </div>
+                <div class="col-md-5 form-group">
+                    <label for="confirm_pass_exporting" class="form-label">Confirmar senha quando exportar</label>
+                    <select class="form-control" id="confirm_pass_exporting">
+                        <option value="yes" ${d.confirmExporting ? "selected" : ""}>Sim</option>
+                        <option value="no" ${!d.confirmExporting ? "selected" : ""}>Não</option>
+                    </select>
+                </div>
+            </div>
 
-    <div class="row">
-        <div class="col-md-2 form-group">
-            <button class="btn btn-primary" type="button" id="saveServer">Salvar</button>
-        </div>
+            <p class="mt-3">
+                <button class="btn btn-primary" type="submit" id="btnSalvar">
+                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    Salvar
+                </button>
+            </p>
+        </form>
     </div>
 
     <script src="${d.jquery}"></script>

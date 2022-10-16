@@ -66,7 +66,13 @@ export class ServerView {
             return;
         }
 
-        const server: ServerDTO =  new Server();
+        if (!this.currentPanel || !this.currentPanel.webview) {
+            return;
+        }
+
+        const webview = this.currentPanel.webview;
+
+        const server: ServerDTO = new Server();
         server.id = obj.id;
         server.name = obj.name;
         server.host = obj.host;
@@ -79,6 +85,10 @@ export class ServerView {
         server.companyId = 0;
 
         UserService.getUser(server).then((response) => {
+            if (!response.data.content) {
+                throw response.data?.message?.message;
+            }
+
             server.companyId = response.data.content.tenantId;
             server.userCode = response.data.content.userCode;
             ServerService.createOrUpdate(server);
@@ -87,7 +97,12 @@ export class ServerView {
                 this.currentPanel.dispose();
             }
         }).catch((e) => {
-            vscode.window.showErrorMessage(`Falha na conexão com o servidor ${server.name}`);
+            vscode.window.showErrorMessage(`Falha na conexão com o servidor ${server.name}. Erro retornado: ${e.message || e}`);
+
+            webview.postMessage({
+                status: 'error',
+                message: e.message || e
+            });
         });
     }
 }

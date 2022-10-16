@@ -2,11 +2,20 @@
     const vscode = acquireVsCodeApi();
 
     $(function () {
-        $("#saveServer").on("click", saveServer);
+        $("#formServer").on("submit", saveServer);
         $("#host").on("change", validateHost);
     });
 
-    function saveServer(close = true) {
+    /**
+     * Salva o servidor após efetuar uma conexão bem sucedida
+     *
+     * @param {JQuery.Event} event
+     */
+    function saveServer(event) {
+        event.preventDefault();
+
+        $("#btnSalvar").addClass("loading").attr("disabled", true);
+
         const id = document.getElementById("id").value;
         const name = document.getElementById("name").value;
         const host  = document.getElementById("host").value;
@@ -52,4 +61,10 @@
 
         }
     }
+
+    window.addEventListener('message', event => {
+        const message = event.data;
+
+        $("#btnSalvar").removeClass("loading").attr("disabled", false);
+    });
 }());
