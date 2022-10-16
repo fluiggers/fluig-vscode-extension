@@ -44,7 +44,7 @@
 
                 <div class="col-md-2 form-group">
                     <label for="ssl" class="form-label">SSL</label>
-                    <select class="form-control" id="ssl">
+                    <select class="form-select" id="ssl">
                         <option value="yes" ${d.ssl ? "selected" : ""}>Sim</option>
                         <option value="no" ${!d.ssl ? "selected" : ""}>Não</option>
                     </select>
@@ -91,7 +91,7 @@
 
                 <div class="col-md-5 form-group">
                     <label for="confirm_pass_exporting" class="form-label">Confirmar senha quando exportar</label>
-                    <select class="form-control" id="confirm_pass_exporting">
+                    <select class="form-select" id="confirm_pass_exporting">
                         <option value="yes" ${d.confirmExporting ? "selected" : ""}>Sim</option>
                         <option value="no" ${!d.confirmExporting ? "selected" : ""}>Não</option>
                     </select>
