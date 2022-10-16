@@ -5,14 +5,18 @@ body {
     font-size: var(--vscode-editor-font-size);
 }
 
+body.vscode-dark .form-select, body.vscode-high-contrast:not(.vscode-high-contrast-light) .form-select {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='white' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e")
+}
+
 ::placeholder {
     color: var(--vscode-input-placeholderForeground);
 }
 
-.form-control, .select2-container--bootstrap .select2-search--dropdown .select2-search__field {
+.form-control, .form-select, .select2-container--bootstrap .select2-search--dropdown .select2-search__field {
     background-color: var(--vscode-input-background);
     color: var(--vscode-input-foreground);
-    border: 1px solid var(--vscode-input-border, var(--gray));
+    border: 1px solid var(--vscode-input-border, var(--bs-gray));
     font-size: var(--vscode-editor-font-size);
 }
 
@@ -31,7 +35,6 @@ body {
 .btn-primary:hover,
 .btn-primary.focus, .btn-primary:focus,
 .btn-primary:not(:disabled):not(.disabled).active, .btn-primary:not(:disabled):not(.disabled):active, .show>.btn-primary.dropdown-toggle {
-    color: #fff;
     background-color: var(--vscode-button-hoverBackground, var(--primary));
     border-color: var(--vscode-button-separator);
 }
@@ -57,50 +60,67 @@ body {
     border-color: inherit;
 }
 
-
-.select2-container--bootstrap .select2-selection, .select2-dropdown {
+.select2-container--default .select2-selection--single {
     background-color: var(--vscode-editor-background);
-    border: 1px solid var(--vscode-input-border, var(--gray));
+    border: 1px solid var(--vscode-input-border, var(--bs-gray));
+}
+
+.select2-dropdown {
+    background-color: var(--vscode-editor-background);
+    border: 1px solid var(--vscode-input-border, var(--bs-gray));
+}
+
+.select2-container--default .select2-search--dropdown .select2-search__field {
+    background-color: var(--vscode-editor-background);
     color: var(--vscode-editor-foreground);
-    font-size: var(--vscode-font-size);
+    border: 1px solid var(--vscode-input-border, var(--bs-gray));
 }
 
-.select2-container--bootstrap.select2-container--focus .select2-selection, .select2-container--bootstrap.select2-container--open .select2-selection,
-.select2-container--bootstrap .select2-dropdown {
-    border-color: var(--vscode-focusBorder);
+.select2-container--default .select2-results__option--highlighted.select2-results__option--selectable,
+.select2-container--default .select2-results__option--selected {
+    background-color: var(--vscode-button-hoverBackground, var(--primary));
+    color: var(--vscode-button-foreground);
 }
 
-.select2-container--bootstrap .select2-selection--single .select2-selection__rendered,
-.select2-container--bootstrap .select2-selection {
-    background-color: var(--vscode-input-background);
-    color: var(--vscode-input-foreground);
+.select2-container .select2-selection--single {
+    height: 38px;
 }
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    color: var(--vscode-editor-foreground);
+    line-height: 33px;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 35px;
+}
+
 
 .page-link {
     background-color: var(--vscode-button-hoverBackground, var(--primary));
     color: var(--vscode-button-foreground);
-    border: 1px solid var(--vscode-input-border, var(--gray));
+    border: 1px solid var(--vscode-input-border, var(--bs-gray));
 }
 
 .page-link:hover {
     background-color: var(--vscode-button-background);
     color: var(--vscode-button-foreground);
-    border: 1px solid var(--vscode-input-border, var(--gray));
+    border: 1px solid var(--vscode-input-border, var(--bs-gray));
 }
 
 .page-item.disabled .page-link {
     color: var(--vscode-disabledForeground);
     background-color: var(--vscode-tab-inactiveBackground);
-    border: 1px solid var(--vscode-input-border, var(--gray));
+    border: 1px solid var(--vscode-input-border, var(--bs-gray));
 }
 
 .table thead th, .table tbody td {
-    border-bottom: 1px solid var(--vscode-input-border, var(--gray));
+    border-bottom: 1px solid var(--vscode-input-border, var(--bs-gray));
 }
 
 div.dt-button-info {
     background-color: var(--vscode-editor-background);
-    border: 2px solid var(--vscode-input-border, var(--gray));
+    border: 2px solid var(--vscode-input-border, var(--bs-gray));
 }
 
 div.dt-button-info h2 {
@@ -109,7 +129,7 @@ div.dt-button-info h2 {
 }
 
 .table-bordered, .table-bordered td, .table-bordered th {
-    border: 1px solid var(--vscode-input-border, var(--gray));
+    border: 1px solid var(--vscode-input-border, var(--bs-gray));
 }
 
 .table {
@@ -117,7 +137,7 @@ div.dt-button-info h2 {
 }
 
 .modal-header {
-    border-bottom-color: var(--vscode-input-border, var(--gray));
+    border-bottom-color: var(--vscode-input-border, var(--bs-gray));
 }
 
 .modal-header .close {
@@ -126,7 +146,7 @@ div.dt-button-info h2 {
 
 .modal-content, .tab-content {
     background-color: var(--vscode-editor-background);
-    border: 1px solid var(--vscode-input-border, var(--gray));
+    border: 1px solid var(--vscode-input-border, var(--bs-gray));
 }
 
 .tab-content {
@@ -134,22 +154,22 @@ div.dt-button-info h2 {
 }
 
 .nav-tabs {
-    border-bottom: 1px solid var(--vscode-input-border, var(--gray));
+    border-bottom: 1px solid var(--vscode-input-border, var(--bs-gray));
 }
 
 .nav-tabs .nav-link {
     background-color: var(--vscode-tab-inactiveBackground);
     color: var(--vscode-tab-inactiveForeground);
-    border: 1px solid var(--vscode-input-border, var(--gray));
+    border: 1px solid var(--vscode-input-border, var(--bs-gray));
 }
 
 .nav-tabs .nav-link.active {
     background-color: var(--vscode-tab-activeBackground);
     color: var(--vscode-tab-activeForeground);
-    border: 1px solid var(--vscode-input-border, var(--gray));
+    border: 1px solid var(--vscode-input-border, var(--bs-gray));
     border-bottom-color: transparent;
 }
 
 .nav-tabs .nav-link:focus, .nav-tabs .nav-link:hover {
-    border-color: var(--vscode-input-border, var(--gray)) var(--vscode-input-border, var(--gray)) var(--vscode-input-border, var(--gray));
+    border-color: var(--vscode-input-border, var(--bs-gray)) var(--vscode-input-border, var(--bs-gray)) var(--vscode-input-border, var(--bs-gray));
 }
