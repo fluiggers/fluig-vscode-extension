@@ -34,8 +34,8 @@
         <table id="tbResultDataset" class="table table-striped table-sm table-bordered"></table>
 
         <!-- Inicio Modal Constraints-->
-        <div class="modal fade" id="modalConfigFiltro" tabindex="-1" role="dialog" aria-labelledby="modalConfigFiltro" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal" id="modalConfigFiltro" tabindex="-1" role="dialog" aria-labelledby="modalConfigFiltro" aria-hidden="true">
+            <div class="modal-dialog modal-xl" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">Parâmetros da Consulta</h5>
@@ -67,25 +67,6 @@
                                             </tr>
                                         </thead>
                                         <tbody id="constraints">
-                                            <tr>
-                                                <td><input type="text" list="fieldsList" class="form-control" name="campo" value="sqlLimit"></td>
-                                                <td><input type="text" class="form-control" name="valor_inicial" value="100"></td>
-                                                <td><input type="text" class="form-control" name="valor_final" value="100"></td>
-                                                <td>
-                                                    <select class="form-control" name="tipo">
-                                                        <option value="MUST" selected>MUST</option>
-                                                        <option value="MUST_NOT">MUST NOT</option>
-                                                        <option value="SHOULD">SHOULD</option>
-                                                    </select>
-                                                </td>
-                                                <td>
-                                                    <select class="form-control" name="like">
-                                                        <option value="NAO" selected>Não</option>
-                                                        <option value="SIM">Sim</option>
-                                                    </select>
-                                                </td>
-                                                <td class="text-center" style="vertical-align:middle"><a class="btn btn-sm btn-secondary removeConstraint" href="#">X</a></td>
-                                            </tr>
                                         </tbody>
                                     </table>
                                 </div>
@@ -134,11 +115,6 @@
                 </div>
             </div>
         </div>
-
-        <datalist id="fieldsList">
-            <option value="sqlLimit">
-            <option value="tablename">
-        </datalist>
 
         <!-- Fim Modal Constraints-->
         <script src="${d.jquery}"></script>

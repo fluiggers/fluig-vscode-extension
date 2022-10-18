@@ -1,17 +1,20 @@
 (function () {
     const vscode = acquireVsCodeApi();
+
     const FIELDS_TO_SELECT = "#fieldsToSelect";
     const FIELDS_SELECTED = "#fieldsSelected";
 
     const FIELDS_TO_ORDER = "#fieldsToOrder";
     const FIELDS_ORDERED = "#fieldsOrdered";
 
+    const MODAL = $("#modalConfigFiltro");
+
     let dataTable = null;
     let currentDataset = "";
     let resetItems = true;
-    let FIELDS = [];
     let $loading = null;
     let $constraints = null;
+    let constraintsFields = [];
 
     $(function () {
         $("#dataset").select2({
@@ -62,6 +65,7 @@
 
                 if (resetItems) {
                     setFields(queryResult);
+                    addConstraints(true);
                 }
 
                 updateTableResult(queryResult);
@@ -127,7 +131,7 @@
         if (currentDataset != dataset) {
             currentDataset = dataset;
             resetItems = true;
-            resetConstraints();
+            $constraints.empty();
             resetFieldsSelect();
         } else {
             resetItems = false;
@@ -140,11 +144,6 @@
             constraints: getConstraints(),
             order: getOrders()
         });
-    }
-
-    function resetConstraints() {
-        $constraints.empty();
-        addConstraints(true);
     }
 
     function resetFieldsSelect() {
@@ -169,30 +168,59 @@
     function addConstraints(isReset) {
         isReset = isReset || false;
 
-        $constraints.append(
+        let constraint = $(
             '<tr>'
-            + '<td><input type="text" list="fieldsList" class="form-control" name="campo" ' + (isReset ? 'value="sqlLimit"' : '') + '></td>'
+            + '<td>'
+                + '<select class="form-control form-select" style="width: 100%" name="campo"><option value=""></option></select>'
+            + '</td>'
+            + '<input type="text" list="fieldsList" class="form-control" name="campo" ' + (isReset ? 'value="sqlLimit"' : '') + '></td>'
             + '<td><input type="text" class="form-control" name="valor_inicial" ' + (isReset ? 'value="100"' : '') + '></td>'
             + '<td><input type="text" class="form-control" name="valor_final" ' + (isReset ? 'value="100"' : '') + '></td>'
             + '<td>'
-                + '<select class="form-control" name="tipo">'
-                    + '<option value="1">MUST</option>'
-                    + '<option value="3">MUST NOT</option>'
-                    + '<option value="2">SHOULD</option>'
+                + '<select class="form-control form-select" name="tipo">'
+                    + '<option value="MUST">MUST</option>'
+                    + '<option value="MUST_NOT">MUST NOT</option>'
+                    + '<option value="SHOULD">SHOULD</option>'
                 + '</select>'
             + '</td>'
             + '<td>'
-                + '<select class="form-control" name="like">'
-                    + '<option value="NAO">Não</option>'
-                    + '<option value="SIM">Sim</option>'
+                + '<select class="form-control form-select" name="like">'
+                    + '<option value="false">Não</option>'
+                    + '<option value="true">Sim</option>'
                 + '</select>'
             + '</td>'
             + '<td class="text-center" style="vertical-align:middle"><a class="btn btn-sm btn-secondary removeConstraint" href="#">X</a></td>'
             + '</tr>'
         );
+
+        const select = constraint.find('select:first');
+
+        select.select2({
+            placeholder: "Selecione o Campo",
+            data: constraintsFields,
+            tags: true,
+            dropdownParent: MODAL,
+        });
+
+        if (isReset) {
+            select.val("sqlLimit").trigger("change");
+        }
+
+        $constraints.append(constraint);
     }
 
     function getConstraints() {
+        // Se é uma nova consulta retorna por padrão a sqlLimit
+        if (resetItems) {
+            return [{
+                fieldName: "sqlLimit",
+                initialValue: "100",
+                finalValue: "100",
+                contraintType: "MUST",
+                likeSearch: "false"
+            }];
+        }
+
         const rows = $constraints.find("tr");
 
         let datasetConstraints = [];
@@ -205,7 +233,7 @@
                 initialValue: fields[1].value,
                 finalValue: fields[2].value,
                 contraintType: fields[3].value,
-                likeSearch: fields[4].value == "SIM"
+                likeSearch: fields[4].value
             });
         }
 
@@ -225,17 +253,14 @@
     function setFields(queryResult) {
         const {columns} = queryResult;
 
-        FIELDS = columns;
         let fieldsToSelect = [];
         let fieldsToOrder = [];
 
-        const fieldsList = $("#fieldsList");
-
-        fieldsList.empty();
-
         for (let optionName of columns) {
-            const option = new Option(optionName, optionName);
-            fieldsList.append(option);
+            constraintsFields.push({
+                id: optionName,
+                text: optionName
+            });
             fieldsToSelect.push("<li>"+ optionName + "</li>");
             fieldsToOrder.push('<li><div class="form-check form-switch">'
                 + '<input type="checkbox" class="form-check-input" id="' + optionName + '">'
@@ -244,8 +269,9 @@
             );
         }
 
-        fieldsList.append(new Option("sqlLimit", "sqlLimit"));
-        fieldsList.append(new Option("tablename", "tablename"));
+        constraintsFields.push({id: "sqlLimit", text: "sqlLimit"});
+        constraintsFields.push({id: "tablename", text: "tablename"});
+
         $(FIELDS_TO_SELECT).append(fieldsToSelect);
         $(FIELDS_TO_ORDER).append(fieldsToOrder);
 
