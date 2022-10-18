@@ -80,8 +80,8 @@
                 "title": "Adicionar Servidor",
                 "category": "Fluig",
                 "icon": {
-                    "light": "dist/assets/images/light/add.svg",
-                    "dark": "dist/assets/images/dark/add.svg"
+                    "light": "dist/images/light/add.svg",
+                    "dark": "dist/images/dark/add.svg"
                 }
             },
             {
@@ -89,8 +89,8 @@
                 "title": "Excluir Servidor",
                 "category": "Fluig",
                 "icon": {
-                    "light": "dist/assets/images/light/trash.svg",
-                    "dark": "dist/assets/images/dark/trash.svg"
+                    "light": "dist/images/light/trash.svg",
+                    "dark": "dist/images/dark/trash.svg"
                 }
             },
             {
@@ -98,8 +98,8 @@
                 "title": "Atualizar",
                 "category": "Fluig",
                 "icon": {
-                    "light": "dist/assets/images/light/refresh.svg",
-                    "dark": "dist/assets/images/dark/refresh.svg"
+                    "light": "dist/images/light/refresh.svg",
+                    "dark": "dist/images/dark/refresh.svg"
                 }
             },
             {
@@ -107,8 +107,8 @@
                 "title": "Editar Servidor",
                 "category": "Fluig",
                 "icon": {
-                    "light": "dist/assets/images/light/edit.svg",
-                    "dark": "dist/assets/images/dark/edit.svg"
+                    "light": "dist/images/light/edit.svg",
+                    "dark": "dist/images/dark/edit.svg"
                 }
             },
             {
@@ -151,8 +151,8 @@
                 "title": "Consultar Dataset",
                 "category": "Fluig",
                 "icon": {
-                    "light": "dist/assets/images/light/preview.svg",
-                    "dark": "dist/assets/images/dark/preview.svg"
+                    "light": "dist/images/light/preview.svg",
+                    "dark": "dist/images/dark/preview.svg"
                 }
             }
         ],
@@ -284,7 +284,7 @@
                 {
                     "id": "fluig-config",
                     "title": "Fluig",
-                    "icon": "dist/assets/images/icon-brand.png"
+                    "icon": "dist/images/icon-brand.png"
                 }
             ]
         },
@@ -351,7 +351,6 @@
         "gulp-cli": "^2.3.0",
         "gulp-concat": "^2.6.1",
         "gulp-footer": "^2.1.0",
-        "gulp-rename": "^2.0.0",
         "gulp-uglify": "^3.0.2",
         "html5sortable": "^0.13.3",
         "jquery": "^3.6.1",

@@ -45,21 +45,21 @@ export class DatasetView {
             datasetOptions += `<option value="${dataset.datasetId}">${dataset.datasetId}</option>`;
         }
 
-        const htmlPath = vscode.Uri.file(path.join(this.context.extensionPath, 'dist', 'assets', 'dataset', 'dataset.html'));
+        const htmlPath = vscode.Uri.file(path.join(this.context.extensionPath, 'dist', 'views', 'dataset', 'dataset.html'));
         const runTemplate = compile(fs.readFileSync(htmlPath.with({ scheme: 'vscode-resource' }).fsPath));
 
         return runTemplate({
-            jquery: this.currentPanel?.webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'assets', 'jquery.min.js')),
-            bootstrapCss: this.currentPanel?.webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'assets', 'bootstrap.min.css')),
-            bootstrapJs: this.currentPanel?.webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'assets', 'bootstrap.min.js')),
-            select2Css: this.currentPanel?.webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'assets', 'select2.min.css')),
-            select2Js: this.currentPanel?.webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'assets', 'select2.min.js')),
-            datatablesCss: this.currentPanel?.webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'assets', 'datatables.min.css')),
-            datatablesJs: this.currentPanel?.webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'assets', 'datatables.min.js')),
-            html5SortableJs: this.currentPanel?.webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'assets', 'html5sortable.min.js')),
-            themeCss: this.currentPanel?.webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'assets', 'css', 'theme.css')),
-            datasetCss: this.currentPanel?.webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'assets', 'dataset', 'dataset.css')),
-            datasetJs: this.currentPanel?.webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'assets', 'dataset', 'dataset.js')),
+            jquery: this.currentPanel?.webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'libs', 'jquery.min.js')),
+            bootstrapCss: this.currentPanel?.webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'libs', 'bootstrap.min.css')),
+            bootstrapJs: this.currentPanel?.webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'libs', 'bootstrap.min.js')),
+            select2Css: this.currentPanel?.webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'libs', 'select2.min.css')),
+            select2Js: this.currentPanel?.webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'libs', 'select2.min.js')),
+            datatablesCss: this.currentPanel?.webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'libs', 'datatables.min.css')),
+            datatablesJs: this.currentPanel?.webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'libs', 'datatables.min.js')),
+            html5SortableJs: this.currentPanel?.webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'libs', 'html5sortable.min.js')),
+            themeCss: this.currentPanel?.webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'css', 'theme.css')),
+            datasetCss: this.currentPanel?.webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'views', 'dataset', 'dataset.css')),
+            datasetJs: this.currentPanel?.webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'views', 'dataset', 'dataset.js')),
             datasets: datasetOptions,
             serverName: this.server.name
         });

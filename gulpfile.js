@@ -1,13 +1,11 @@
 const { src, dest, series, parallel } = require('gulp');
 const concat = require('gulp-concat');
 const uglify = require('gulp-uglify');
-const rename = require('gulp-rename');
 const cleanCSS = require('gulp-clean-css');
 const footer = require('gulp-footer');
-const posix = require('path');
 const fs = require('fs');
 
-const destFolder = 'dist/assets';
+const destFolder = 'dist';
 
 function clean(cb) {
     try {
@@ -20,21 +18,21 @@ function clean(cb) {
 
 function buildJquery(cb) {
     src('node_modules/jquery/dist/jquery.min.js')
-        .pipe(dest(destFolder));
+        .pipe(dest(`${destFolder}/libs`));
 
     cb();
 }
 
 function buildBootstrapCss(cb) {
     src('node_modules/bootstrap/dist/css/bootstrap.min.css')
-        .pipe(dest(destFolder));
+        .pipe(dest(`${destFolder}/libs`));
 
     cb();
 }
 
 function buildBootstrapJs(cb) {
     src('node_modules/bootstrap/dist/js/bootstrap.min.js')
-        .pipe(dest(destFolder));
+        .pipe(dest(`${destFolder}/libs`));
 
     cb();
 }
@@ -45,7 +43,7 @@ function buildSelect2Css(cb) {
         'node_modules/select2-bootstrap-5-theme/dist/select2-bootstrap-5-theme.min.css',
     ])
         .pipe(concat('select2.min.css'))
-        .pipe(dest(destFolder));
+        .pipe(dest(`${destFolder}/libs`));
 
     cb();
 }
@@ -57,7 +55,7 @@ function buildSelect2Js(cb) {
     ])
         .pipe(concat('select2.min.js'))
         .pipe(footer(`\n$.fn.select2.defaults.set("language", "pt-BR");\n`))
-        .pipe(dest(destFolder));
+        .pipe(dest(`${destFolder}/libs`));
 
     cb();
 }
@@ -70,7 +68,7 @@ function buildDatatablesCss(cb) {
         'node_modules/datatables.net-scroller-bs5/css/scroller.bootstrap5.min.css',
     ])
         .pipe(concat('datatables.min.css'))
-        .pipe(dest(destFolder));
+        .pipe(dest(`${destFolder}/libs`));
 
     cb();
 }
@@ -92,59 +90,51 @@ function buildDatatablesJs(cb) {
     ])
         .pipe(concat('datatables.min.js'))
         .pipe(footer(`\n$.extend($.fn.dataTable.defaults, {language: ${ptBrJson}});\n`))
-        .pipe(dest(destFolder));
+        .pipe(dest(`${destFolder}/libs`));
 
     cb();
 }
 
 function buildHtml5Sortable(cb) {
     src('node_modules/html5sortable/dist/html5sortable.min.js')
-        .pipe(dest(destFolder));
+        .pipe(dest(`${destFolder}/libs`));
 
     cb();
 }
 
 function buildResourcesCss(cb) {
-    src('src/resources/**/*.css')
+    src('resources/**/*.css')
         .pipe(cleanCSS())
-        .pipe(rename(function (path) {
-            path.dirname = path.dirname.split(posix.sep).pop();
-        }))
         .pipe(dest(destFolder));
 
     cb();
 }
 
 function buildResourcesJs(cb) {
-    src('src/resources/**/*.js')
+    src('resources/**/*.js')
         .pipe(uglify())
-        .pipe(rename(function (path) {
-            path.dirname = path.dirname.split(posix.sep).pop();
-        }))
         .pipe(dest(destFolder));
 
     cb();
 }
 
 function buildResourcesHtml(cb) {
-    src('src/resources/**/*.html')
-        .pipe(rename(function (path) {
-            path.dirname = path.dirname.split(posix.sep).pop();
-        }))
+    src('resources/**/*.html')
         .pipe(dest(destFolder));
 
     cb();
 }
 
 function buildResourcesImages(cb) {
-    src('src/resources/images/**/*.{jpg,jpeg,png,svg}')
-        .pipe(rename(function (path) {
-            path.dirname = path.dirname.split(posix.sep).pop();
-        }))
-        .pipe(dest('dist/assets/images'));
+    src('resources/images/**/*.{jpg,jpeg,png,svg}')
+        .pipe(dest('dist/images'));
 
     cb();
 }
+
+// function mountResourcesDirname(originalDirname) {
+//     let
+// }
 
 exports.default = series(
     clean,

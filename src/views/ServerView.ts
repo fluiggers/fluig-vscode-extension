@@ -34,14 +34,14 @@ export class ServerView {
     }
 
     private getWebViewContent() {
-        const htmlPath = vscode.Uri.file(path.join(this.context.extensionPath, 'dist', 'assets', 'server', 'server.html'));
+        const htmlPath = vscode.Uri.file(path.join(this.context.extensionPath, 'dist', 'views', 'server', 'server.html'));
         const runTemplate = compile(fs.readFileSync(htmlPath.with({ scheme: 'vscode-resource' }).fsPath));
 
         return runTemplate({
-            jquery: this.currentPanel?.webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'assets', 'jquery.min.js')),
-            bootstrapCss: this.currentPanel?.webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'assets', 'bootstrap.min.css')),
-            themeCss: this.currentPanel?.webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'assets', 'css', 'theme.css')),
-            serverJs: this.currentPanel?.webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'assets', 'server', 'server.js')),
+            jquery: this.currentPanel?.webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'libs', 'jquery.min.js')),
+            bootstrapCss: this.currentPanel?.webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'libs', 'bootstrap.min.css')),
+            themeCss: this.currentPanel?.webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'css', 'theme.css')),
+            serverJs: this.currentPanel?.webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'views', 'server', 'server.js')),
             serverData: this.serverData,
             ssl: (this.serverData && this.serverData.ssl) ? this.serverData.ssl : false,
             confirmExporting: (this.serverData && this.serverData.confirmExporting) ? this.serverData.confirmExporting : false

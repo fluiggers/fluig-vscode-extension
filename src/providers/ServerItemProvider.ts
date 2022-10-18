@@ -18,8 +18,8 @@ export class ServerItem extends vscode.TreeItem {
     }
 
     iconPath = {
-        light: path.join(__filename, '..', '..', 'dist', 'assets', 'images', 'light', 'server-environment.svg'),
-        dark: path.join(__filename, '..', '..', 'dist', 'assets', 'images', 'dark', 'server-environment.svg')
+        light: path.join(__filename, '..', '..', 'dist', 'images', 'light', 'server-environment.svg'),
+        dark: path.join(__filename, '..', '..', 'dist', 'images', 'dark', 'server-environment.svg')
     };
 
     contextValue = 'serverItem';
@@ -35,8 +35,8 @@ export class DatasetItem extends ServerItem {
     }
 
     iconPath = {
-        light: path.join(__filename, '..', '..', 'dist', 'assets', 'images', 'light', 'database.svg'),
-        dark: path.join(__filename, '..', '..', 'dist', 'assets', 'images', 'dark', 'database.svg')
+        light: path.join(__filename, '..', '..', 'dist', 'images', 'light', 'database.svg'),
+        dark: path.join(__filename, '..', '..', 'dist', 'images', 'dark', 'database.svg')
     };
 
     contextValue = 'DatasetItem';
