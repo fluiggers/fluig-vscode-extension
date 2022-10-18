@@ -56,6 +56,7 @@ function buildSelect2Js(cb) {
         'node_modules/select2/dist/js/i18n/pt-BR.js',
     ])
         .pipe(concat('select2.min.js'))
+        .pipe(footer(`\n$.fn.select2.defaults.set("language", "pt-BR");\n`))
         .pipe(dest(destFolder));
 
     cb();
