@@ -29,22 +29,6 @@ export class DatasetView {
     }
 
     private async getWebViewContent() {
-        let datasets = null;
-
-        try {
-            datasets = await DatasetService.getDatasets(this.server);
-        } catch (error) {
-            this.showError(error);
-            throw error;
-        }
-
-        datasets = await DatasetService.getDatasets(this.server);
-        let datasetOptions = ``;
-
-        for (let dataset of datasets) {
-            datasetOptions += `<option value="${dataset.datasetId}">${dataset.datasetId}</option>`;
-        }
-
         const htmlPath = vscode.Uri.file(path.join(this.context.extensionPath, 'dist', 'views', 'dataset', 'dataset.html'));
         const runTemplate = compile(fs.readFileSync(htmlPath.with({ scheme: 'vscode-resource' }).fsPath));
 
@@ -60,7 +44,6 @@ export class DatasetView {
             themeCss: this.currentPanel?.webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'css', 'theme.css')),
             datasetCss: this.currentPanel?.webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'views', 'dataset', 'dataset.css')),
             datasetJs: this.currentPanel?.webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'views', 'dataset', 'dataset.js')),
-            datasets: datasetOptions,
             serverName: this.server.name
         });
     }
@@ -84,9 +67,39 @@ export class DatasetView {
                 this.consultDataset(obj);
                 break;
 
+            case 'load_datasets':
+                this.loadDatasets();
+                break;
+
             case 'error':
                 vscode.window.showErrorMessage(obj.message);
                 break;
+        }
+    }
+
+    private async loadDatasets() {
+        if (!this.currentPanel) {
+            return;
+        }
+
+        try {
+            let datasets = await DatasetService.getDatasets(this.server);
+            let datasetOptions = [];
+
+            for (let dataset of datasets) {
+                datasetOptions.push({
+                    id: dataset.datasetId,
+                    text: dataset.datasetId
+                });
+            }
+
+            this.currentPanel.webview.postMessage({
+                command: 'load_datasets',
+                datasets: datasetOptions
+            });
+        } catch (error) {
+            this.showError(error);
+            throw error;
         }
     }
 

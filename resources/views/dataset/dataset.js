@@ -17,11 +17,11 @@
     let constraintsFields = [];
 
     $(function () {
-        $("#dataset").select2({
-            placeholder: "Selecione o Dataset"
-        });
-
-
+        $loading = $("#loading").modal({
+            backdrop: "static",
+            keyboard: false,
+            focus: false
+        }).modal("show");
 
         $("#consultarDataset").on("click", getResultQuery);
         $("#atualizaConsulta").on("click", getResultQuery);
@@ -54,11 +54,8 @@
             itemSerializer: fieldsOrderedSerializer,
         });
 
-        $loading = $("#loading").modal({
-            backdrop: "static",
-            keyboard: false,
-            focus: false,
-            show: false
+        vscode.postMessage({
+            command: 'load_datasets'
         });
     });
 
@@ -66,6 +63,14 @@
         const message = event.data;
 
         switch (message.command) {
+            case 'load_datasets':
+                $("#dataset").select2({
+                    placeholder: "Selecione o Dataset",
+                    data: message.datasets
+                });
+                hideLoading();
+                break;
+
             case 'query_result':
                 const queryResult = message.queryResult
 
@@ -76,7 +81,6 @@
 
                 updateTableResult(queryResult);
                 hideLoading();
-                console.log("Carregou");
                 break;
         }
     });
