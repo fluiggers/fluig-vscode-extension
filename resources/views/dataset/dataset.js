@@ -265,6 +265,7 @@
     function setFields(queryResult) {
         const {columns} = queryResult;
 
+        constraintsFields = [];
         let fieldsToSelect = [];
         let fieldsToOrder = [];
 
