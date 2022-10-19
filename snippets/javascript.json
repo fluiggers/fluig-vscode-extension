@@ -200,5 +200,60 @@
             ""
         ],
         "description": "Função executada quando um elemento é desmarcado no Zoom (front-end)."
-    }
+    },
+
+    "fluig-dataset-async": {
+        "prefix": "fluig-dataset-async",
+        "body": [
+            "var callback = {",
+            "    success: function (data) {",
+            "        if (data != undefined && data.values.length > 0) {",
+            "            for (var i = 0; i < data.values.length; i++) {",
+            "                $0",
+            "            }",
+            "        } else {",
+            "            // Vazio",
+            "        }",
+            "    },",
+            "    error: function (jqXHR, textStatus, errorThrown) {",
+            "        // Erro",
+            "    }",
+            "};",
+            "\n",
+            "var c1 = DatasetFactory.createConstraint('${1:constraint}', '${2:initialValue}', '${3:finalValue}', ConstraintType.MUST);",
+            "var constraints = [c1];",
+            "var dataset = DatasetFactory.getDataset('${4:datasetName}', ${5:null}, constraints, null, callback);"
+        ],
+        "description": "Chamar Dataset de modo Assíncrono (front-end)."
+    },
+
+    "fluig-modal": {
+        "prefix": "fluig-modal",
+        "body": [
+            "var myModal = FLUIGC.modal(",
+            "    {",
+            "        title: '${1:Título}',",
+            "        content: '${2:Conteúdo}',",
+            "        id: '${3:fluig-modal}',",
+            "        actions: [",
+            "            {",
+            "                'label': '${3:Salvar}',",
+            "                'bind': 'data-save',",
+            "            },",
+            "            {",
+            "                'label': '${4:Fechar}',",
+            "                'autoClose': true,",
+            "            }",
+            "        ]",
+            "    },",
+            "    function (err, data) {",
+            "        if (err) {",
+            "            // Tratar Erro",
+            "        } else {",
+            "            // Fazer algo com os dados (data)",
+            "        }",
+            "    }",
+            ");"
+        ],
+        "description": "Criar modal do Fluig (front-end)"
 }
