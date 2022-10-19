@@ -26,15 +26,10 @@
             </div>
         </div>
 
-        <div class="text-center mt-5 d-none" id="loading">
-            <div class="spinner-border text-primary ml-auto" style="width: 3rem; height: 3rem;" role="status" aria-hidden="true"></div>
-            <p>Carregando</p>
-        </div>
-
         <table id="tbResultDataset" class="table table-striped table-sm table-bordered"></table>
 
         <!-- Inicio Modal Constraints-->
-        <div class="modal" id="modalConfigFiltro" tabindex="-1" role="dialog" aria-labelledby="modalConfigFiltro" aria-hidden="true">
+        <div class="modal fade" id="modalConfigFiltro" tabindex="-1" role="dialog" aria-hidden="true">
             <div class="modal-dialog modal-xl" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -116,7 +111,18 @@
             </div>
         </div>
 
-        <!-- Fim Modal Constraints-->
+        <div class="modal" id="loading" tabindex="-1" role="dialog" aria-modal="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-body text-center">
+                        <div class="spinner-border" style="width: 3rem; height: 3rem; margin-bottom: 5px;" role="status" aria-hidden="true"></div>
+                        <p>Carregando</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
         <script src="${d.jquery}"></script>
         <script src="${d.bootstrapJs}"></script>
         <script src="${d.select2Js}"></script>

@@ -21,6 +21,8 @@
             placeholder: "Selecione o Dataset"
         });
 
+
+
         $("#consultarDataset").on("click", getResultQuery);
         $("#atualizaConsulta").on("click", getResultQuery);
         $("#addConstraint").on("click", () => addConstraints(false));
@@ -52,7 +54,12 @@
             itemSerializer: fieldsOrderedSerializer,
         });
 
-        $loading = $("#loading");
+        $loading = $("#loading").modal({
+            backdrop: "static",
+            keyboard: false,
+            focus: false,
+            show: false
+        });
     });
 
     window.addEventListener('message', event => {
@@ -60,7 +67,6 @@
 
         switch (message.command) {
             case 'query_result':
-                $loading.addClass("d-none");
                 const queryResult = message.queryResult
 
                 if (resetItems) {
@@ -69,6 +75,8 @@
                 }
 
                 updateTableResult(queryResult);
+                hideLoading();
+                console.log("Carregou");
                 break;
         }
     });
@@ -126,7 +134,7 @@
             return;
         }
 
-        $loading.removeClass("d-none");
+        showLoading();
 
         if (currentDataset != dataset) {
             currentDataset = dataset;
@@ -295,5 +303,23 @@
         return {
             field,
         }
+    }
+
+    function showLoading() {
+        $loading.modal("show");
+    }
+
+    function hideLoading() {
+        $loading.modal("hide");
+
+        // Força fechamento da modal
+        setTimeout(
+            function () {
+                if ($loading.hasClass("show")) {
+                    $loading.modal("hide");
+                }
+            },
+            500
+        );
     }
 }());
