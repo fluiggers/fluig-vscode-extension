@@ -55,6 +55,7 @@ function buildSelect2Js(cb) {
     ])
         .pipe(concat('select2.min.js'))
         .pipe(footer(`\n$.fn.select2.defaults.set("language", "pt-BR");\n`))
+        .pipe(footer(`\n$(document).on('select2:open', () => document.querySelector('.select2-search__field').focus());\n`)) // Corrige bug JQuery + Select2 no foco
         .pipe(dest(`${destFolder}/libs`));
 
     cb();
@@ -131,10 +132,6 @@ function buildResourcesImages(cb) {
 
     cb();
 }
-
-// function mountResourcesDirname(originalDirname) {
-//     let
-// }
 
 exports.default = series(
     clean,
