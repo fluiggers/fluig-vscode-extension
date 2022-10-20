@@ -46,6 +46,9 @@ aberto.
 Com a extensão instalada será adicionada a visão de gerenciamento de servidores. Nela é possível
 adicionar, editar e remover servidores Fluig.
 
+A senha é criptografada utilizando identificadores do computador como chave da criptografia, assim não é possível
+decifrar a senha em outro computador, prevenindo a perda de credenciais.
+
 ![Gerenciando Servidores](images/gerenciar_servidores.jpg)
 
 Ao clicar em um servidor é possível visualizar alguns comandos disponíveis. Com eles podemos consultar dataset, serviços etc.
