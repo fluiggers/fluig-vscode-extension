@@ -63,8 +63,6 @@
     }
 
     window.addEventListener('message', event => {
-        const message = event.data;
-
         $("#btnSalvar").removeClass("loading").attr("disabled", false);
     });
 }());

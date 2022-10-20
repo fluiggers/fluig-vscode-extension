@@ -82,6 +82,10 @@
                 updateTableResult(queryResult);
                 hideLoading();
                 break;
+
+            case 'error':
+                hideLoading();
+                break;
         }
     });
 

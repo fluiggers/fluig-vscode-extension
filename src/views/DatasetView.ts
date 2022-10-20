@@ -97,10 +97,16 @@ export class DatasetView {
                 command: 'load_datasets',
                 datasets: datasetOptions
             });
-        } catch (error) {
-            this.showError(error);
-            throw error;
-        }
+        } catch(err: any) {
+            const message = (err instanceof Error) ? err.message : err;
+
+            vscode.window.showErrorMessage(`Erro ao carregar os datasets do servidor ${this.server.name}. Erro retornado: ${message}`);
+
+            this.currentPanel.webview.postMessage({
+                status: 'error',
+                message: message,
+            });
+        };
     }
 
     private async consultDataset(queryInformation: any) {
@@ -122,22 +128,15 @@ export class DatasetView {
                 queryResult: queryResult
             });
 
-        } catch (error) {
-            this.showError(error);
-        }
-    }
+        } catch(err: any) {
+            const message = (err instanceof Error) ? err.message : err;
 
-    private showError(error: any) {
-        let message = "";
+            vscode.window.showErrorMessage(`Erro ao consultar o Dataset ${queryInformation.datasetId}. Erro retornado: ${message}`);
 
-        if (typeof error === "string") {
-            message = error;
-        } else if (error instanceof Error) {
-            message = error.message;
-        }
-
-        if (message) {
-            vscode.window.showErrorMessage(message);
-        }
+            this.currentPanel.webview.postMessage({
+                status: 'error',
+                message: message,
+            });
+        };
     }
 }
