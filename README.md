@@ -8,7 +8,7 @@ gerenciar seus Servidores Fluig e permitir Importar e Exportar Datasets.
 Os comandos aparecem ao clicar com o botão direito do mouse nos arquivos e diretórios ou
 pressionando F1 (Command Palette), sendo obrigatório ter um Diretório / Workspace aberto.
 
-![Novo Dataset](images/dataset.gif)
+![Opções](images/opcoes.jpg)
 
 ## Instalação
 
@@ -54,9 +54,14 @@ Ao clicar em um servidor é possível visualizar alguns comandos disponíveis. C
 
 Ao clicar no servidor será disponibilizada a opção Dataset. Nela você pode consultar um dataset do servidor.
 
-![Opção Dataset](images/dataset_consultar_menu.jpg)
+A consulta de Dataset permite configurar as Constraints, selecionar os campos a serem exibidos e também a ordenação.
 
-![Tela de Consulta](images/dataset_consultar_resultado.jpg)
+Diferente do plugin do Eclipse a Consulta de Dataset permite informar uma Constraint que não seja um campo do Dataset,
+sendo útil para consulta de Pai Filho ou de Datasets que aceitam Constraints que não são campos retornados.
+
+Diferente do Plugin do Eclipse é possível efetuar várias consultas aos Datasets, cada consulta em sua aba.
+
+![Tela de Consulta](images/dataset_consultar.jpg)
 
 ## Novo Dataset
 
@@ -158,15 +163,11 @@ dos comandos de importação (`Fluig: Importar Dataset` ou `Fluig: Importar Vár
 Após selecionar o servidor é exibido a lista de Datasets do servidor para selecionar qual/quais
 serão importados.
 
-![Importar Dataset](images/importar_dataset.gif)
-
 ## Exportar Dataset
 
 Para exportar Dataset clique com o botão direito do mouse sobre o Dataset e selecione `Exportar Dataset`.
 
 Após selecionar o servidor você poderá escolher um Dataset para ser editado ou selecionar **Novo Dataset** para criar o Dataset.
-
-![Exportar Dataset](images/exportar_dataset.gif)
 
 ## Importar Formulário
 
@@ -229,6 +230,9 @@ ser utilizado em qual dos dois ambientes.
 - **fluig-data-atual**: Pega a data atual formatada em PT-BR;
 - **fluig-zoom-removed**: Função executada ao desmarcar item no Zoom;
 - **fluig-zoom-selected**: Função executada ao selecionar item no Zoom;
+- **fluig-dataset-async**: Chamar Dataset de modo Assíncrono
+- **fluig-modal**: Criar modal do Fluig
+- **fluig-widget**: Criar o esqueleto de uma Widget
 
 ## Todo
 

@@ -2,6 +2,18 @@
 
 Lista de atualizações da Extensão.
 
+## 1.15.0
+
+Melhorias de Interface, otimização de performance e correção de bugs nas chamadas aos Datasets.
+
+Ao efetuar consultas de Datasets as Constraints não estavam filtrando corretamente.
+
+Adição dos seguintes snippets JavaScript (front-end):
+
+- fluig-dataset-async
+- fluig-modal
+- fluig-widget
+
 ## 1.14.0
 
 Adicionada a opção de efetuar a consulta a um Dataset indicando quais colunas devem vir ordenadas.
