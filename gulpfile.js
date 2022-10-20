@@ -133,6 +133,13 @@ function buildResourcesImages(cb) {
     cb();
 }
 
+function buildTemplates(cb) {
+    src('templates/**')
+        .pipe(dest('dist/templates'));
+
+    cb();
+}
+
 exports.default = series(
     clean,
     parallel(
@@ -147,7 +154,8 @@ exports.default = series(
         buildResourcesJs,
         buildResourcesCss,
         buildResourcesImages,
-        buildResourcesHtml
+        buildResourcesHtml,
+        buildTemplates
     )
 );
 
@@ -171,7 +179,4 @@ exports.buildResources = parallel([
     buildResourcesHtml,
 ]);
 
-exports.resourcesJs = buildResourcesJs;
-exports.resourcesCss = buildResourcesCss;
-exports.resourcesImages = buildResourcesImages;
-exports.resourcesHtml = buildResourcesHtml;
+exports.buildTemplates = buildTemplates;

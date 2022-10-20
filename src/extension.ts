@@ -54,7 +54,7 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerCommand("fluig-vscode-extension.newGlobalEvent", createGlobalEvent)
     );
 
-    EXTENSION_PATHS.TEMPLATES = getTemplateDirectoryPath();
+    EXTENSION_PATHS.TEMPLATES = getTemplateDirectoryPath(context);
     EXTENSION_PATHS.FORM_EVENTS = posix.join(EXTENSION_PATHS.TEMPLATES, 'formEvents')
     EXTENSION_PATHS.WORKFLOW_EVENTS = posix.join(EXTENSION_PATHS.TEMPLATES, 'workflowEvents')
     EXTENSION_PATHS.GLOBAL_EVENTS = posix.join(EXTENSION_PATHS.TEMPLATES, 'globalEvents')
@@ -408,14 +408,8 @@ async function createWorkflowEvent(folderUri: vscode.Uri) {
  *
  * @returns O caminho do diretório de templates da Extensão
  */
-function getTemplateDirectoryPath(): string {
-    const path = vscode.extensions.getExtension("BrunoGasparetto.fluig-vscode-extension")?.extensionPath;
-
-    if (!path) {
-        throw "Não foi possível encontrar o diretório de templates.";
-    }
-
-    return posix.join(path, 'templates');
+function getTemplateDirectoryPath(context: vscode.ExtensionContext): string {
+    return posix.join(context.extensionPath, 'dist', 'templates');
 }
 
 /**

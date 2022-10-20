@@ -4,7 +4,6 @@ out/**
 src/**
 .gitignore
 .yarnrc
-vsc-extension-quickstart.md
 **/tsconfig.json
 **/.eslintrc.json
 **/*.map
@@ -12,3 +11,5 @@ vsc-extension-quickstart.md
 node_modules/**
 resources/**
 gulpfile.js
+webpack.config.js
+templates/**
