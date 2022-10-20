@@ -100,7 +100,7 @@ export class ServerView {
             vscode.window.showErrorMessage(`Falha na conexão com o servidor ${server.name}. Erro retornado: ${e.message || e}`);
 
             webview.postMessage({
-                status: 'error',
+                command: 'error',
                 message: e.message || e
             });
         });

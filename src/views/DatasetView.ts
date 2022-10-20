@@ -103,7 +103,7 @@ export class DatasetView {
             vscode.window.showErrorMessage(`Erro ao carregar os datasets do servidor ${this.server.name}. Erro retornado: ${message}`);
 
             this.currentPanel.webview.postMessage({
-                status: 'error',
+                command: 'error',
                 message: message,
             });
         };

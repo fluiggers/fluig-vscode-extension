@@ -2,6 +2,10 @@
 
 Lista de atualizações da Extensão.
 
+## 1.15.1
+
+Corrige o bug de não fechar a tela de loading quando há erro de consulta ao Dataset.
+
 ## 1.15.0
 
 Melhorias de Interface, otimização de performance e correção de bugs nas chamadas aos Datasets.
