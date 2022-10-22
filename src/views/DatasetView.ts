@@ -100,12 +100,12 @@ export class DatasetView {
         } catch(err: any) {
             const message = (err instanceof Error) ? err.message : err;
 
-            vscode.window.showErrorMessage(`Erro ao carregar os datasets do servidor ${this.server.name}. Erro retornado: ${message}`);
-
             this.currentPanel.webview.postMessage({
                 command: 'error',
                 message: message,
             });
+
+            vscode.window.showErrorMessage(`Erro ao carregar os datasets do servidor ${this.server.name}. Erro retornado: ${message}`);
         };
     }
 
@@ -131,12 +131,12 @@ export class DatasetView {
         } catch(err: any) {
             const message = (err instanceof Error) ? err.message : err;
 
-            vscode.window.showErrorMessage(`Erro ao consultar o Dataset ${queryInformation.datasetId}. Erro retornado: ${message}`);
-
             this.currentPanel.webview.postMessage({
-                status: 'error',
+                command: 'error',
                 message: message,
             });
+
+            vscode.window.showErrorMessage(`Erro ao consultar o Dataset ${queryInformation.datasetId}. Erro retornado: ${message}`);
         };
     }
 }

@@ -97,12 +97,12 @@ export class ServerView {
                 this.currentPanel.dispose();
             }
         }).catch((e) => {
-            vscode.window.showErrorMessage(`Falha na conexão com o servidor ${server.name}. Erro retornado: ${e.message || e}`);
-
             webview.postMessage({
                 command: 'error',
                 message: e.message || e
             });
+
+            vscode.window.showErrorMessage(`Falha na conexão com o servidor ${server.name}. Erro retornado: ${e.message || e}`);
         });
     }
 }
