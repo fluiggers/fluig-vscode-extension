@@ -1,3 +1,4 @@
+import * as vscode from "vscode";
 import axios from "axios";
 import { ServerDTO } from "../models/ServerDTO";
 import * as https from 'https';
@@ -298,6 +299,15 @@ export class DatasetService {
 
         if (!server) {
             return;
+        }
+
+        // Ativado pelo Atalho
+        if (!fileUri) {
+            if (!vscode.window.activeTextEditor) {
+                vscode.window.showErrorMessage("Não há editor de texto ativo com Dataset");
+                return;
+            }
+            fileUri = vscode.window.activeTextEditor.document.uri;
         }
 
         const datasets = await DatasetService.getDatasetsCustom(server);

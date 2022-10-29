@@ -279,6 +279,14 @@
                 }
             ]
         },
+        "keybindings":[
+            {
+                "command": "fluig-vscode-extension.exportDataset",
+                "key": "ctrl+f9",
+                "mac": "cmd+f9",
+                "when": "editorTextFocus && resourcePath =~ /[\\/\\\\]datasets[\\/\\\\].+$/"
+            }
+        ],
         "viewsContainers": {
             "activitybar": [
                 {
