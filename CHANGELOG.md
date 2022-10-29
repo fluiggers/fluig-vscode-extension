@@ -2,6 +2,16 @@
 
 Lista de atualizações da Extensão.
 
+## 1.16.0
+
+Adiciona atalhos para:
+
+- Exportar Dataset (CTRL + F9 / CMD + F9)
+- Novo Dataset (CTRL + F10 / CMD + F10)
+- Novo Formulário (CTRL + F11 / CMD + F11)
+- Novo Evento de Formulário (CTRL + F12 / CMD + F12)
+- Novo Evento de Processo (CTRL + F12 / CMD + F12)
+
 ## 1.15.2
 
 Realmente corrige o bug de não fechar a tela de loading quando há erro de consulta ao Dataset. Ainda havia uma

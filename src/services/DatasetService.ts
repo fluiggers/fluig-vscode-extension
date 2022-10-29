@@ -1,3 +1,4 @@
+import * as vscode from "vscode";
 import axios from "axios";
 import { ServerDTO } from "../models/ServerDTO";
 import * as https from 'https';

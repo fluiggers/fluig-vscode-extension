@@ -73,7 +73,8 @@ Esse comando cria um arquivo JavaScript, após você preencher o nome do Dataset
 
 O arquivo vem com as quatro funções básicas de datasets que o Fluig disponibiliza.
 
-Você pode executar esse comando no **Command Palette** ou com o menu de contexto no **File Explorer**.
+Você pode executar esse comando no **Command Palette**, no menu de contexto no **File Explorer** ou pelo
+atalho **CTRL + F10** (CMD + F10 no Mac).
 
 ## Novo Formulário
 
@@ -82,7 +83,8 @@ Esse diretório é criado dentro do diretório `forms` do seu projeto Fluig.
 
 O arquivo HTML vem com o esqueleto básico de um formulário Fluig utilizando o **Fluig Style Guide**.
 
-Você pode executar esse comando no **Command Palette** ou com o menu de contexto no **File Explorer**.
+Você pode executar esse comando no **Command Palette**, no menu de contexto no **File Explorer** ou pelo
+atalho **CTRL + F11** (CMD + F11 no Mac).
 
 ## Novo Evento Global
 
@@ -103,8 +105,9 @@ Eventos disponibilizados:
 Esse comando cria um arquivo JavaScript, após selecionar o evento, no diretório `events` do
 formulário selecionado.
 
-Esse comando só é exibido no menu de contexto no **File Explorer** ao selecionar um **Formulário**
-ou qualquer arquivo / diretório que esteja dentro de um formulário.
+Esse comando é exibido no menu de contexto no **File Explorer** ao selecionar um **Formulário**
+ou qualquer arquivo / diretório que esteja dentro de um formulário. També é possível utilizar com o
+atalho **CTRL + F12** (CMD + F12 no Mac) enquanto estiver editando algum arquivo do formulário.
 
 O arquivo JavaScript contém a estrutura da função do evento selecionado.
 
@@ -124,8 +127,10 @@ Eventos disponibilizados:
 Esse comando cria um arquivo JavaScript, após selecionar o evento, no diretório `workflow/scripts`
 do seu projeto Fluig.
 
-Esse comando só é exibido no menu de contexto no **File Explorer** ao selecionar um **Diagrama**,
-que são arquivos com a extensão **.process** e estão no diretório `workflow/diagrams`.
+Esse comando é exibido no menu de contexto no **File Explorer** ao selecionar um **Diagrama**,
+que são arquivos com a extensão **.process** e estão no diretório `workflow/diagrams`, ou ao selecionar um evento de
+processo, que são arquivos .js que estão em `workflow/scripts`. Também é possível acionar o comando com o atalho
+**CTRL + F12** (CMD + F12 no Mac) enquanto estiver editando um evento de processo.
 
 O arquivo JavaScript será nomeado seguindo a regra do Fluig (nome_do_diagrama.nome_do_evento.js) e
 contém a estrutura da função do evento selecionado.
@@ -168,9 +173,11 @@ serão importados.
 
 ## Exportar Dataset
 
-Para exportar Dataset clique com o botão direito do mouse sobre o Dataset e selecione `Exportar Dataset`.
+Para exportar Dataset clique com o botão direito do mouse sobre o Dataset e selecione `Exportar Dataset` ou,
+enquanto editando o dataset, utilize o atalho **CTRL + F9** (CMD + F9 no Mac).
 
-Após selecionar o servidor você poderá escolher um Dataset para ser editado ou selecionar **Novo Dataset** para criar o Dataset.
+Após selecionar o servidor você poderá escolher um dos datasets listados para efetuar uma edição ou
+selecionar a opção **Novo Dataset** para criar o Dataset no servidor..
 
 ## Importar Formulário
 
