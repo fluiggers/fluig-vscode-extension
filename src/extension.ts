@@ -119,7 +119,18 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(
         vscode.commands.registerCommand(
             "fluig-vscode-extension.exportDataset",
-            (fileUri: vscode.Uri) => DatasetService.export(fileUri)
+            function (fileUri: vscode.Uri) {
+                // Ativado pelo Atalho
+                if (!fileUri) {
+                    if (!vscode.window.activeTextEditor) {
+                        vscode.window.showErrorMessage("Não há editor de texto ativo com Dataset");
+                        return;
+                    }
+                    fileUri = vscode.window.activeTextEditor.document.uri;
+                }
+
+                DatasetService.export(fileUri);
+            }
         )
     );
 

@@ -301,15 +301,6 @@ export class DatasetService {
             return;
         }
 
-        // Ativado pelo Atalho
-        if (!fileUri) {
-            if (!vscode.window.activeTextEditor) {
-                vscode.window.showErrorMessage("Não há editor de texto ativo com Dataset");
-                return;
-            }
-            fileUri = vscode.window.activeTextEditor.document.uri;
-        }
-
         const datasets = await DatasetService.getDatasetsCustom(server);
         const items = [];
         const path = fileUri.fsPath.split("\\");
