@@ -285,6 +285,22 @@
                 "key": "ctrl+f9",
                 "mac": "cmd+f9",
                 "when": "editorTextFocus && resourcePath =~ /[\\/\\\\]datasets[\\/\\\\].+$/"
+            },
+            {
+                "command": "fluig-vscode-extension.newDataset",
+                "key": "ctrl+f10",
+                "mac": "cmd+f10"
+            },
+            {
+                "command": "fluig-vscode-extension.newForm",
+                "key": "ctrl+f11",
+                "mac": "cmd+f11"
+            },
+            {
+                "command": "fluig-vscode-extension.newFormEvent",
+                "key": "ctrl+f12",
+                "mac": "cmd+f12",
+                "when": "editorTextFocus && resourcePath =~ /[\\/\\\\]forms[\\/\\\\].+$/"
             }
         ],
         "viewsContainers": {

@@ -242,6 +242,15 @@ async function createFormEvent(folderUri: vscode.Uri) {
         return;
     }
 
+    // Ativado pelo Atalho
+    if (!folderUri) {
+        if (!vscode.window.activeTextEditor) {
+            vscode.window.showErrorMessage("Não há editor de texto ativo com Dataset");
+            return;
+        }
+        folderUri = vscode.window.activeTextEditor.document.uri;
+    }
+
     if (!folderUri.path.includes("/forms/")) {
         vscode.window.showErrorMessage("Necessário selecionar um formulário para criar o evento.");
         return;
