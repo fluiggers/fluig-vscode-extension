@@ -74,7 +74,7 @@ Esse comando cria um arquivo JavaScript, após você preencher o nome do Dataset
 O arquivo vem com as quatro funções básicas de datasets que o Fluig disponibiliza.
 
 Você pode executar esse comando no **Command Palette**, no menu de contexto no **File Explorer** ou pelo
-atalho **CTRL + F10** (CMD + 10 no Mac).
+atalho **CTRL + F10** (CMD + F10 no Mac).
 
 ## Novo Formulário
 
