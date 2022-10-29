@@ -361,7 +361,16 @@ async function createWorkflowEvent(folderUri: vscode.Uri) {
         return;
     }
 
-    if (!folderUri.path.endsWith(".process")) {
+    // Ativado pelo Atalho
+    if (!folderUri) {
+        if (!vscode.window.activeTextEditor) {
+            vscode.window.showErrorMessage("Não há editor de texto ativo com Dataset");
+            return;
+        }
+        folderUri = vscode.window.activeTextEditor.document.uri;
+    }
+
+    if (!folderUri.path.endsWith(".process") && !folderUri.path.endsWith(".js")) {
         vscode.window.showErrorMessage("Necessário selecionar um Processo para criar o evento.");
         return;
     }
@@ -395,7 +404,11 @@ async function createWorkflowEvent(folderUri: vscode.Uri) {
         isNewFunction = true;
     }
 
-    const processName: string = folderUri.path.replace(/.*\/(\w+)\.process$/, "$1");
+    const processName: string =
+        folderUri.path.endsWith(".process")
+        ? folderUri.path.replace(/.*\/(\w+)\.process$/, "$1")
+        : folderUri.path.replace(/.*\/workflow\/scripts\/([^.]+).+\.js$/, "$1");
+
     const eventFilename = `${processName}.${eventName}.js`;
     const workspaceFolderUri = vscode.workspace.workspaceFolders[0].uri;
     const eventUri = workspaceFolderUri.with({

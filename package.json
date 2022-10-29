@@ -2,7 +2,7 @@
     "name": "fluig-vscode-extension",
     "displayName": "Fluig - Extensão VS Code",
     "description": "Extensão para agilizar o desenvolvimento para o TOTVS Fluig no VS Code",
-    "version": "1.15.2",
+    "version": "1.16.0",
     "publisher": "BrunoGasparetto",
     "repository": {
         "type": "git",
@@ -228,7 +228,7 @@
                 },
                 {
                     "command": "fluig-vscode-extension.newWorkflowEvent",
-                    "when": "resourceExtname == .process",
+                    "when": "resourceExtname == .process || resourcePath =~ /[\\/\\\\]workflow[\\/\\\\]scripts[\\/\\\\].+\\.js$/",
                     "group": "1_Fluig@0"
                 }
             ],
@@ -301,6 +301,12 @@
                 "key": "ctrl+f12",
                 "mac": "cmd+f12",
                 "when": "editorTextFocus && resourcePath =~ /[\\/\\\\]forms[\\/\\\\].+$/"
+            },
+            {
+                "command": "fluig-vscode-extension.newWorkflowEvent",
+                "key": "ctrl+f12",
+                "mac": "cmd+f12",
+                "when": "editorTextFocus && resourcePath =~ /[\\/\\\\]workflow[\\/\\\\]scripts[\\/\\\\].+\\.js$/"
             }
         ],
         "viewsContainers": {
