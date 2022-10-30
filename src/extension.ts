@@ -463,6 +463,11 @@ function getTemplatesNameFromPath(path: string): string[] {
 }
 
 function installDeclarationLibrary() {
+    if (!vscode.workspace.workspaceFolders) {
+        vscode.window.showInformationMessage("Você precisa estar em um diretório / workspace.");
+        return;
+    }
+
     const axiosConfig: AxiosRequestConfig = {
         responseType: "stream"
     };
