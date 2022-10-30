@@ -92,7 +92,6 @@ Adição do snippet JavaScript (fluig-paifilho-loop-workflow) para percorrer Pai
 
 Adição do snippet JavaScript (fluig-consulta-jdbc) para facilitar consulta direta ao Banco de Dados com JDBC.
 
-
 ## 1.5.0
 
 Adição dos comandos:
