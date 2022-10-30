@@ -45,11 +45,17 @@
         "onCommand:fluig-vscode-extension.importGlobalEvent",
         "onCommand:fluig-vscode-extension.importManyGlobalEvent",
         "onCommand:fluig-vscode-extension.datasetView",
+        "onCommand:fluig-vscode-extension.installDeclarationLibrary",
         "onView:fluig-vscode-extension.servers"
     ],
     "main": "./dist/extension.js",
     "contributes": {
         "commands": [
+            {
+                "command": "fluig-vscode-extension.installDeclarationLibrary",
+                "title": "Instalar Declarações de Tipo",
+                "category": "Fluig"
+            },
             {
                 "command": "fluig-vscode-extension.newDataset",
                 "title": "Novo Dataset",
