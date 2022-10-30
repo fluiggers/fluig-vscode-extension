@@ -2,6 +2,11 @@
 
 Lista de atualizações da Extensão.
 
+## 1.17.0
+
+Adiciona o comando `Instalar Declarações de Tipo` para instalar a biblioteca de declarações de tipo puxando os
+arquivos mais atualizados do GitHub.
+
 ## 1.16.0
 
 Adiciona atalhos para:
