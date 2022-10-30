@@ -2,6 +2,11 @@
 
 Lista de atualizações da Extensão.
 
+## 1.17.0
+
+Adiciona o comando `Instalar Declarações de Tipo` para instalar a biblioteca de declarações de tipo puxando os
+arquivos mais atualizados do GitHub.
+
 ## 1.16.0
 
 Adiciona atalhos para:
@@ -91,7 +96,6 @@ Adição do snippet JavaScript (fluig-paifilho-loop-workflow) para percorrer Pai
 ## 1.6.0
 
 Adição do snippet JavaScript (fluig-consulta-jdbc) para facilitar consulta direta ao Banco de Dados com JDBC.
-
 
 ## 1.5.0
 

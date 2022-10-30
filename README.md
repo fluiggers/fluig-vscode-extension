@@ -22,6 +22,10 @@ Essa extensão cria os arquivos utilizando os tipos declarados na biblioteca [De
 para o Fluig](https://github.com/fluiggers/fluig-declaration-type) para ter auto-complete no
 VS Code, por isso é recomendado que ela seja instalada.
 
+Você pode instalar a **Declaração de Tipos para o Fluig** baixando o último release disponibilizado no GitHub ou
+pode executar o comando `Fluig: Instalar Declarações de Tipo`, no **Command Palette** (normalmente com a tecla de atalho F1),
+para que a Extensão baixe os arquivos para o seu workspace / diretório.
+
 ## Como utilizar
 
 Para utilizar os comandos de criação de arquivos é obrigatório estar com um diretório / workspace

@@ -2,7 +2,7 @@
     "name": "fluig-vscode-extension",
     "displayName": "Fluig - Extensão VS Code",
     "description": "Extensão para agilizar o desenvolvimento para o TOTVS Fluig no VS Code",
-    "version": "1.16.0",
+    "version": "1.17.0",
     "publisher": "BrunoGasparetto",
     "repository": {
         "type": "git",
@@ -45,11 +45,17 @@
         "onCommand:fluig-vscode-extension.importGlobalEvent",
         "onCommand:fluig-vscode-extension.importManyGlobalEvent",
         "onCommand:fluig-vscode-extension.datasetView",
+        "onCommand:fluig-vscode-extension.installDeclarationLibrary",
         "onView:fluig-vscode-extension.servers"
     ],
     "main": "./dist/extension.js",
     "contributes": {
         "commands": [
+            {
+                "command": "fluig-vscode-extension.installDeclarationLibrary",
+                "title": "Instalar Declarações de Tipo",
+                "category": "Fluig"
+            },
             {
                 "command": "fluig-vscode-extension.newDataset",
                 "title": "Novo Dataset",
@@ -176,6 +182,10 @@
                 },
                 {
                     "command": "fluig-vscode-extension.editServer",
+                    "when": "false"
+                },
+                {
+                    "command": "fluig-vscode-extension.datasetView",
                     "when": "false"
                 }
             ],

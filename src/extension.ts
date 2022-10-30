@@ -1,11 +1,13 @@
 import * as vscode from "vscode";
 import { posix } from "path";
-import { readFileSync } from "fs";
+import { readFileSync, createWriteStream } from "fs";
 import { DatasetItem, ServerItem, ServerItemProvider } from "./providers/ServerItemProvider";
+import axios, { AxiosRequestConfig } from "axios";
 import { glob } from "glob";
 import { DatasetService } from "./services/DatasetService";
 import { FormService } from "./services/FormService";
 import { GlobalEventService } from "./services/GlobalEventService";
+import { UtilsService } from "./services/UtilsService";
 
 interface ExtensionsPath {
     TEMPLATES: string,
@@ -52,6 +54,10 @@ export function activate(context: vscode.ExtensionContext) {
 
     context.subscriptions.push(
         vscode.commands.registerCommand("fluig-vscode-extension.newGlobalEvent", createGlobalEvent)
+    );
+
+    context.subscriptions.push(
+        vscode.commands.registerCommand("fluig-vscode-extension.installDeclarationLibrary", installDeclarationLibrary)
     );
 
     EXTENSION_PATHS.TEMPLATES = getTemplateDirectoryPath(context);
@@ -454,6 +460,27 @@ function getTemplateDirectoryPath(context: vscode.ExtensionContext): string {
 function getTemplatesNameFromPath(path: string): string[] {
     return glob.sync(posix.join(path, '*.txt'))
         .map(filename => posix.basename(filename).replace(/([^.]+)\.txt/, '$1'));
+}
+
+function installDeclarationLibrary() {
+    if (!vscode.workspace.workspaceFolders) {
+        vscode.window.showInformationMessage("Você precisa estar em um diretório / workspace.");
+        return;
+    }
+
+    const axiosConfig: AxiosRequestConfig = {
+        responseType: "stream"
+    };
+
+    Promise.all([
+        axios.get("https://raw.githubusercontent.com/fluiggers/fluig-declaration-type/master/jsconfig.json", axiosConfig),
+        axios.get("https://raw.githubusercontent.com/fluiggers/fluig-declaration-type/master/fluig.d.ts", axiosConfig)
+    ])
+    .then(function ([jsConfig, fluigDeclarations]) {
+        jsConfig.data.pipe(createWriteStream(posix.join(UtilsService.getWorkspace(), "jsconfig.json")));
+        fluigDeclarations.data.pipe(createWriteStream(posix.join(UtilsService.getWorkspace(), "fluig.d.ts")));
+    })
+    .catch(() => vscode.window.showErrorMessage("Erro ao baixar biblioteca do GitHub. Verifique sua conexão com a Internet"));
 }
 
 /**
