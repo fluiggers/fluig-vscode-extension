@@ -5,6 +5,7 @@ Lista de atualizações da Extensão.
 ## 1.17.1
 
 Corrige cor de fundo do cabeçalho fixo da consulta de dataset.
+
 ## 1.17.0
 
 Adiciona o comando `Instalar Declarações de Tipo` para instalar a biblioteca de declarações de tipo puxando os
