@@ -194,3 +194,7 @@ body.vscode-dark .modal-header .btn-close,
 body.vscode-high-contrast:not(.vscode-high-contrast-light) .modal-header .btn-close {
     filter: invert(1) grayscale(100%) brightness(200%);
 }
+
+.dtfh-floatingparent.dtfh-floatingparenthead table {
+    background-color: var(--vscode-editor-background) !important;
+}
