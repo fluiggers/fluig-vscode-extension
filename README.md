@@ -16,7 +16,7 @@ Você pode procurar pela extensão `Fluig - Extensão VS Code` no VS Code, baix�
 Code Market Place: Fluig - Extensão VS Code](https://marketplace.visualstudio.com/items?itemName=BrunoGasparetto.fluig-vscode-extension) ou abrir o **Quick Open** (CTRL + P) e executar o
 comando `ext install brunogasparetto.fluig-vscode-extension`.
 
-### Importante!
+## Importante!
 
 Essa extensão cria os arquivos utilizando os tipos declarados na biblioteca [Declaração de Tipos
 para o Fluig](https://github.com/fluiggers/fluig-declaration-type) para ter auto-complete no
@@ -25,6 +25,14 @@ VS Code, por isso é recomendado que ela seja instalada.
 Você pode instalar a **Declaração de Tipos para o Fluig** baixando o último release disponibilizado no GitHub ou
 pode executar o comando `Fluig: Instalar Declarações de Tipo`, no **Command Palette** (normalmente com a tecla de atalho F1),
 para que a Extensão baixe os arquivos para o seu workspace / diretório.
+
+### Erro de Linguagem não reconhecida
+
+Essa extensão adiciona snippets para a linguagem FreeMarker (extensão ftl),
+utilizada nos widgets e templates de e-mail.
+
+Se você não tem uma extensão para tratar a linguagem FreeMarker pode receber
+um aviso de erro de linguagem não reconhecida.
 
 ## Como utilizar
 
@@ -38,6 +46,7 @@ aberto.
 - [Novo Evento Global](#novo-evento-global);
 - [Novo Evento de Formulário](#novo-evento-de-formulário);
 - [Novo Evento de Processo](#novo-evento-de-processo);
+- [Novo Mecanismo Customizado](#novo-mecanismo-customizado);
 - [Importar Dataset e Importar Vários Datasets](#importar-dataset);
 - [Exportar Dataset](#exportar-dataset);
 - [Importar Formulário e Importar Vários Formulários](#importar-formulário);
@@ -165,6 +174,16 @@ Eventos disponibilizados:
 - checkComplementsPermission
 - subProcessCreated
 - validateAvailableStates
+
+## Novo Mecanismo Customizado
+
+Esse comando cria um arquivo JavaScript, após você preencher o nome do Mecanismo, no diretório
+`mechanisms` do seu projeto Fluig.
+
+O arquivo vem com a função padrão que retorna os usuários que podem ser selecionados pelo
+mecanismo de atribuição.
+
+Você pode executar esse comando no **Command Palette** e no menu de contexto no **File Explorer**.
 
 ## Importar Dataset
 
