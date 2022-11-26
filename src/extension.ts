@@ -66,6 +66,10 @@ export function activate(context: vscode.ExtensionContext) {
     );
 
     context.subscriptions.push(
+        vscode.commands.registerCommand("fluig-vscode-extension.newMechanism", createMechanism)
+    );
+
+    context.subscriptions.push(
         vscode.commands.registerCommand("fluig-vscode-extension.installDeclarationLibrary", installDeclarationLibrary)
     );
 
@@ -208,6 +212,45 @@ async function createDataset() {
         readFileSync(posix.join(EXTENSION_PATHS.TEMPLATES, 'createDataset.txt'))
     );
     vscode.window.showTextDocument(datasetUri);
+}
+
+/**
+ * Cria um arquivo contendo um novo Dataset
+ */
+async function createMechanism() {
+    if (!vscode.workspace.workspaceFolders) {
+        vscode.window.showInformationMessage("Você precisa estar em um diretório / workspace.");
+        return;
+    }
+
+    let mechanism: string = await vscode.window.showInputBox({
+        prompt: "Qual o nome do Mecanismo Customizado (sem espaços e sem caracteres especiais)?",
+        placeHolder: "mecanismo_customizado"
+    }) || "";
+
+    if (!mechanism) {
+        return;
+    }
+
+    if (!mechanism.endsWith(".js")) {
+        mechanism += ".js";
+    }
+
+    const workspaceFolderUri = vscode.workspace.workspaceFolders[0].uri;
+    const mechanismUri = workspaceFolderUri.with({ path: posix.join(workspaceFolderUri.path, "mechanisms", mechanism) });
+
+    try {
+        await vscode.workspace.fs.stat(mechanismUri);
+        return vscode.window.showTextDocument(mechanismUri);
+    } catch (err) {
+
+    }
+
+    await vscode.workspace.fs.writeFile(
+        mechanismUri,
+        readFileSync(posix.join(EXTENSION_PATHS.TEMPLATES, 'createMechanism.txt'))
+    );
+    vscode.window.showTextDocument(mechanismUri);
 }
 
 /**
