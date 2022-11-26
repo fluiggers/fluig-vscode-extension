@@ -2,6 +2,14 @@
 
 Lista de atualizações da Extensão.
 
+## 1.18.1
+
+Remove as linhas desnecessárias do template do Mecanismo Customizado.
+
+## 1.18.0
+
+Adiciona o comando de criar Mecanismo Customizado.
+
 ## 1.17.1
 
 Corrige cor de fundo do cabeçalho fixo da consulta de dataset.

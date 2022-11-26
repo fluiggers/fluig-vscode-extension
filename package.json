@@ -2,7 +2,7 @@
     "name": "fluig-vscode-extension",
     "displayName": "Fluig - Extensão VS Code",
     "description": "Extensão para agilizar o desenvolvimento para o TOTVS Fluig no VS Code",
-    "version": "1.17.2",
+    "version": "1.18.1",
     "publisher": "BrunoGasparetto",
     "repository": {
         "type": "git",
@@ -33,6 +33,7 @@
         "onCommand:fluig-vscode-extension.newFormEvent",
         "onCommand:fluig-vscode-extension.newWorkflowEvent",
         "onCommand:fluig-vscode-extension.newGlobalEvent",
+        "onCommand:fluig-vscode-extension.newMechanism",
         "onCommand:fluig-vscode-extension.addServer",
         "onCommand:fluig-vscode-extension.deleteServer",
         "onCommand:fluig-vscode-extension.refreshServer",
@@ -79,6 +80,11 @@
             {
                 "command": "fluig-vscode-extension.newGlobalEvent",
                 "title": "Novo Evento Global",
+                "category": "Fluig"
+            },
+            {
+                "command": "fluig-vscode-extension.newMechanism",
+                "title": "Novo Mecanismo Customizado",
                 "category": "Fluig"
             },
             {
@@ -203,28 +209,32 @@
                     "group": "1_Fluig@3"
                 },
                 {
-                    "command": "fluig-vscode-extension.importDataset",
+                    "command": "fluig-vscode-extension.newMechanism",
                     "group": "1_Fluig@4"
                 },
                 {
-                    "command": "fluig-vscode-extension.importManyDataset",
+                    "command": "fluig-vscode-extension.importDataset",
                     "group": "1_Fluig@5"
                 },
                 {
-                    "command": "fluig-vscode-extension.importForm",
+                    "command": "fluig-vscode-extension.importManyDataset",
                     "group": "1_Fluig@6"
                 },
                 {
-                    "command": "fluig-vscode-extension.importManyForm",
+                    "command": "fluig-vscode-extension.importForm",
                     "group": "1_Fluig@7"
                 },
                 {
-                    "command": "fluig-vscode-extension.importGlobalEvent",
+                    "command": "fluig-vscode-extension.importManyForm",
                     "group": "1_Fluig@8"
                 },
                 {
-                    "command": "fluig-vscode-extension.importManyGlobalEvent",
+                    "command": "fluig-vscode-extension.importGlobalEvent",
                     "group": "1_Fluig@9"
+                },
+                {
+                    "command": "fluig-vscode-extension.importManyGlobalEvent",
+                    "group": "1_Fluig@10"
                 },
                 {
                     "command": "fluig-vscode-extension.exportDataset",

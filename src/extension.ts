@@ -36,6 +36,15 @@ const EVENTS_NAMES: EventsNames = {
 }
 
 export function activate(context: vscode.ExtensionContext) {
+    EXTENSION_PATHS.TEMPLATES = getTemplateDirectoryPath(context);
+    EXTENSION_PATHS.FORM_EVENTS = posix.join(EXTENSION_PATHS.TEMPLATES, 'formEvents')
+    EXTENSION_PATHS.WORKFLOW_EVENTS = posix.join(EXTENSION_PATHS.TEMPLATES, 'workflowEvents')
+    EXTENSION_PATHS.GLOBAL_EVENTS = posix.join(EXTENSION_PATHS.TEMPLATES, 'globalEvents')
+
+    EVENTS_NAMES.FORM = getTemplatesNameFromPath(EXTENSION_PATHS.FORM_EVENTS);
+    EVENTS_NAMES.WORKFLOW = getTemplatesNameFromPath(EXTENSION_PATHS.WORKFLOW_EVENTS);
+    EVENTS_NAMES.GLOBAL = getTemplatesNameFromPath(EXTENSION_PATHS.GLOBAL_EVENTS);
+
     context.subscriptions.push(
         vscode.commands.registerCommand("fluig-vscode-extension.newDataset", createDataset)
     );
@@ -57,17 +66,12 @@ export function activate(context: vscode.ExtensionContext) {
     );
 
     context.subscriptions.push(
-        vscode.commands.registerCommand("fluig-vscode-extension.installDeclarationLibrary", installDeclarationLibrary)
+        vscode.commands.registerCommand("fluig-vscode-extension.newMechanism", createMechanism)
     );
 
-    EXTENSION_PATHS.TEMPLATES = getTemplateDirectoryPath(context);
-    EXTENSION_PATHS.FORM_EVENTS = posix.join(EXTENSION_PATHS.TEMPLATES, 'formEvents')
-    EXTENSION_PATHS.WORKFLOW_EVENTS = posix.join(EXTENSION_PATHS.TEMPLATES, 'workflowEvents')
-    EXTENSION_PATHS.GLOBAL_EVENTS = posix.join(EXTENSION_PATHS.TEMPLATES, 'globalEvents')
-
-    EVENTS_NAMES.FORM = getTemplatesNameFromPath(EXTENSION_PATHS.FORM_EVENTS);
-    EVENTS_NAMES.WORKFLOW = getTemplatesNameFromPath(EXTENSION_PATHS.WORKFLOW_EVENTS);
-    EVENTS_NAMES.GLOBAL = getTemplatesNameFromPath(EXTENSION_PATHS.GLOBAL_EVENTS);
+    context.subscriptions.push(
+        vscode.commands.registerCommand("fluig-vscode-extension.installDeclarationLibrary", installDeclarationLibrary)
+    );
 
     // Servidores
     const serverItemProvider = new ServerItemProvider(context);
@@ -208,6 +212,45 @@ async function createDataset() {
         readFileSync(posix.join(EXTENSION_PATHS.TEMPLATES, 'createDataset.txt'))
     );
     vscode.window.showTextDocument(datasetUri);
+}
+
+/**
+ * Cria um arquivo contendo um novo Dataset
+ */
+async function createMechanism() {
+    if (!vscode.workspace.workspaceFolders) {
+        vscode.window.showInformationMessage("Você precisa estar em um diretório / workspace.");
+        return;
+    }
+
+    let mechanism: string = await vscode.window.showInputBox({
+        prompt: "Qual o nome do Mecanismo Customizado (sem espaços e sem caracteres especiais)?",
+        placeHolder: "mecanismo_customizado"
+    }) || "";
+
+    if (!mechanism) {
+        return;
+    }
+
+    if (!mechanism.endsWith(".js")) {
+        mechanism += ".js";
+    }
+
+    const workspaceFolderUri = vscode.workspace.workspaceFolders[0].uri;
+    const mechanismUri = workspaceFolderUri.with({ path: posix.join(workspaceFolderUri.path, "mechanisms", mechanism) });
+
+    try {
+        await vscode.workspace.fs.stat(mechanismUri);
+        return vscode.window.showTextDocument(mechanismUri);
+    } catch (err) {
+
+    }
+
+    await vscode.workspace.fs.writeFile(
+        mechanismUri,
+        readFileSync(posix.join(EXTENSION_PATHS.TEMPLATES, 'createMechanism.txt'))
+    );
+    vscode.window.showTextDocument(mechanismUri);
 }
 
 /**
