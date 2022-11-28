@@ -10,6 +10,8 @@ pressionando F1 (Command Palette), sendo obrigatório ter um Diretório / Worksp
 
 ![Opções](images/opcoes.jpg)
 
+**Aviso**: Essa extensão não é mantida pela TOTVS e não possuí suporte da TOTVS. Sendo uma extensão feita pela comunidade de desenvolvedores para Fluig. O ambiente oficial para desenvolvimento no Fluig continua sendo o Eclipse Luna, conforme documentação oficial do Fluig.
+
 ## Instalação
 
 Você pode procurar pela extensão `Fluig - Extensão VS Code` no VS Code, baixá-la diretamente no [VS
