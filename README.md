@@ -112,7 +112,15 @@ Você pode executar esse comando no **Command Palette** ou com o menu de context
 
 Eventos disponibilizados:
 
+- afterActivateUser
+- afterDeactivateUser
+- afterLogin
+- beforeActivateUser
+- beforeDeactivateUser
+- beforeLogin
 - displayCentralTasks
+- onLoginError
+- onLogout
 - onNotify
 
 ## Novo Evento de Formulário
