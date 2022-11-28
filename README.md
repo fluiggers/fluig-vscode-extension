@@ -1,6 +1,6 @@
-# Fluig - Extensão VS Code
+# Fluig - Extensão para Desenvolvimento no VSCode
 
-Extensão para facilitar o desenvolvimento na plataforma TOTVS Fluig utilizando o VS Code.
+Extensão para facilitar o desenvolvimento na plataforma TOTVS Fluig utilizando o VSCode.
 
 Essa extensão adiciona alguns comandos para criar arquivos e snippets HTML e JavaScript, além de
 gerenciar seus Servidores Fluig e permitir Importar e Exportar Datasets.
@@ -14,9 +14,9 @@ pressionando F1 (Command Palette), sendo obrigatório ter um Diretório / Worksp
 
 ## Instalação
 
-Você pode procurar pela extensão `Fluig - Extensão VS Code` no VS Code, baixá-la diretamente no [VS
-Code Market Place: Fluig - Extensão VS Code](https://marketplace.visualstudio.com/items?itemName=BrunoGasparetto.fluig-vscode-extension) ou abrir o **Quick Open** (CTRL + P) e executar o
-comando `ext install brunogasparetto.fluig-vscode-extension`.
+Você pode procurar pela extensão `Fluig - Extensão para Desenvolvimento` no VSCode, baixá-la diretamente no [VS
+Code Market Place: Fluig - Extensão para Desenvolvimento](https://marketplace.visualstudio.com/items?itemName=Fluiggers.fluiggers-fluig-vscode-extension) ou abrir o **Quick Open** (CTRL + P) e executar o
+comando `ext install fluiggers.fluiggers-fluig-vscode-extension`.
 
 ## Importante!
 
