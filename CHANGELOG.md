@@ -2,6 +2,21 @@
 
 Lista de atualizações da Extensão.
 
+## 1.19.0
+
+Altera o publicador da Extensão, a passando para a comunidade Fluiggers.
+
+Adiciona os seguintes eventos globais:
+
+- afterActivateUser
+- afterDeactivateUser
+- afterLogin
+- beforeActivateUser
+- beforeDeactivateUser
+- beforeLogin
+- onLoginError
+- onLogout
+
 ## 1.18.1
 
 Remove as linhas desnecessárias do template do Mecanismo Customizado.

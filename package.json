@@ -1,8 +1,8 @@
 {
-    "name": "fluig-vscode-extension",
-    "displayName": "Fluig - Extensão VS Code",
+    "name": "fluiggers-fluig-vscode-extension",
+    "displayName": "Fluig - Extensão para Desenvolvimento",
     "description": "Extensão para agilizar o desenvolvimento para o TOTVS Fluig no VS Code",
-    "version": "1.18.1",
+    "version": "1.19.0",
     "publisher": "Fluiggers",
     "icon": "images/icon.png",
     "repository": {
