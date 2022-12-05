@@ -14,7 +14,7 @@ export class GlobalEventService {
      */
     public static async getEventList(server: ServerDTO): Promise<GlobalEventDTO[]> {
         const host = UtilsService.getHost(server);
-        const endpoint = `${host}/ecm/api/rest/ecm/globalevent/getEventList?username=${server.username}&password=${server.password}`;
+        const endpoint = `${host}/ecm/api/rest/ecm/globalevent/getEventList?username=${encodeURIComponent(server.username)}&password=${encodeURIComponent(server.password)}`;
 
         const agent = new https.Agent({
             rejectUnauthorized: false

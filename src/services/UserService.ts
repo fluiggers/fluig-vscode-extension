@@ -12,9 +12,9 @@ export class UserService {
     public static async getUser(server: ServerDTO): Promise<AxiosResponse<any>> {
         const uri: string = UtilsService.getHost(server)
             + "/portal/api/rest/wcmservice/rest/user/findUserByLogin"
-            + "?username=" + server.username
-            + "&password=" + server.password
-            + "&login=" + server.username;
+            + "?username=" + encodeURIComponent(server.username)
+            + "&password=" + encodeURIComponent(server.password)
+            + "&login=" + encodeURIComponent(server.username);
 
         const agent = new Agent({
             rejectUnauthorized: false
