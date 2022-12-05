@@ -64,9 +64,9 @@ export class DatasetService {
     public static async getDataset(server: ServerDTO, datasetId: string) {
         const uri = UtilsService.getHost(server)
             + "/ecm/api/rest/ecm/dataset/loadDataset"
-            + "?username=" + server.username
-            + "&password=" + server.password
-            + "&datasetId=" + datasetId
+            + "?username=" +  encodeURIComponent(server.username)
+            + "&password=" +  encodeURIComponent(server.password)
+            + "&datasetId=" + encodeURIComponent(datasetId)
         ;
 
         const agent = new https.Agent({
@@ -163,8 +163,8 @@ export class DatasetService {
     public static async createDataset(server: ServerDTO, dataset: DatasetStructureDTO) {
         const uri = UtilsService.getHost(server)
             + "/ecm/api/rest/ecm/dataset/createDataset"
-            + "?username=" + server.username
-            + "&password=" + server.password
+            + "?username=" + encodeURIComponent(server.username)
+            + "&password=" + encodeURIComponent(server.password)
         ;
 
         const agent = new https.Agent({
@@ -182,8 +182,8 @@ export class DatasetService {
     public static async updateDataset(server: ServerDTO, dataset: DatasetStructureDTO) {
         const uri = UtilsService.getHost(server)
             + "/ecm/api/rest/ecm/dataset/editDataset"
-            + "?username=" + server.username
-            + "&password=" + server.password
+            + "?username=" + encodeURIComponent(server.username)
+            + "&password=" + encodeURIComponent(server.password)
             + "&confirmnewstructure=false"
         ;
 
