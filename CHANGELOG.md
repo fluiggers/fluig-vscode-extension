@@ -2,6 +2,11 @@
 
 Lista de atualizações da Extensão.
 
+## 1.19.3
+
+- Instala atualizações de segurança de várias dependências do projeto;
+- Aumenta a versão do engine do VS Code para ^1.75.0;
+
 ## 1.19.0
 
 Altera o publicador da Extensão, a passando para a comunidade Fluiggers.
