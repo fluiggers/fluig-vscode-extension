@@ -161,7 +161,7 @@ exports.default = series(
 
 exports.clean = clean;
 
-exports.buildLibrarys = parallel([
+exports.buildLibraries = parallel([
     buildJquery,
     buildBootstrapCss,
     buildBootstrapJs,
