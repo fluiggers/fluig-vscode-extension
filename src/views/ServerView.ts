@@ -34,7 +34,7 @@ export class ServerView {
     }
 
     private getWebViewContent() {
-        const htmlPath = vscode.Uri.file(path.join(this.context.extensionPath, 'dist', 'views', 'server', 'server.html'));
+        const htmlPath = vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'views', 'server', 'server.html');
         const runTemplate = compile(fs.readFileSync(htmlPath.with({ scheme: 'vscode-resource' }).fsPath));
 
         return runTemplate({

@@ -1,10 +1,9 @@
-import * as vscode from "vscode";
 import axios from "axios";
 import { ServerDTO } from "../models/ServerDTO";
 import * as https from 'https';
 import { ServerService } from "./ServerService";
 import { window, workspace, Uri } from "vscode";
-import { posix } from "path";
+import { basename } from "path";
 import { DatasetDTO } from "../models/DatasetDTO";
 import { DatasetStructureDTO } from "../models/DatasetStructureDTO";
 import { UtilsService } from "./UtilsService";
@@ -219,6 +218,7 @@ export class DatasetService {
     public static async getOptionsSelected(server: ServerDTO) {
         const datasets = await DatasetService.getDatasetsCustom(server);
         const items = datasets.map(dataset => ({ label: dataset.datasetId }));
+
         const result = await window.showQuickPick(items, {
             placeHolder: "Selecione o dataset",
             canPickMany: true
@@ -229,9 +229,7 @@ export class DatasetService {
             return;
         }
 
-        return result.map(async item => {
-            return await DatasetService.getDataset(server, item.label);
-        });
+        return result.map(async (item: any) => await DatasetService.getDataset(server, item.label));
     }
 
     /**
@@ -282,7 +280,7 @@ export class DatasetService {
             return;
         }
 
-        datasets.map(async item => {
+        datasets.map(async (item: any) => {
             const dataset = await item;
             DatasetService.saveFile(
                 dataset.data.datasetPK.datasetId,
@@ -303,24 +301,21 @@ export class DatasetService {
 
         const datasets = await DatasetService.getDatasetsCustom(server);
         const items = [];
-        const path = fileUri.fsPath.split("\\");
-        let datasetIdSelected: string = '';
-        let datasetId: string = '';
-        datasetId = path[path.length - 1];
-        datasetId = datasetId.replace('.js', '');
 
-        for(let dataset of datasets) {
-            if(dataset.datasetId !== datasetId) {
+        let datasetIdSelected: string = '';
+        let datasetId: string = basename(fileUri.fsPath, '.js');
+
+        for (let dataset of datasets) {
+            if (dataset.datasetId !== datasetId) {
                 items.push({ label: dataset.datasetId });
-            }
-            else {
+            } else {
                 datasetIdSelected = dataset.datasetId;
             }
         }
 
         items.unshift({ label: 'Novo dataset' });
 
-        if(datasetIdSelected !== '') {
+        if (datasetIdSelected !== '') {
             items.unshift({ label: datasetIdSelected });
         }
 
@@ -446,7 +441,7 @@ export class DatasetService {
         }
 
         const workspaceFolderUri = workspace.workspaceFolders[0].uri;
-        const datasetUri = workspaceFolderUri.with({ path: posix.join(workspaceFolderUri.path, "datasets", name + ".js") });
+        const datasetUri = Uri.joinPath(workspaceFolderUri, "datasets", name + ".js");
 
         await workspace.fs.writeFile(
             datasetUri,

@@ -3,9 +3,9 @@ import { ServerDTO } from "../models/ServerDTO";
 import { UtilsService } from "./UtilsService";
 import * as https from 'https';
 import { GlobalEventDTO } from "../models/GlobalEventDTO";
-import { window, workspace } from "vscode";
+import { window, workspace, Uri } from "vscode";
 import { ServerService } from "./ServerService";
-import { posix } from "path";
+import * as path from "path";
 
 export class GlobalEventService {
 
@@ -137,7 +137,7 @@ export class GlobalEventService {
         }
 
         const workspaceFolderUri = workspace.workspaceFolders[0].uri;
-        const uri = workspaceFolderUri.with({ path: posix.join(workspaceFolderUri.path, "events", name + ".js") });
+        const uri = Uri.joinPath(workspaceFolderUri, "events", name + ".js");
 
         await workspace.fs.writeFile(
             uri,

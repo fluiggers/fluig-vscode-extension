@@ -9,13 +9,14 @@ export class UtilsService {
     /**
      * Retorna o PATH do workspace
      */
-    public static getWorkspace() {
+    public static getWorkspace(): vscode.Uri {
         if (!vscode.workspace.workspaceFolders) {
-            vscode.window.showInformationMessage("Você não esta em um diretório /workspace.");
-            return require('os').homedir();
+            vscode.window.showInformationMessage("Você não esta em um diretório / workspace.");
+
+            throw "Obrigatório estar em um diretório / workspace";
         }
 
-        return vscode.workspace.workspaceFolders[0].uri.fsPath;
+        return vscode.workspace.workspaceFolders[0].uri;
     }
 
     public static getHost(server: ServerDTO): string {

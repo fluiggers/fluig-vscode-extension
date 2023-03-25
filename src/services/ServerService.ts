@@ -1,12 +1,12 @@
 import { ServerConfig } from "../models/ServerConfig";
 import { ServerDTO } from "../models/ServerDTO";
 import { UtilsService } from "./UtilsService";
-import { window } from "vscode";
+import { window, Uri } from "vscode";
 import { Server } from "../models/Server";
 
 export class ServerService {
-    private static PATH = UtilsService.getWorkspace() + '/.vscode';
-    private static FILE_SERVER_CONFIG = ServerService.PATH + '/servers.json';
+    private static PATH = Uri.joinPath(UtilsService.getWorkspace(), '.vscode').fsPath;
+    private static FILE_SERVER_CONFIG = Uri.joinPath(UtilsService.getWorkspace(), '.vscode', 'servers.json').fsPath;
 
     /**
      * Adiciona um novo servidor

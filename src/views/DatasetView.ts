@@ -29,7 +29,7 @@ export class DatasetView {
     }
 
     private async getWebViewContent() {
-        const htmlPath = vscode.Uri.file(path.join(this.context.extensionPath, 'dist', 'views', 'dataset', 'dataset.html'));
+        const htmlPath = vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'views', 'dataset', 'dataset.html');
         const runTemplate = compile(fs.readFileSync(htmlPath.with({ scheme: 'vscode-resource' }).fsPath));
 
         return runTemplate({
