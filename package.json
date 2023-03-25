@@ -2,7 +2,7 @@
     "name": "fluiggers-fluig-vscode-extension",
     "displayName": "Fluig - Extensão para Desenvolvimento",
     "description": "Extensão para agilizar o desenvolvimento para o TOTVS Fluig no VS Code",
-    "version": "1.19.2",
+    "version": "1.19.4",
     "publisher": "Fluiggers",
     "icon": "images/icon.png",
     "repository": {
@@ -21,34 +21,12 @@
         }
     ],
     "engines": {
-        "vscode": "^1.56.0"
+        "vscode": "^1.75.0"
     },
     "categories": [
         "Snippets",
         "Programming Languages",
         "Other"
-    ],
-    "activationEvents": [
-        "onCommand:fluiggers-fluig-vscode-extension.newDataset",
-        "onCommand:fluiggers-fluig-vscode-extension.newForm",
-        "onCommand:fluiggers-fluig-vscode-extension.newFormEvent",
-        "onCommand:fluiggers-fluig-vscode-extension.newWorkflowEvent",
-        "onCommand:fluiggers-fluig-vscode-extension.newGlobalEvent",
-        "onCommand:fluiggers-fluig-vscode-extension.newMechanism",
-        "onCommand:fluiggers-fluig-vscode-extension.addServer",
-        "onCommand:fluiggers-fluig-vscode-extension.deleteServer",
-        "onCommand:fluiggers-fluig-vscode-extension.refreshServer",
-        "onCommand:fluiggers-fluig-vscode-extension.editServer",
-        "onCommand:fluiggers-fluig-vscode-extension.importDataset",
-        "onCommand:fluiggers-fluig-vscode-extension.importManyDataset",
-        "onCommand:fluiggers-fluig-vscode-extension.exportDataset",
-        "onCommand:fluiggers-fluig-vscode-extension.importManyForm",
-        "onCommand:fluiggers-fluig-vscode-extension.importForm",
-        "onCommand:fluiggers-fluig-vscode-extension.importGlobalEvent",
-        "onCommand:fluiggers-fluig-vscode-extension.importManyGlobalEvent",
-        "onCommand:fluiggers-fluig-vscode-extension.datasetView",
-        "onCommand:fluiggers-fluig-vscode-extension.installDeclarationLibrary",
-        "onView:fluiggers-fluig-vscode-extension.servers"
     ],
     "main": "./dist/extension.js",
     "contributes": {
@@ -372,7 +350,7 @@
         "vscode:prepublish": "npm run package",
         "precompile": "gulp",
         "buildResources": "gulp buildResources",
-        "buildLibrarys": "gulp buildLibrarys",
+        "buildLibraries": "gulp buildLibraries",
         "compile": "webpack",
         "watch": "npm run precompile && webpack --watch",
         "package": "npm run precompile && webpack --mode production --devtool hidden-source-map",
