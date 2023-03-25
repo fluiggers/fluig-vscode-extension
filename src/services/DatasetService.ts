@@ -1,10 +1,9 @@
-import * as vscode from "vscode";
 import axios from "axios";
 import { ServerDTO } from "../models/ServerDTO";
 import * as https from 'https';
 import { ServerService } from "./ServerService";
 import { window, workspace, Uri } from "vscode";
-import * as path from "path";
+import { basename } from "path";
 import { DatasetDTO } from "../models/DatasetDTO";
 import { DatasetStructureDTO } from "../models/DatasetStructureDTO";
 import { UtilsService } from "./UtilsService";
@@ -304,7 +303,7 @@ export class DatasetService {
         const items = [];
 
         let datasetIdSelected: string = '';
-        let datasetId: string = path.basename(fileUri.fsPath, '.js');
+        let datasetId: string = basename(fileUri.fsPath, '.js');
 
         for (let dataset of datasets) {
             if (dataset.datasetId !== datasetId) {
@@ -442,7 +441,7 @@ export class DatasetService {
         }
 
         const workspaceFolderUri = workspace.workspaceFolders[0].uri;
-        const datasetUri = workspaceFolderUri.with({ path: path.posix.join(workspaceFolderUri.path, "datasets", name + ".js") });
+        const datasetUri = Uri.joinPath(workspaceFolderUri, "datasets", name + ".js");
 
         await workspace.fs.writeFile(
             datasetUri,

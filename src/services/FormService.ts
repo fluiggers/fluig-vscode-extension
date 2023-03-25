@@ -1,9 +1,9 @@
 import { ServerDTO } from "../models/ServerDTO";
+import { Uri } from "vscode";
 import * as soap from 'soap';
 import { window, workspace } from "vscode";
 import { ServerService } from "./ServerService";
 import { DocumentDTO } from "../models/DocumentDTO";
-import { posix } from "path";
 import { CustomizationEventsDTO } from "../models/CustomizationEventsDTO";
 import { UtilsService } from "./UtilsService";
 
@@ -229,11 +229,12 @@ export class FormService {
 
         const form = await FormService.getOptionSelected(server);
 
-        if(!form) {
+        if (!form) {
             return;
         }
 
-        const folderName = form.documentDescription;
+        let folderUri = Uri.joinPath(workspace.workspaceFolders[0].uri, 'forms', form.documentDescription);
+
         const fileNames = await FormService.getFileNames(server, form.documentId);
 
         for (let fileName of fileNames) {
@@ -241,15 +242,15 @@ export class FormService {
 
             if (base64) {
                 const fileContent = Buffer.from(base64, 'base64').toString('utf-8');
-                FormService.saveFile(folderName, fileName, fileContent);
+                workspace.fs.writeFile(Uri.joinPath(folderUri, fileName), Buffer.from(fileContent, "utf-8"));
             }
         }
 
-        const folder = posix.join(folderName, "events");
+        folderUri = Uri.joinPath(workspace.workspaceFolders[0].uri, 'forms', "events");
         const events = await FormService.getCustomizationEvents(server, form.documentId);
 
         for (let item of events) {
-            FormService.saveFile(folder, item.eventId + ".js", item.eventDescription);
+            workspace.fs.writeFile(Uri.joinPath(folderUri, item.eventId + ".js"), Buffer.from(item.eventDescription, "utf-8"));
         }
     }
 
@@ -279,7 +280,13 @@ export class FormService {
                 return;
             }
 
-            const folderName = form.documentDescription;
+            if (!workspace.workspaceFolders) {
+                window.showInformationMessage("Você precisa estar em um diretório / workspace.");
+                return;
+            }
+
+            let folderUri = Uri.joinPath(workspace.workspaceFolders[0].uri, 'forms', form.documentDescription);
+
             const fileNames = await FormService.getFileNames(server, form.documentId);
 
             for (let fileName of fileNames) {
@@ -287,33 +294,18 @@ export class FormService {
 
                 if (base64) {
                     const fileContent = Buffer.from(base64, 'base64').toString('utf-8');
-                    FormService.saveFile(folderName, fileName, fileContent);
+                    workspace.fs.writeFile(Uri.joinPath(folderUri, fileName), Buffer.from(fileContent, "utf-8"));
                 }
             }
 
-            const folder = posix.join(folderName, "events");
+            folderUri = Uri.joinPath(workspace.workspaceFolders[0].uri, 'forms', "events");
             const events = await FormService.getCustomizationEvents(server, form.documentId);
 
             for (let item of events) {
-                FormService.saveFile(folder, item.eventId + ".js", item.eventDescription);
+                workspace.fs.writeFile(Uri.joinPath(folderUri, item.eventId + ".js"), Buffer.from(item.eventDescription, "utf-8"));
             }
         });
 
         window.showInformationMessage("Os formulários foram importados com sucesso!");
-    }
-
-    /**
-     * Criar arquivo do formulario
-     */
-     public static saveFile(folder: string, name: string, content: string) {
-        if (!workspace.workspaceFolders) {
-            window.showInformationMessage("Você precisa estar em um diretório / workspace.");
-            return;
-        }
-
-        const workspaceFolderUri = workspace.workspaceFolders[0].uri;
-        const path = workspaceFolderUri.with({ path: posix.join(workspaceFolderUri.path, "forms", folder, name) });
-
-        workspace.fs.writeFile(path, Buffer.from(content, "utf-8"));
     }
 }

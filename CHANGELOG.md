@@ -2,6 +2,12 @@
 
 Lista de atualizações da Extensão.
 
+## 1.19.4
+
+- Aumenta a versão do motor do VSCode;
+- Altera como determina o caminho dos arquivos para utilizar a `vscode.Uri`, evitando problemas com o módulo `path`;
+- Utiliza a `path.basename` para determinar o nome do Dataset ao exportar, corrigindo problema de não pré-selecionar a opção em Mac / Unix;
+
 ## 1.19.3
 
 - Instala atualizações de segurança de várias dependências do projeto;
