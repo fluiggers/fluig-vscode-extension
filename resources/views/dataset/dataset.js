@@ -15,6 +15,7 @@
     let $loading = null;
     let $constraints = null;
     let constraintsFields = [];
+    let isFirstDatasetLoaded = true;
 
     $(function () {
         $loading = $("#loading").modal({
@@ -77,6 +78,11 @@
                 if (resetItems) {
                     setFields(queryResult);
                     addConstraints(true);
+
+                    if (isFirstDatasetLoaded) {
+                        isFirstDatasetLoaded = false;
+                        $("#configurarParametros").attr("disabled", false);
+                    }
                 }
 
                 updateTableResult(queryResult);
