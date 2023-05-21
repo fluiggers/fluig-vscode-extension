@@ -216,7 +216,7 @@ export class FormService {
      * Realiza a importação de um formulário específico
      */
      public static async import() {
-        if (!workspace.workspaceFolders) {
+        if (!workspace.workspaceFolders || !workspace.workspaceFolders[0]) {
             window.showInformationMessage("Você precisa estar em um diretório / workspace.");
             return;
         }
@@ -246,7 +246,8 @@ export class FormService {
             }
         }
 
-        folderUri = Uri.joinPath(workspace.workspaceFolders[0].uri, 'forms', "events");
+        folderUri = Uri.joinPath(folderUri, "events");
+
         const events = await FormService.getCustomizationEvents(server, form.documentId);
 
         for (let item of events) {
@@ -258,7 +259,7 @@ export class FormService {
      * Realiza a importação de vários formulários
      */
      public static async importMany() {
-        if (!workspace.workspaceFolders) {
+        if (!workspace.workspaceFolders || !workspace.workspaceFolders[0]) {
             window.showInformationMessage("Você precisa estar em um diretório / workspace.");
             return;
         }
@@ -271,21 +272,18 @@ export class FormService {
 
         const forms = await FormService.getOptionsSelected(server);
 
-        if(!forms) {
+        if (!forms) {
             return;
         }
 
+        const workspaceFolder = workspace.workspaceFolders[0];
+
         forms.map(async form => {
-            if(!form) {
+            if (!form) {
                 return;
             }
 
-            if (!workspace.workspaceFolders) {
-                window.showInformationMessage("Você precisa estar em um diretório / workspace.");
-                return;
-            }
-
-            let folderUri = Uri.joinPath(workspace.workspaceFolders[0].uri, 'forms', form.documentDescription);
+            let folderUri = Uri.joinPath(workspaceFolder.uri, 'forms', form.documentDescription);
 
             const fileNames = await FormService.getFileNames(server, form.documentId);
 
@@ -298,7 +296,8 @@ export class FormService {
                 }
             }
 
-            folderUri = Uri.joinPath(workspace.workspaceFolders[0].uri, 'forms', "events");
+            folderUri = Uri.joinPath(folderUri, "events");
+
             const events = await FormService.getCustomizationEvents(server, form.documentId);
 
             for (let item of events) {
