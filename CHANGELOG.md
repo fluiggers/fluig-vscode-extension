@@ -2,6 +2,14 @@
 
 Lista de atualizações da Extensão.
 
+## 1.19.6
+
+Corrige a criação do diretório de eventos ao importar um formulário.
+
+## 1.19.5
+
+Impede configurar parâmetros de consulta de Dataset antes da primeira execução.
+
 ## 1.19.4
 
 - Aumenta a versão do motor do VSCode;
