@@ -8,6 +8,7 @@ import { CustomizationEventsDTO } from "../models/CustomizationEventsDTO";
 import { UtilsService } from "./UtilsService";
 
 export class FormService {
+
     private static getUri(server: ServerDTO): string {
         return UtilsService.getHost(server) +  "/webdesk/ECMCardIndexService?wsdl";
     }
@@ -15,7 +16,7 @@ export class FormService {
     /**
      * Retorna uma lista com todos os formulários
      */
-    public static async getForms(server: ServerDTO): Promise<DocumentDTO[]> {
+    public static getForms(server: ServerDTO): Promise<DocumentDTO[]> {
         const params = {
             companyId: server.companyId,
             username: server.username,
@@ -23,31 +24,18 @@ export class FormService {
             colleagueId: server.userCode
         };
 
-        const forms: any = await new Promise((accept, reject) => {
-            soap.createClient(FormService.getUri(server), (err: any, client: soap.Client) => {
-                if (err) {
-                    reject(err);
-                    return;
-                }
-
-                client.getCardIndexesWithoutApprover(params, (err: any, response: any) => {
-                    if (err) {
-                        reject(err);
-                        return;
-                    }
-
-                    accept(response);
-                });
+        return soap.createClientAsync(FormService.getUri(server))
+            .then((client) => {
+                return client.getCardIndexesWithoutApproverAsync(params);
+            }).then((response) => {
+                return response[0].result.item || [];
             });
-        });
-
-        return forms?.result?.item || [];
     }
 
     /**
      * Retorna uma lista com o nome dos arquivos referente ao documento
      */
-     public static async getFileNames(server: ServerDTO, documentId: Number): Promise<string[]> {
+     public static getFileNames(server: ServerDTO, documentId: Number): Promise<string[]> {
         const params = {
             username: server.username,
             password: server.password,
@@ -56,39 +44,24 @@ export class FormService {
             colleagueId: server.userCode
         };
 
-        const forms: any = await new Promise((accept, reject) => {
-            soap.createClient(FormService.getUri(server), (err: any, client: soap.Client) => {
-                if (err) {
-                    reject(err);
-                    return;
+        return soap.createClientAsync(FormService.getUri(server))
+            .then((client) => {
+                return client.getAttachmentsListAsync(params);
+            }).then((response) => {
+                return response[0].result;
+            }).then((result) => {
+                if (!Array.isArray(result.item)) {
+                    return [result.item];
                 }
 
-                client.getAttachmentsList(params, (err: any, response: any) => {
-                    if (err) {
-                        reject(err);
-                        return;
-                    }
-
-                    accept(response);
-                });
+                return result.item;
             });
-        });
-
-        if (!forms.result) {
-            return [];
-        }
-
-        if (typeof forms.result.item === 'string') {
-            return [forms.result.item];
-        }
-
-        return forms.result.item;
     }
 
     /**
      * Retorna o base64 referente ao arquivo
      */
-     public static async getFileBase64(server: ServerDTO, documentId: number, version: number, fileName: string) {
+     public static getFileBase64(server: ServerDTO, documentId: number, version: number, fileName: string) {
         const params = {
             username: server.username,
             password: server.password,
@@ -99,31 +72,18 @@ export class FormService {
             nomeArquivo: fileName
         };
 
-        const file: any = await new Promise((accept, reject) => {
-            soap.createClient(FormService.getUri(server), (err: any, client: soap.Client) => {
-                if (err) {
-                    reject(err);
-                    return;
-                }
-
-                client.getCardIndexContent(params, (err: any, response: any) => {
-                    if (err) {
-                        reject(err);
-                        return;
-                    }
-
-                    accept(response);
-                });
+        return soap.createClientAsync(FormService.getUri(server))
+            .then((client) => {
+                return client.getCardIndexContentAsync(params);
+            }).then((response) => {
+                return response[0].folder;
             });
-        });
-
-        return file.folder;
     }
 
     /**
      * Retorna uma lista com os eventos do formulario
      */
-     public static async getCustomizationEvents(server: ServerDTO, documentId: number): Promise<CustomizationEventsDTO[]> {
+     public static getCustomizationEvents(server: ServerDTO, documentId: number): Promise<CustomizationEventsDTO[]> {
         const params = {
             username: server.username,
             password: server.password,
@@ -131,32 +91,18 @@ export class FormService {
             documentId: documentId
         };
 
-        const events: any = await new Promise((accept, reject) => {
-            soap.createClient(FormService.getUri(server), (err: any, client: soap.Client) => {
-                if (err) {
-                    reject(err);
-                    return;
+        return soap.createClientAsync(FormService.getUri(server))
+            .then((client) => {
+                return client.getCustomizationEventsAsync(params);
+            }).then((response) => {
+                return response[0].result;
+            }).then((result) => {
+                if (!Array.isArray(result.item)) {
+                    return [result.item];
                 }
 
-                client.getCustomizationEvents(params, (err: any, response: any) => {
-                    if (err) {
-                        reject(err);
-                        return;
-                    }
-                    accept(response);
-                });
+                return result.item;
             });
-        });
-
-        if (!events.result) {
-            return [];
-        }
-
-        if (typeof events.result.item === 'string') {
-            return [events.result.item];
-        }
-
-        return events.result.item;
     }
 
     /**
