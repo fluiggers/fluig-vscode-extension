@@ -6,6 +6,11 @@ import { ServerService } from "./ServerService";
 import { DocumentDTO } from "../models/DocumentDTO";
 import { CustomizationEventsDTO } from "../models/CustomizationEventsDTO";
 import { UtilsService } from "./UtilsService";
+import { glob } from "glob";
+import { readFileSync } from "fs";
+import { parse, basename } from "path";
+import { FormDTO } from "../models/FormDTO";
+import { AttachmentDTO } from "../models/AttachmentDTO";
 
 export class FormService {
 
@@ -252,5 +257,108 @@ export class FormService {
         });
 
         window.showInformationMessage("Os formulários foram importados com sucesso!");
+    }
+
+
+    // TODO: Exportar Formulário
+
+    // escolher o servidor
+    // carregar os formulários do servidor (e selecionar o formulário caso exista)
+    // perguntar o nome do dataset vinculado (preencher se já existir formulário no servidor)
+    // perguntar se quer incrementar versão
+    // pegar todos os eventos e montar um array de CustomizationEventsDTO
+    // pegar todos os outros arquivos e montar array
+    //
+
+    public static async export(fileUri: Uri) {
+        if (!workspace.workspaceFolders || !workspace.workspaceFolders[0]) {
+            window.showInformationMessage("Você precisa estar em um diretório / workspace.");
+            return;
+        }
+
+        const server = await ServerService.getSelect();
+
+        if (!server) {
+            return;
+        }
+
+        if (server.confirmExporting) {
+            let isPasswordCorrect: boolean = true;
+
+            do {
+                const confirmPassword = await window.showInputBox({
+                    prompt: "Informe a senha do servidor " + server.name,
+                    password: true
+                }) || "";
+
+                if (!confirmPassword) {
+                    return;
+                } else if (confirmPassword !== server.password) {
+                    window.showWarningMessage(`A senha informada para o servidor "${server.name}" está incorreta!`);
+                    isPasswordCorrect = false;
+                } else {
+                    isPasswordCorrect = true;
+                }
+            } while (!isPasswordCorrect);
+        }
+
+        const formFolderName: string = fileUri.path.replace(/.*\/forms\/([^/]+).*/, "$1");
+
+        // Remove possível documentid da frente do formulário (quando importado pelo Eclipse)
+        const formName = formFolderName.replace(/^(?:\d+ - )?(\w+)$/, "$1");
+
+        const params: FormDTO = {
+            username: server.username,
+            password: server.password,
+            companyId: server.companyId,
+            parentDocumentId: 2,
+            publisherId: server.username,
+            documentDescription: formName,
+            cardDescription: "",
+            datasetName: `ds_${formName}`,
+            Attachments: {
+                item: []
+            },
+            customEvents: {
+                item: [],
+            },
+            persistenceType: 0,
+        };
+
+        const workspaceFolder = workspace.workspaceFolders[0];
+        const formFolder = Uri.joinPath(workspaceFolder.uri, 'forms', formFolderName).fsPath;
+
+        for (let attachmentPath of glob.sync(formFolder + "/**/*.*", {nodir: true, ignore: formFolder + "/events/**/*.*"})) {
+            const pathParsed = parse(attachmentPath);
+
+            const attachment: AttachmentDTO = {
+                fileName: pathParsed.base,
+                filecontent: readFileSync(attachmentPath).toString("base64"),
+                principal: formName === pathParsed.name,
+            };
+            params.Attachments.item.push(attachment);
+        }
+
+        for (let eventPath of glob.sync(formFolder + "/events/*.js")) {
+            const customEvent: CustomizationEventsDTO = {
+                eventDescription: readFileSync(eventPath).toString("utf-8"),
+                eventId: basename(eventPath),
+            };
+            params.customEvents.item.push(customEvent);
+        }
+
+        try {
+            const client = await await soap.createClientAsync(FormService.getUri(server));
+            const response = await client.createSimpleCardIndexWithDatasetPersisteTypeAsync(params);
+
+            if (response[0].result.item.webServiceMessage === 'ok') {
+                window.showInformationMessage(`Formulário ${formName} exportado com sucesso!`);
+            } else {
+                window.showInformationMessage(response[0].result.item.webServiceMessage);
+            }
+
+        } catch (err) {
+            window.showErrorMessage("Erro ao exportar Formulário.");
+        }
     }
 }
