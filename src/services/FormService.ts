@@ -259,17 +259,7 @@ export class FormService {
         window.showInformationMessage("Os formulários foram importados com sucesso!");
     }
 
-
-    // TODO: Exportar Formulário
-
-    // escolher o servidor
-    // carregar os formulários do servidor (e selecionar o formulário caso exista)
-    // perguntar o nome do dataset vinculado (preencher se já existir formulário no servidor)
-    // perguntar se quer incrementar versão
-    // pegar todos os eventos e montar um array de CustomizationEventsDTO
-    // pegar todos os outros arquivos e montar array
-    //
-
+    // TODO: definir arquivo principal mesmo sendo diferente do nome da pasta
     public static async export(fileUri: Uri) {
         if (!workspace.workspaceFolders || !workspace.workspaceFolders[0]) {
             window.showInformationMessage("Você precisa estar em um diretório / workspace.");
@@ -307,58 +297,247 @@ export class FormService {
         // Remove possível documentid da frente do formulário (quando importado pelo Eclipse)
         const formName = formFolderName.replace(/^(?:\d+ - )?(\w+)$/, "$1");
 
-        const params: FormDTO = {
-            username: server.username,
-            password: server.password,
-            companyId: server.companyId,
-            parentDocumentId: 2,
-            publisherId: server.username,
-            documentDescription: formName,
-            cardDescription: "",
-            datasetName: `ds_${formName}`,
-            Attachments: {
-                item: []
-            },
-            customEvents: {
-                item: [],
-            },
-            persistenceType: 0,
-        };
+        const selectedForm = await FormService.getExportFormSelected(server, formName);
 
-        const workspaceFolder = workspace.workspaceFolders[0];
-        const formFolder = Uri.joinPath(workspaceFolder.uri, 'forms', formFolderName).fsPath;
-
-        for (let attachmentPath of glob.sync(formFolder + "/**/*.*", {nodir: true, ignore: formFolder + "/events/**/*.*"})) {
-            const pathParsed = parse(attachmentPath);
-
-            const attachment: AttachmentDTO = {
-                fileName: pathParsed.base,
-                filecontent: readFileSync(attachmentPath).toString("base64"),
-                principal: formName === pathParsed.name,
-            };
-            params.Attachments.item.push(attachment);
+        if (!selectedForm) {
+            return;
         }
 
-        for (let eventPath of glob.sync(formFolder + "/events/*.js")) {
-            const customEvent: CustomizationEventsDTO = {
-                eventDescription: readFileSync(eventPath).toString("utf-8"),
-                eventId: basename(eventPath),
-            };
-            params.customEvents.item.push(customEvent);
-        }
+        if (selectedForm == "novo") {
 
-        try {
-            const client = await await soap.createClientAsync(FormService.getUri(server));
-            const response = await client.createSimpleCardIndexWithDatasetPersisteTypeAsync(params);
+            const newFormName = await window.showInputBox({
+                prompt: "Qual o nome do Formulário?",
+                value: formName
+            }) || "";
 
-            if (response[0].result.item.webServiceMessage === 'ok') {
-                window.showInformationMessage(`Formulário ${formName} exportado com sucesso!`);
-            } else {
-                window.showInformationMessage(response[0].result.item.webServiceMessage);
+            if (!newFormName) {
+                return;
             }
 
-        } catch (err) {
-            window.showErrorMessage("Erro ao exportar Formulário.");
+            const newDatasetName = await window.showInputBox({
+                prompt: "Qual o nome do Dataset do Formulário?",
+                value: `ds_${newFormName}`
+            }) || "";
+
+            if (!newDatasetName) {
+                return;
+            }
+
+            const parentDocumentId = await window.showInputBox({
+                prompt: "Qual o id da Pasta onde salvar o Formulário?",
+                value: "2"
+            }) || "";
+
+            if (!parentDocumentId) {
+                return;
+            }
+
+            const persistenceType = await window.showQuickPick(
+                [
+                    {
+                        label: "Tabelas de Banco de Dados (recomendado)",
+                        value: 0
+                    },
+                    {
+                        label: "Numa única tabela (pequena quantidade de registros)",
+                        value: 1
+                    }
+                ],
+                {
+                    placeHolder: "Tipo de Armazenamento?"
+                }
+            );
+
+            if (!persistenceType) {
+                return;
+            }
+
+            const params: FormDTO = {
+                username: server.username,
+                password: server.password,
+                companyId: server.companyId,
+                publisherId: server.username,
+                parentDocumentId: parseInt(parentDocumentId),
+                documentDescription: newFormName,
+                cardDescription: "",
+                datasetName: newDatasetName,
+                Attachments: {
+                    item: []
+                },
+                customEvents: {
+                    item: [],
+                },
+                persistenceType: persistenceType.value,
+            };
+
+            const workspaceFolder = workspace.workspaceFolders[0];
+            const formFolder = Uri.joinPath(workspaceFolder.uri, 'forms', formFolderName).fsPath;
+
+            for (let attachmentPath of glob.sync(formFolder + "/**/*.*", {nodir: true, ignore: formFolder + "/events/**/*.*"})) {
+                const pathParsed = parse(attachmentPath);
+
+                const attachment: AttachmentDTO = {
+                    fileName: pathParsed.base,
+                    filecontent: readFileSync(attachmentPath).toString("base64"),
+                    principal: formName === pathParsed.name,
+                };
+                params.Attachments.item.push(attachment);
+            }
+
+            for (let eventPath of glob.sync(formFolder + "/events/*.js")) {
+                const customEvent: CustomizationEventsDTO = {
+                    eventDescription: readFileSync(eventPath).toString("utf-8"),
+                    eventId: basename(eventPath),
+                };
+                params.customEvents.item.push(customEvent);
+            }
+
+            try {
+                const client = await await soap.createClientAsync(FormService.getUri(server));
+                const response = await client.createSimpleCardIndexWithDatasetPersisteTypeAsync(params);
+
+                if (response[0].result.item.webServiceMessage === 'ok') {
+                    window.showInformationMessage(`Formulário ${formName} exportado com sucesso!`);
+                } else {
+                    window.showErrorMessage(response[0].result.item.webServiceMessage);
+                }
+            } catch (err) {
+                window.showErrorMessage("Erro ao exportar Formulário.");
+            }
+        } else {
+            const newDatasetName = await window.showInputBox({
+                prompt: "Qual o nome do Dataset do Formulário?",
+                value: selectedForm.datasetName
+            }) || "";
+
+            if (!newDatasetName) {
+                return;
+            }
+
+            const versionOption = await window.showQuickPick(
+                [
+                    {
+                        label: "Criar Nova Versão",
+                        value: "2",
+                    },
+                    {
+                        label: "Manter Versão",
+                        value: "0",
+                    }
+                ],
+                {
+                    placeHolder: "Controle de Versão"
+                }
+            );
+
+            if (!versionOption) {
+                return;
+            }
+
+            const params: FormDTO = {
+                username: server.username,
+                password: server.password,
+                companyId: server.companyId,
+                publisherId: server.username,
+                documentId: selectedForm.documentId,
+                descriptionField: "",
+                cardDescription: "",
+                datasetName: newDatasetName,
+                Attachments: {
+                    item: []
+                },
+                customEvents: {
+                    item: [],
+                },
+                generalInfo: {
+                    versionOption: versionOption.value
+                },
+            };
+
+            const workspaceFolder = workspace.workspaceFolders[0];
+            const formFolder = Uri.joinPath(workspaceFolder.uri, 'forms', formFolderName).fsPath;
+
+            for (let attachmentPath of glob.sync(formFolder + "/**/*.*", {nodir: true, ignore: formFolder + "/events/**/*.*"})) {
+                const pathParsed = parse(attachmentPath);
+
+                const attachment: AttachmentDTO = {
+                    fileName: pathParsed.base,
+                    filecontent: readFileSync(attachmentPath).toString("base64"),
+                    principal: formName === pathParsed.name,
+                };
+                params.Attachments.item.push(attachment);
+            }
+
+            for (let eventPath of glob.sync(formFolder + "/events/*.js")) {
+                const customEvent: CustomizationEventsDTO = {
+                    eventDescription: readFileSync(eventPath).toString("utf-8"),
+                    eventId: basename(eventPath),
+                    eventVersAnt: false,
+                };
+                params.customEvents.item.push(customEvent);
+            }
+
+            try {
+                console.log(params);
+
+                const client = await await soap.createClientAsync(FormService.getUri(server));
+                const response = await client.updateSimpleCardIndexWithDatasetAndGeneralInfoAsync(params);
+
+                if (response[0].result.item.webServiceMessage === 'ok') {
+                    window.showInformationMessage(`Formulário ${formName} exportado com sucesso!`);
+                } else {
+                    window.showErrorMessage(response[0].result.item.webServiceMessage);
+                }
+            } catch (err) {
+                window.showErrorMessage("Erro ao exportar Formulário.");
+                console.log(err);
+            }
         }
+    }
+
+    private static async getExportFormSelected(server: ServerDTO, formNameOrId: string|number) {
+        const forms = await FormService.getForms(server);
+        const items = [];
+        let selected = null;
+
+        for (let form of forms) {
+            if (formNameOrId == form.documentId || formNameOrId === form.documentDescription) {
+                selected = {
+                    label: form.documentId + ' - ' + form.documentDescription,
+                    detail: form.datasetName
+                };
+            } else {
+                items.push({
+                    label: form.documentId + ' - ' + form.documentDescription,
+                    detail: form.datasetName
+                });
+            }
+        }
+
+        items.unshift({
+            label: "Novo Formulário"
+        });
+
+        if (selected) {
+            items.unshift(selected);
+        }
+
+        const result = await window.showQuickPick(items, {
+            placeHolder: "Criar ou Editar formulário?"
+        });
+
+        if (!result) {
+            return undefined;
+        }
+
+        if (result.label === "Novo Formulário") {
+            return "novo";
+        }
+
+        const endPosition = result.label.indexOf(" - ");
+        const documentId = result.label.substring(0, endPosition);
+        const form = forms.find(form => form.documentId.toString() === documentId);
+
+        return form;
     }
 }
