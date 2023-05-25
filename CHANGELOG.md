@@ -2,6 +2,10 @@
 
 Lista de atualizações da Extensão.
 
+## 1.20.0
+
+Adiciona a opção de exportar formulário.
+
 ## 1.19.6
 
 Corrige a criação do diretório de eventos ao importar um formulário.

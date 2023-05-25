@@ -52,6 +52,7 @@ aberto.
 - [Importar Dataset e Importar Vários Datasets](#importar-dataset);
 - [Exportar Dataset](#exportar-dataset);
 - [Importar Formulário e Importar Vários Formulários](#importar-formulário);
+- [Exportar Formulário](#exportar-formulário);
 - [Importar Evento Global e Importar Vários Eventos Globais](#importar-evento-global);
 - [Snippets para HTML](#snippets-para-html);
 - [Snippets para JavaScript](#snippets-para-javascript);
@@ -210,7 +211,7 @@ Para exportar Dataset clique com o botão direito do mouse sobre o Dataset e sel
 enquanto editando o dataset, utilize o atalho **CTRL + F9** (CMD + F9 no Mac).
 
 Após selecionar o servidor você poderá escolher um dos datasets listados para efetuar uma edição ou
-selecionar a opção **Novo Dataset** para criar o Dataset no servidor..
+selecionar a opção **Novo Dataset** para criar o Dataset no servidor.
 
 ## Importar Formulário
 
@@ -220,6 +221,22 @@ importação (`Fluig: Importar Formulário` ou `Fluig: Importar Vários Formulá
 
 Após selecionar o servidor é exibido a lista de Formulários do servidor para selecionar qual/quais serão
 importados.
+
+## Exportar Formulário
+
+Para exportar um formulário clique com o botão direito do mouse sobre o Formulário e selecione a opção `Exportar Formulário`
+ou, enquanto edita qualquer arquivo do formulário, utilize o atalho **CTRL + F9** (CMD + F9 no Mac).
+
+Após selecionar o servidor você poderá escolher um dos formulários listados para efetuar uma edição ou selecionar a opção
+**Novo Formulário** para criar um formulário no servidor.
+
+Ao criar um formulário você deve indicar o ID da pasta onde ele será salvo (não há opção de pesquisar pastas igual ao Eclipse),
+indicar um nome de Dataset para o formulário e o modo de persistência (em uma tabela própria ou numa única tabela).
+
+Ao editar um formulário você pode indicar se deve ou não atualizar a versão.
+
+É obrigatório que o nome do arquivo HTML seja igual ao nome da pasta do diretório que está no seu computador (o nome do formulário no servidor
+é indiferente), pois é isso que determina qual é o arquivo principal do formulário.
 
 ## Importar Evento Global
 
