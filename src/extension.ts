@@ -146,6 +146,24 @@ export function activate(context: vscode.ExtensionContext) {
 
     context.subscriptions.push(
         vscode.commands.registerCommand(
+            "fluiggers-fluig-vscode-extension.exportForm",
+            function (fileUri: vscode.Uri) {
+                // Ativado pelo Atalho
+                if (!fileUri) {
+                    if (!vscode.window.activeTextEditor) {
+                        vscode.window.showErrorMessage("Não há editor de texto ativo com Formulário");
+                        return;
+                    }
+                    fileUri = vscode.window.activeTextEditor.document.uri;
+                }
+
+                FormService.export(fileUri);
+            }
+        )
+    );
+
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
             "fluiggers-fluig-vscode-extension.importForm",
             () => FormService.import()
         )

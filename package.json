@@ -2,7 +2,7 @@
     "name": "fluiggers-fluig-vscode-extension",
     "displayName": "Fluig - Extensão para Desenvolvimento",
     "description": "Extensão para agilizar o desenvolvimento para o TOTVS Fluig no VS Code",
-    "version": "1.19.6",
+    "version": "1.20.0",
     "publisher": "Fluiggers",
     "icon": "images/icon.png",
     "repository": {
@@ -128,6 +128,11 @@
                 "category": "Fluig"
             },
             {
+                "command": "fluiggers-fluig-vscode-extension.exportForm",
+                "title": "Exportar Formulário",
+                "category": "Fluig"
+            },
+            {
                 "command": "fluiggers-fluig-vscode-extension.importGlobalEvent",
                 "title": "Importar Evento Global",
                 "category": "Fluig"
@@ -159,6 +164,10 @@
                 },
                 {
                     "command": "fluiggers-fluig-vscode-extension.exportDataset",
+                    "when": "false"
+                },
+                {
+                    "command": "fluiggers-fluig-vscode-extension.exportForm",
                     "when": "false"
                 },
                 {
@@ -218,6 +227,11 @@
                 {
                     "command": "fluiggers-fluig-vscode-extension.exportDataset",
                     "when": "resourcePath =~ /[\\/\\\\]datasets[\\/\\\\].+$/",
+                    "group": "1_Fluig@0"
+                },
+                {
+                    "command": "fluiggers-fluig-vscode-extension.exportForm",
+                    "when": "resourcePath =~ /[\\/\\\\]forms[\\/\\\\].+$/",
                     "group": "1_Fluig@0"
                 },
                 {
@@ -284,6 +298,12 @@
                 "key": "ctrl+f9",
                 "mac": "cmd+f9",
                 "when": "editorTextFocus && resourcePath =~ /[\\/\\\\]datasets[\\/\\\\].+$/"
+            },
+            {
+                "command": "fluiggers-fluig-vscode-extension.exportForm",
+                "key": "ctrl+f9",
+                "mac": "cmd+f9",
+                "when": "editorTextFocus && resourcePath =~ /[\\/\\\\]forms[\\/\\\\].+$/"
             },
             {
                 "command": "fluiggers-fluig-vscode-extension.newDataset",
