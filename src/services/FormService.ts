@@ -379,7 +379,7 @@ export class FormService {
                 const attachment: AttachmentDTO = {
                     fileName: pathParsed.base,
                     filecontent: readFileSync(attachmentPath).toString("base64"),
-                    principal: formName === pathParsed.name,
+                    principal: pathParsed.ext.toLowerCase().includes('htm') && formName === pathParsed.name,
                 };
                 params.Attachments.item.push(attachment);
             }
@@ -478,8 +478,6 @@ export class FormService {
             }
 
             try {
-                console.log(params);
-
                 const client = await await soap.createClientAsync(FormService.getUri(server));
                 const response = await client.updateSimpleCardIndexWithDatasetAndGeneralInfoAsync(params);
 
@@ -490,7 +488,6 @@ export class FormService {
                 }
             } catch (err) {
                 window.showErrorMessage("Erro ao exportar Formulário.");
-                console.log(err);
             }
         }
     }
