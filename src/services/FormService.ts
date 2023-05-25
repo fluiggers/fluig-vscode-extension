@@ -259,7 +259,6 @@ export class FormService {
         window.showInformationMessage("Os formulários foram importados com sucesso!");
     }
 
-    // TODO: definir arquivo principal mesmo sendo diferente do nome da pasta
     public static async export(fileUri: Uri) {
         if (!workspace.workspaceFolders || !workspace.workspaceFolders[0]) {
             window.showInformationMessage("Você precisa estar em um diretório / workspace.");
