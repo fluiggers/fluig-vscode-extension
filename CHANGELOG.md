@@ -2,6 +2,16 @@
 
 Lista de atualizações da Extensão.
 
+## 1.20.1
+
+Permite efetuar a primeira consulta a um dataset já informando constraints, facilitando a consulta de datasets que dão erro
+quando não tem constraint informada.
+
+Porém não é possível selecionar as constraints de uma lista devido à extensão não saber quais campos são retornados pelo dataset
+antes da consulta.
+
+O comportamento de resetar todos os parâmetros da consulta ao trocar o dataset selecionado permanece.
+
 ## 1.20.0
 
 Adiciona a opção de exportar formulário.
