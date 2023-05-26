@@ -11,11 +11,13 @@
 
     let dataTable = null;
     let currentDataset = "";
-    let resetItems = true;
+
+    let needLoadFields = true;
+    let needResetConstraints = true;
+
     let $loading = null;
     let $constraints = null;
     let constraintsFields = [];
-    let isFirstDatasetLoaded = true;
 
     $(function () {
         $loading = $("#loading").modal({
@@ -75,14 +77,12 @@
             case 'query_result':
                 const queryResult = message.queryResult
 
-                if (resetItems) {
+                if (needLoadFields) {
                     setFields(queryResult);
-                    addConstraints(true);
+                }
 
-                    if (isFirstDatasetLoaded) {
-                        isFirstDatasetLoaded = false;
-                        $("#configurarParametros").attr("disabled", false);
-                    }
+                if (needResetConstraints) {
+                    addConstraints(true);
                 }
 
                 updateTableResult(queryResult);
@@ -150,14 +150,43 @@
 
         showLoading();
 
+        if (currentDataset == "") {
+            currentDataset = dataset;
+            const constraints = getConstraints();
+            needLoadFields = true;
+            needResetConstraints = !constraints.length;
+
+            vscode.postMessage({
+                command: 'consult_dataset',
+                datasetId: dataset,
+                fields: [],
+                constraints: constraints.length ? constraints : getConstraints(true),
+                order: []
+            });
+
+            return;
+        }
+
         if (currentDataset != dataset) {
             currentDataset = dataset;
-            resetItems = true;
+            needLoadFields = true;
+            needResetConstraints = true;
             $constraints.empty();
             resetFieldsSelect();
-        } else {
-            resetItems = false;
+
+            vscode.postMessage({
+                command: 'consult_dataset',
+                datasetId: dataset,
+                fields: getFields(),
+                constraints: getConstraints(true),
+                order: getOrders()
+            });
+
+            return;
         }
+
+        needLoadFields = false;
+        needResetConstraints = false;
 
         vscode.postMessage({
             command: 'consult_dataset',
@@ -231,8 +260,10 @@
         $constraints.append(constraint);
     }
 
-    function getConstraints() {
-        // Se é uma nova consulta retorna por padrão a sqlLimit
+    function getConstraints(resetItems) {
+        resetItems = resetItems || false;
+
+        // Limpa constraints para evitar erros
         if (resetItems) {
             return [{
                 fieldName: "sqlLimit",
@@ -244,8 +275,7 @@
         }
 
         const rows = $constraints.find("tr");
-
-        let datasetConstraints = [];
+        const datasetConstraints = [];
 
         for (let row of rows) {
             const fields = $(row).find(".form-control");
