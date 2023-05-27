@@ -2,6 +2,14 @@
 
 Lista de atualizações da Extensão.
 
+## 1.21.0
+
+Permite indicar o campo descritor ao exportar formulário.
+
+Ainda não permite selecionar um HTML principal para o formulário, sendo obrigatório que o nome do arquivo HTML principal seja igual ao nome
+do diretório do formulário.
+
+
 ## 1.20.1
 
 Permite efetuar a primeira consulta a um dataset já informando constraints, facilitando a consulta de datasets que dão erro
