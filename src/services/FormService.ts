@@ -351,6 +351,11 @@ export class FormService {
                 return;
             }
 
+            const cardDescription = await window.showInputBox({
+                prompt: "Nome do campo descritor (deixe em branco para usar o padrão)",
+                value: ""
+            }) || "";
+
             const params: FormDTO = {
                 username: server.username,
                 password: server.password,
@@ -358,7 +363,7 @@ export class FormService {
                 publisherId: server.username,
                 parentDocumentId: parseInt(parentDocumentId),
                 documentDescription: newFormName,
-                cardDescription: "",
+                cardDescription: cardDescription,
                 datasetName: newDatasetName,
                 Attachments: {
                     item: []
@@ -433,13 +438,18 @@ export class FormService {
                 return;
             }
 
+            const descriptionField = await window.showInputBox({
+                prompt: "Nome do campo descritor (deixe em branco para usar o padrão)",
+                value: selectedForm.cardDescription,
+            }) || "";
+
             const params: FormDTO = {
                 username: server.username,
                 password: server.password,
                 companyId: server.companyId,
                 publisherId: server.username,
                 documentId: selectedForm.documentId,
-                descriptionField: "",
+                descriptionField: descriptionField,
                 cardDescription: "",
                 datasetName: newDatasetName,
                 Attachments: {
@@ -462,7 +472,7 @@ export class FormService {
                 const attachment: AttachmentDTO = {
                     fileName: pathParsed.base,
                     filecontent: readFileSync(attachmentPath).toString("base64"),
-                    principal: formName === pathParsed.name,
+                    principal: pathParsed.ext.toLowerCase().includes('htm') && formName === pathParsed.name,
                 };
                 params.Attachments.item.push(attachment);
             }
