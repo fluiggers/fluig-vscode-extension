@@ -45,150 +45,113 @@ export function activate(context: vscode.ExtensionContext) {
     EVENTS_NAMES.WORKFLOW = getTemplatesNameFromPath(EXTENSION_PATHS.WORKFLOW_EVENTS);
     EVENTS_NAMES.GLOBAL = getTemplatesNameFromPath(EXTENSION_PATHS.GLOBAL_EVENTS);
 
-    context.subscriptions.push(
-        vscode.commands.registerCommand("fluiggers-fluig-vscode-extension.newDataset", createDataset)
-    );
+    context.subscriptions.push(vscode.commands.registerCommand("fluiggers-fluig-vscode-extension.installDeclarationLibrary", installDeclarationLibrary));
 
-    context.subscriptions.push(
-        vscode.commands.registerCommand("fluiggers-fluig-vscode-extension.newForm", createForm)
-    );
+    // Criação de artefatos
 
-    context.subscriptions.push(
-        vscode.commands.registerCommand("fluiggers-fluig-vscode-extension.newFormEvent", createFormEvent)
-    );
+    context.subscriptions.push(vscode.commands.registerCommand("fluiggers-fluig-vscode-extension.newDataset", createDataset));
+    context.subscriptions.push(vscode.commands.registerCommand("fluiggers-fluig-vscode-extension.newForm", createForm));
+    context.subscriptions.push(vscode.commands.registerCommand("fluiggers-fluig-vscode-extension.newFormEvent", createFormEvent));
+    context.subscriptions.push(vscode.commands.registerCommand("fluiggers-fluig-vscode-extension.newWorkflowEvent", createWorkflowEvent));
+    context.subscriptions.push(vscode.commands.registerCommand("fluiggers-fluig-vscode-extension.newGlobalEvent", createGlobalEvent));
+    context.subscriptions.push(vscode.commands.registerCommand("fluiggers-fluig-vscode-extension.newMechanism", createMechanism));
 
-    context.subscriptions.push(
-        vscode.commands.registerCommand("fluiggers-fluig-vscode-extension.newWorkflowEvent", createWorkflowEvent)
-    );
-
-    context.subscriptions.push(
-        vscode.commands.registerCommand("fluiggers-fluig-vscode-extension.newGlobalEvent", createGlobalEvent)
-    );
-
-    context.subscriptions.push(
-        vscode.commands.registerCommand("fluiggers-fluig-vscode-extension.newMechanism", createMechanism)
-    );
-
-    context.subscriptions.push(
-        vscode.commands.registerCommand("fluiggers-fluig-vscode-extension.installDeclarationLibrary", installDeclarationLibrary)
-    );
 
     // Servidores
+
     const serverItemProvider = new ServerItemProvider(context);
     vscode.window.registerTreeDataProvider("fluiggers-fluig-vscode-extension.servers", serverItemProvider);
 
-    context.subscriptions.push(
-        vscode.commands.registerCommand(
-            "fluiggers-fluig-vscode-extension.addServer",
-            () => serverItemProvider.add()
-        )
-    );
+    context.subscriptions.push(vscode.commands.registerCommand(
+        "fluiggers-fluig-vscode-extension.addServer",
+        () => serverItemProvider.add()
+    ));
 
-    context.subscriptions.push(
-        vscode.commands.registerCommand(
-            "fluiggers-fluig-vscode-extension.refreshServer",
-            () => serverItemProvider.refresh()
-        )
-    );
+    context.subscriptions.push(vscode.commands.registerCommand(
+        "fluiggers-fluig-vscode-extension.refreshServer",
+        () => serverItemProvider.refresh()
+    ));
 
-    context.subscriptions.push(
-        vscode.commands.registerCommand(
-            "fluiggers-fluig-vscode-extension.editServer",
-            (serverItem: ServerItem) => serverItemProvider.update(serverItem)
-        )
-    );
+    context.subscriptions.push(vscode.commands.registerCommand(
+        "fluiggers-fluig-vscode-extension.editServer",
+        (serverItem: ServerItem) => serverItemProvider.update(serverItem)
+    ));
 
-    context.subscriptions.push(
-        vscode.commands.registerCommand(
-            "fluiggers-fluig-vscode-extension.deleteServer",
-            (serverItem: ServerItem) => serverItemProvider.delete(serverItem)
-        )
-    );
+    context.subscriptions.push(vscode.commands.registerCommand(
+        "fluiggers-fluig-vscode-extension.deleteServer",
+        (serverItem: ServerItem) => serverItemProvider.delete(serverItem)
+    ));
 
-    context.subscriptions.push(
-        vscode.commands.registerCommand(
-            "fluiggers-fluig-vscode-extension.datasetView",
-            (datasetItem: DatasetItem) => serverItemProvider.datasetView(datasetItem)
-        )
-    );
+    context.subscriptions.push(vscode.commands.registerCommand(
+        "fluiggers-fluig-vscode-extension.datasetView",
+        (datasetItem: DatasetItem) => serverItemProvider.datasetView(datasetItem)
+    ));
 
-    context.subscriptions.push(
-        vscode.commands.registerCommand(
-            "fluiggers-fluig-vscode-extension.importDataset",
-            () => DatasetService.import()
-        )
-    );
+    // Importação de artefatos
 
-    context.subscriptions.push(
-        vscode.commands.registerCommand(
-            "fluiggers-fluig-vscode-extension.importManyDataset",
-            () => DatasetService.importMany()
-        )
-    );
+    context.subscriptions.push(vscode.commands.registerCommand(
+        "fluiggers-fluig-vscode-extension.importDataset",
+        () => DatasetService.import()
+    ));
 
-    context.subscriptions.push(
-        vscode.commands.registerCommand(
-            "fluiggers-fluig-vscode-extension.exportDataset",
-            function (fileUri: vscode.Uri) {
-                // Ativado pelo Atalho
-                if (!fileUri) {
-                    if (!vscode.window.activeTextEditor) {
-                        vscode.window.showErrorMessage("Não há editor de texto ativo com Dataset");
-                        return;
-                    }
-                    fileUri = vscode.window.activeTextEditor.document.uri;
+    context.subscriptions.push(vscode.commands.registerCommand(
+        "fluiggers-fluig-vscode-extension.importManyDataset",
+        () => DatasetService.importMany()
+    ));
+
+    context.subscriptions.push(vscode.commands.registerCommand(
+        "fluiggers-fluig-vscode-extension.importForm",
+        () => FormService.import()
+    ));
+
+    context.subscriptions.push(vscode.commands.registerCommand(
+        "fluiggers-fluig-vscode-extension.importManyForm",
+        () => FormService.importMany()
+    ));
+
+    context.subscriptions.push(vscode.commands.registerCommand(
+        "fluiggers-fluig-vscode-extension.importGlobalEvent",
+        () => GlobalEventService.import()
+    ));
+
+    context.subscriptions.push(vscode.commands.registerCommand(
+        "fluiggers-fluig-vscode-extension.importManyGlobalEvent",
+        () => GlobalEventService.importMany()
+    ));
+
+    // Exportação de artefatos
+
+    context.subscriptions.push(vscode.commands.registerCommand(
+        "fluiggers-fluig-vscode-extension.exportDataset",
+        function (fileUri: vscode.Uri) {
+            // Ativado pela Tecla de Atalho
+            if (!fileUri) {
+                if (!vscode.window.activeTextEditor) {
+                    vscode.window.showErrorMessage("Não há editor de texto ativo com Dataset");
+                    return;
                 }
-
-                DatasetService.export(fileUri);
+                fileUri = vscode.window.activeTextEditor.document.uri;
             }
-        )
-    );
 
-    context.subscriptions.push(
-        vscode.commands.registerCommand(
-            "fluiggers-fluig-vscode-extension.exportForm",
-            function (fileUri: vscode.Uri) {
-                // Ativado pelo Atalho
-                if (!fileUri) {
-                    if (!vscode.window.activeTextEditor) {
-                        vscode.window.showErrorMessage("Não há editor de texto ativo com Formulário");
-                        return;
-                    }
-                    fileUri = vscode.window.activeTextEditor.document.uri;
+            DatasetService.export(fileUri);
+        }
+    ));
+
+    context.subscriptions.push(vscode.commands.registerCommand(
+        "fluiggers-fluig-vscode-extension.exportForm",
+        function (fileUri: vscode.Uri) {
+            // Ativado pela Tecla Atalho
+            if (!fileUri) {
+                if (!vscode.window.activeTextEditor) {
+                    vscode.window.showErrorMessage("Não há editor de texto ativo com Formulário");
+                    return;
                 }
-
-                FormService.export(fileUri);
+                fileUri = vscode.window.activeTextEditor.document.uri;
             }
-        )
-    );
 
-    context.subscriptions.push(
-        vscode.commands.registerCommand(
-            "fluiggers-fluig-vscode-extension.importForm",
-            () => FormService.import()
-        )
-    );
-
-    context.subscriptions.push(
-        vscode.commands.registerCommand(
-                  "fluiggers-fluig-vscode-extension.importManyForm",
-            () => FormService.importMany()
-        )
-    );
-
-    context.subscriptions.push(
-        vscode.commands.registerCommand(
-            "fluiggers-fluig-vscode-extension.importGlobalEvent",
-            () => GlobalEventService.import()
-        )
-    );
-
-    context.subscriptions.push(
-        vscode.commands.registerCommand(
-            "fluiggers-fluig-vscode-extension.importManyGlobalEvent",
-            () => GlobalEventService.importMany()
-        )
-    );
+            FormService.export(fileUri);
+        }
+    ));
 }
 
 export function deactivate() { }
@@ -339,7 +302,7 @@ async function createFormEvent(folderUri: vscode.Uri) {
         return;
     }
 
-    // Ativado pelo Atalho
+    // Ativado pela Tecla de Atalho
     if (!folderUri) {
         if (!vscode.window.activeTextEditor) {
             vscode.window.showErrorMessage("Não há editor de texto ativo com Dataset");
