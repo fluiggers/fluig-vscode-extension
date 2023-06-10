@@ -2,48 +2,19 @@ import * as vscode from "vscode";
 import { readFileSync, createWriteStream } from "fs";
 import { DatasetItem, ServerItem, ServerItemProvider } from "./providers/ServerItemProvider";
 import axios, { AxiosRequestConfig } from "axios";
-import { glob } from "glob";
-import { basename } from "path";
 import { DatasetService } from "./services/DatasetService";
 import { FormService } from "./services/FormService";
 import { GlobalEventService } from "./services/GlobalEventService";
 import { UtilsService } from "./services/UtilsService";
-
-interface ExtensionsPath {
-    TEMPLATES: vscode.Uri | null,
-    FORM_EVENTS: vscode.Uri | null,
-    WORKFLOW_EVENTS: vscode.Uri | null,
-    GLOBAL_EVENTS: vscode.Uri | null
-}
-
-interface EventsNames {
-    FORM: string[],
-    WORKFLOW: string[],
-    GLOBAL: string[]
-}
-
-const EXTENSION_PATHS: ExtensionsPath = {
-    TEMPLATES: null,
-    FORM_EVENTS: null,
-    WORKFLOW_EVENTS: null,
-    GLOBAL_EVENTS: null
-};
-
-const EVENTS_NAMES: EventsNames = {
-    FORM: [],
-    WORKFLOW: [],
-    GLOBAL: []
-}
+import { TemplateService } from "./services/TemplateService";
 
 export function activate(context: vscode.ExtensionContext) {
-    EXTENSION_PATHS.TEMPLATES = getTemplateDirectoryPath(context);
-    EXTENSION_PATHS.FORM_EVENTS = vscode.Uri.joinPath(EXTENSION_PATHS.TEMPLATES, 'formEvents');
-    EXTENSION_PATHS.WORKFLOW_EVENTS = vscode.Uri.joinPath(EXTENSION_PATHS.TEMPLATES, 'workflowEvents')
-    EXTENSION_PATHS.GLOBAL_EVENTS = vscode.Uri.joinPath(EXTENSION_PATHS.TEMPLATES, 'globalEvents')
+    if (!vscode.workspace.workspaceFolders) {
+        throw "É necessário estar em Workspace / Diretório.";
+    }
 
-    EVENTS_NAMES.FORM = getTemplatesNameFromPath(EXTENSION_PATHS.FORM_EVENTS);
-    EVENTS_NAMES.WORKFLOW = getTemplatesNameFromPath(EXTENSION_PATHS.WORKFLOW_EVENTS);
-    EVENTS_NAMES.GLOBAL = getTemplatesNameFromPath(EXTENSION_PATHS.GLOBAL_EVENTS);
+    // Carrega os templates de criação de artefatos
+    TemplateService.init(context);
 
     context.subscriptions.push(vscode.commands.registerCommand("fluiggers-fluig-vscode-extension.installDeclarationLibrary", installDeclarationLibrary));
 
@@ -160,13 +131,9 @@ export function deactivate() { }
  * Cria um arquivo contendo um novo Dataset
  */
 async function createDataset() {
-    if (!vscode.workspace.workspaceFolders) {
-        vscode.window.showInformationMessage("Você precisa estar em um diretório / workspace.");
-        return;
-    }
+    const workspaceFolderUri = UtilsService.getWorkspaceUri();
 
-    if (EXTENSION_PATHS.TEMPLATES === null) {
-        vscode.window.showInformationMessage("Erro ao carregar os templates.");
+    if (!workspaceFolderUri) {
         return;
     }
 
@@ -183,7 +150,6 @@ async function createDataset() {
         dataset += ".js";
     }
 
-    const workspaceFolderUri = vscode.workspace.workspaceFolders[0].uri;
     const datasetUri = vscode.Uri.joinPath(workspaceFolderUri, "datasets", dataset);
 
     try {
@@ -195,7 +161,7 @@ async function createDataset() {
 
     await vscode.workspace.fs.writeFile(
         datasetUri,
-        readFileSync(vscode.Uri.joinPath(EXTENSION_PATHS.TEMPLATES, 'createDataset.txt').fsPath)
+        readFileSync(vscode.Uri.joinPath(TemplateService.templatesUri, 'createDataset.txt').fsPath)
     );
     vscode.window.showTextDocument(datasetUri);
 }
@@ -204,13 +170,9 @@ async function createDataset() {
  * Cria um arquivo contendo um novo Dataset
  */
 async function createMechanism() {
-    if (!vscode.workspace.workspaceFolders) {
-        vscode.window.showInformationMessage("Você precisa estar em um diretório / workspace.");
-        return;
-    }
+    const workspaceFolderUri = UtilsService.getWorkspaceUri();
 
-    if (EXTENSION_PATHS.TEMPLATES === null) {
-        vscode.window.showInformationMessage("Erro ao carregar os templates.");
+    if (!workspaceFolderUri) {
         return;
     }
 
@@ -227,19 +189,18 @@ async function createMechanism() {
         mechanism += ".js";
     }
 
-    const workspaceFolderUri = vscode.workspace.workspaceFolders[0].uri;
     const mechanismUri = vscode.Uri.joinPath(workspaceFolderUri, "mechanisms", mechanism);
 
     try {
         await vscode.workspace.fs.stat(mechanismUri);
         return vscode.window.showTextDocument(mechanismUri);
     } catch (err) {
-
+        console.error(err);
     }
 
     await vscode.workspace.fs.writeFile(
         mechanismUri,
-        readFileSync(vscode.Uri.joinPath(EXTENSION_PATHS.TEMPLATES, 'createMechanism.txt').fsPath)
+        readFileSync(vscode.Uri.joinPath(TemplateService.templatesUri, 'createMechanism.txt').fsPath)
     );
     vscode.window.showTextDocument(mechanismUri);
 }
@@ -248,13 +209,9 @@ async function createMechanism() {
  * Cria um novo formulário
  */
 async function createForm() {
-    if (!vscode.workspace.workspaceFolders) {
-        vscode.window.showInformationMessage("Você precisa estar em um diretório / workspace.");
-        return;
-    }
+    const workspaceFolderUri = UtilsService.getWorkspaceUri();
 
-    if (EXTENSION_PATHS.TEMPLATES === null) {
-        vscode.window.showInformationMessage("Erro ao carregar os templates.");
+    if (!workspaceFolderUri) {
         return;
     }
 
@@ -268,7 +225,6 @@ async function createForm() {
     }
 
     const formFileName = formName + ".html";
-    const workspaceFolderUri = vscode.workspace.workspaceFolders[0].uri;
     const formUri = vscode.Uri.joinPath(
         workspaceFolderUri,
         "forms",
@@ -280,11 +236,10 @@ async function createForm() {
         await vscode.workspace.fs.stat(formUri);
         return vscode.window.showTextDocument(formUri);
     } catch (err) {
-        console.log(vscode.workspace.workspaceFolders[0].uri);
         console.log(err);
     }
 
-    await vscode.workspace.fs.writeFile(formUri, readFileSync(vscode.Uri.joinPath(EXTENSION_PATHS.TEMPLATES, 'form.txt').fsPath));
+    await vscode.workspace.fs.writeFile(formUri, readFileSync(vscode.Uri.joinPath(TemplateService.templatesUri, 'form.txt').fsPath));
     vscode.window.showTextDocument(formUri);
 }
 
@@ -292,13 +247,9 @@ async function createForm() {
  * Cria um novo evento de formulário
  */
 async function createFormEvent(folderUri: vscode.Uri) {
-    if (!vscode.workspace.workspaceFolders) {
-        vscode.window.showInformationMessage("Você precisa estar em um diretório / workspace.");
-        return;
-    }
+    const workspaceFolderUri = UtilsService.getWorkspaceUri();
 
-    if (EXTENSION_PATHS.FORM_EVENTS === null) {
-        vscode.window.showInformationMessage("Erro ao carregar os templates.");
+    if (!workspaceFolderUri) {
         return;
     }
 
@@ -319,7 +270,7 @@ async function createFormEvent(folderUri: vscode.Uri) {
     const formName: string = folderUri.path.replace(/.*\/forms\/([^/]+).*/, "$1");
 
     const eventName: string = await vscode.window.showQuickPick(
-        EVENTS_NAMES.FORM,
+        TemplateService.formEventsNames,
         {
             canPickMany: false,
             placeHolder: "Selecione o Evento"
@@ -331,7 +282,6 @@ async function createFormEvent(folderUri: vscode.Uri) {
     }
 
     const eventFilename = eventName + ".js";
-    const workspaceFolderUri = vscode.workspace.workspaceFolders[0].uri;
     const eventUri = vscode.Uri.joinPath(
         workspaceFolderUri,
         "forms",
@@ -349,7 +299,7 @@ async function createFormEvent(folderUri: vscode.Uri) {
 
     await vscode.workspace.fs.writeFile(
         eventUri,
-        readFileSync(vscode.Uri.joinPath(EXTENSION_PATHS.FORM_EVENTS, `${eventName}.txt`).fsPath)
+        readFileSync(vscode.Uri.joinPath(TemplateService.formEventsUri, `${eventName}.txt`).fsPath)
     );
     vscode.window.showTextDocument(eventUri);
 }
@@ -358,18 +308,14 @@ async function createFormEvent(folderUri: vscode.Uri) {
  * Cria um novo evento Global
  */
 async function createGlobalEvent(folderUri: vscode.Uri) {
-    if (!vscode.workspace.workspaceFolders) {
-        vscode.window.showInformationMessage("Você precisa estar em um diretório / workspace.");
-        return;
-    }
+    const workspaceFolderUri = UtilsService.getWorkspaceUri();
 
-    if (EXTENSION_PATHS.GLOBAL_EVENTS === null) {
-        vscode.window.showInformationMessage("Erro ao carregar os templates.");
+    if (!workspaceFolderUri) {
         return;
     }
 
     const eventName: string = await vscode.window.showQuickPick(
-        EVENTS_NAMES.GLOBAL,
+        TemplateService.globalEventsNames,
         {
             canPickMany: false,
             placeHolder: "Selecione o Evento"
@@ -381,7 +327,6 @@ async function createGlobalEvent(folderUri: vscode.Uri) {
     }
 
     const eventFilename = eventName + ".js";
-    const workspaceFolderUri = vscode.workspace.workspaceFolders[0].uri;
     const eventUri = vscode.Uri.joinPath(
         workspaceFolderUri,
         "events",
@@ -397,7 +342,7 @@ async function createGlobalEvent(folderUri: vscode.Uri) {
 
     await vscode.workspace.fs.writeFile(
         eventUri,
-        readFileSync(vscode.Uri.joinPath(EXTENSION_PATHS.GLOBAL_EVENTS, `${eventName}.txt`).fsPath)
+        readFileSync(vscode.Uri.joinPath(TemplateService.globalEventsUri, `${eventName}.txt`).fsPath)
     );
     vscode.window.showTextDocument(eventUri);
 }
@@ -406,13 +351,9 @@ async function createGlobalEvent(folderUri: vscode.Uri) {
  * Cria um novo evento de Processo
  */
 async function createWorkflowEvent(folderUri: vscode.Uri) {
-    if (!vscode.workspace.workspaceFolders) {
-        vscode.window.showInformationMessage("Você precisa estar em um diretório / workspace.");
-        return;
-    }
+    const workspaceFolderUri = UtilsService.getWorkspaceUri();
 
-    if (EXTENSION_PATHS.WORKFLOW_EVENTS === null) {
-        vscode.window.showInformationMessage("Erro ao carregar os templates.");
+    if (!workspaceFolderUri) {
         return;
     }
 
@@ -433,7 +374,7 @@ async function createWorkflowEvent(folderUri: vscode.Uri) {
     const newFunctionOption = 'Nova Função';
 
     let eventName: string = await vscode.window.showQuickPick(
-        EVENTS_NAMES.WORKFLOW.concat(newFunctionOption),
+        TemplateService.workflowEventsNames.concat(newFunctionOption),
         {
             canPickMany: false,
             placeHolder: "Selecione o Evento"
@@ -465,7 +406,6 @@ async function createWorkflowEvent(folderUri: vscode.Uri) {
         : folderUri.path.replace(/.*\/workflow\/scripts\/([^.]+).+\.js$/, "$1");
 
     const eventFilename = `${processName}.${eventName}.js`;
-    const workspaceFolderUri = vscode.workspace.workspaceFolders[0].uri;
     const eventUri = vscode.Uri.joinPath(
         workspaceFolderUri,
         "workflow",
@@ -484,34 +424,18 @@ async function createWorkflowEvent(folderUri: vscode.Uri) {
         eventUri,
         isNewFunction
             ? Buffer.from(createEmptyFunction(eventName), "utf-8")
-            : readFileSync(vscode.Uri.joinPath(EXTENSION_PATHS.WORKFLOW_EVENTS, `${eventName}.txt`).fsPath)
+            : readFileSync(vscode.Uri.joinPath(TemplateService.workflowEventsUri, `${eventName}.txt`).fsPath)
     );
     vscode.window.showTextDocument(eventUri);
 }
 
 /**
- * Pega o diretório de templates da Extensão
- *
- * @returns O caminho do diretório de templates da Extensão
+ * Instala a última versão a bilioteca de tipos
  */
-function getTemplateDirectoryPath(context: vscode.ExtensionContext): vscode.Uri {
-    return vscode.Uri.joinPath(context.extensionUri, 'dist', 'templates');
-}
-
-/**
- * Pega o nome dos templates de determinado diretório
- *
- * @param path Diretório onde estão os templates
- * @returns Nome dos arquivos sem a extensão
- */
-function getTemplatesNameFromPath(templatesUri: vscode.Uri): string[] {
-    return glob.sync(vscode.Uri.joinPath(templatesUri, '*.txt').fsPath)
-        .map(filename => basename(filename, '.txt'));
-}
-
 function installDeclarationLibrary() {
-    if (!vscode.workspace.workspaceFolders) {
-        vscode.window.showInformationMessage("Você precisa estar em um diretório / workspace.");
+    const workspaceUri = UtilsService.getWorkspaceUri();
+
+    if (!workspaceUri) {
         return;
     }
 
@@ -524,8 +448,8 @@ function installDeclarationLibrary() {
         axios.get("https://raw.githubusercontent.com/fluiggers/fluig-declaration-type/master/fluig.d.ts", axiosConfig)
     ])
     .then(function ([jsConfig, fluigDeclarations]) {
-        jsConfig.data.pipe(createWriteStream(vscode.Uri.joinPath(UtilsService.getWorkspace(), "jsconfig.json").fsPath));
-        fluigDeclarations.data.pipe(createWriteStream(vscode.Uri.joinPath(UtilsService.getWorkspace(), "fluig.d.ts").fsPath));
+        jsConfig.data.pipe(createWriteStream(vscode.Uri.joinPath(workspaceUri, "jsconfig.json").fsPath));
+        fluigDeclarations.data.pipe(createWriteStream(vscode.Uri.joinPath(workspaceUri, "fluig.d.ts").fsPath));
     })
     .catch(() => vscode.window.showErrorMessage("Erro ao baixar biblioteca do GitHub. Verifique sua conexão com a Internet"));
 }
