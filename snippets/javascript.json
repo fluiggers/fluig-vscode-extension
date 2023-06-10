@@ -305,7 +305,7 @@
             "        initWidgetElements: function () {",
             "            widgetElements.widget = this.DOM;",
             "            widgetElements.loading = FLUIGC.loading(window, {",
-            "                textMessage: \"Processando Dados. Favor aguardar!.\"",
+            "                textMessage: \"Processando Dados. Favor aguardar.\"",
             "            });",
             "        },",
             "",
