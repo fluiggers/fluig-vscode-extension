@@ -5,8 +5,8 @@ import { window, Uri } from "vscode";
 import { Server } from "../models/Server";
 
 export class ServerService {
-    private static PATH = Uri.joinPath(UtilsService.getWorkspace(), '.vscode').fsPath;
-    private static FILE_SERVER_CONFIG = Uri.joinPath(UtilsService.getWorkspace(), '.vscode', 'servers.json').fsPath;
+    private static PATH = Uri.joinPath(UtilsService.getWorkspaceUri(), '.vscode').fsPath;
+    private static FILE_SERVER_CONFIG = Uri.joinPath(UtilsService.getWorkspaceUri(), '.vscode', 'servers.json').fsPath;
 
     /**
      * Adiciona um novo servidor
