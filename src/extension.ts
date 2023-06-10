@@ -131,12 +131,6 @@ export function deactivate() { }
  * Cria um arquivo contendo um novo Dataset
  */
 async function createDataset() {
-    const workspaceFolderUri = UtilsService.getWorkspaceUri();
-
-    if (!workspaceFolderUri) {
-        return;
-    }
-
     let dataset: string = await vscode.window.showInputBox({
         prompt: "Qual o nome do Dataset (sem espaços e sem caracteres especiais)?",
         placeHolder: "ds_nome_dataset"
@@ -150,7 +144,7 @@ async function createDataset() {
         dataset += ".js";
     }
 
-    const datasetUri = vscode.Uri.joinPath(workspaceFolderUri, "datasets", dataset);
+    const datasetUri = vscode.Uri.joinPath(UtilsService.getWorkspaceUri(), "datasets", dataset);
 
     try {
         await vscode.workspace.fs.stat(datasetUri);
@@ -170,12 +164,6 @@ async function createDataset() {
  * Cria um arquivo contendo um novo Dataset
  */
 async function createMechanism() {
-    const workspaceFolderUri = UtilsService.getWorkspaceUri();
-
-    if (!workspaceFolderUri) {
-        return;
-    }
-
     let mechanism: string = await vscode.window.showInputBox({
         prompt: "Qual o nome do Mecanismo Customizado (sem espaços e sem caracteres especiais)?",
         placeHolder: "mecanismo_customizado"
@@ -189,7 +177,7 @@ async function createMechanism() {
         mechanism += ".js";
     }
 
-    const mechanismUri = vscode.Uri.joinPath(workspaceFolderUri, "mechanisms", mechanism);
+    const mechanismUri = vscode.Uri.joinPath(UtilsService.getWorkspaceUri(), "mechanisms", mechanism);
 
     try {
         await vscode.workspace.fs.stat(mechanismUri);
@@ -209,12 +197,6 @@ async function createMechanism() {
  * Cria um novo formulário
  */
 async function createForm() {
-    const workspaceFolderUri = UtilsService.getWorkspaceUri();
-
-    if (!workspaceFolderUri) {
-        return;
-    }
-
     let formName: string = await vscode.window.showInputBox({
         prompt: "Qual o nome do Formulário (sem espaços e sem caracteres especiais)?",
         placeHolder: "NomeFormulario"
@@ -226,7 +208,7 @@ async function createForm() {
 
     const formFileName = formName + ".html";
     const formUri = vscode.Uri.joinPath(
-        workspaceFolderUri,
+        UtilsService.getWorkspaceUri(),
         "forms",
         formName,
         formFileName
@@ -247,12 +229,6 @@ async function createForm() {
  * Cria um novo evento de formulário
  */
 async function createFormEvent(folderUri: vscode.Uri) {
-    const workspaceFolderUri = UtilsService.getWorkspaceUri();
-
-    if (!workspaceFolderUri) {
-        return;
-    }
-
     // Ativado pela Tecla de Atalho
     if (!folderUri) {
         if (!vscode.window.activeTextEditor) {
@@ -283,7 +259,7 @@ async function createFormEvent(folderUri: vscode.Uri) {
 
     const eventFilename = eventName + ".js";
     const eventUri = vscode.Uri.joinPath(
-        workspaceFolderUri,
+        UtilsService.getWorkspaceUri(),
         "forms",
         formName,
         'events',
@@ -308,12 +284,6 @@ async function createFormEvent(folderUri: vscode.Uri) {
  * Cria um novo evento Global
  */
 async function createGlobalEvent(folderUri: vscode.Uri) {
-    const workspaceFolderUri = UtilsService.getWorkspaceUri();
-
-    if (!workspaceFolderUri) {
-        return;
-    }
-
     const eventName: string = await vscode.window.showQuickPick(
         TemplateService.globalEventsNames,
         {
@@ -328,7 +298,7 @@ async function createGlobalEvent(folderUri: vscode.Uri) {
 
     const eventFilename = eventName + ".js";
     const eventUri = vscode.Uri.joinPath(
-        workspaceFolderUri,
+        UtilsService.getWorkspaceUri(),
         "events",
         eventFilename
     );
@@ -351,12 +321,6 @@ async function createGlobalEvent(folderUri: vscode.Uri) {
  * Cria um novo evento de Processo
  */
 async function createWorkflowEvent(folderUri: vscode.Uri) {
-    const workspaceFolderUri = UtilsService.getWorkspaceUri();
-
-    if (!workspaceFolderUri) {
-        return;
-    }
-
     // Ativado pelo Atalho
     if (!folderUri) {
         if (!vscode.window.activeTextEditor) {
@@ -407,7 +371,7 @@ async function createWorkflowEvent(folderUri: vscode.Uri) {
 
     const eventFilename = `${processName}.${eventName}.js`;
     const eventUri = vscode.Uri.joinPath(
-        workspaceFolderUri,
+        UtilsService.getWorkspaceUri(),
         "workflow",
         "scripts",
         eventFilename
@@ -434,10 +398,6 @@ async function createWorkflowEvent(folderUri: vscode.Uri) {
  */
 function installDeclarationLibrary() {
     const workspaceUri = UtilsService.getWorkspaceUri();
-
-    if (!workspaceUri) {
-        return;
-    }
 
     const axiosConfig: AxiosRequestConfig = {
         responseType: "stream"
