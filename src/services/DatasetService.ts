@@ -13,9 +13,9 @@ import * as soap from 'soap';
 export class DatasetService {
 
     /**
-     * Retorna uma lista com todos os datasets
+     * Retorna uma lista com todos os datasets do servidor
      */
-    public static async getDatasets(server: ServerDTO): Promise<DatasetDTO[]> {
+    public static getDatasets(server: ServerDTO): Promise<DatasetDTO[]> {
         const uri = UtilsService.getHost(server) + "/webdesk/ECMDatasetService?wsdl";
 
         const params = {
@@ -24,29 +24,12 @@ export class DatasetService {
             password: server.password
         };
 
-        const wsdlOptions = {
-            handleNilAsNull: true
-        };
-
-        const datasets: any = await new Promise((accept, reject) => {
-            soap.createClient(uri, wsdlOptions, (err: any, client: soap.Client) => {
-                if (err) {
-                    reject(err);
-                    return;
-                }
-
-                client.findAllFormulariesDatasets(params, (err: any, response: any) => {
-                    if (err) {
-                        reject(err);
-                        return;
-                    }
-
-                    accept(response);
-                });
+        return soap.createClientAsync(uri)
+            .then((client) => {
+                return client.findAllFormulariesDatasetsAsync(params);
+            }).then((response) => {
+                return response[0].dataset?.item || [];
             });
-        });
-
-        return datasets.dataset.item;
     }
 
     /**
@@ -90,33 +73,11 @@ export class DatasetService {
             order: {item: order}
         };
 
-        const wsdlOptions = {
-            handleNilAsNull: true
-        };
+        const dataset = await soap.createClientAsync(uri, { handleNilAsNull: true })
+            .then(client => client.getDatasetAsync(params))
+            .then(response => response[0].dataset);
 
-        const result: any = await new Promise((accept, reject) => {
-
-            soap.createClient(uri, wsdlOptions, (err: any, client: soap.Client) => {
-                if (err) {
-                    reject(err);
-                    return;
-                }
-
-                client.getDataset(params, (err: any, response: any) => {
-                    if (err) {
-                        reject(err);
-                        return;
-                    }
-
-                    accept(response);
-                });
-            });
-        });
-
-        const columns = Array.isArray(result.dataset.columns)
-            ? result.dataset.columns
-            : [result.dataset.columns]
-        ;
+        const columns = Array.isArray(dataset.columns) ? dataset.columns : [dataset.columns];
 
         const mountValue = (item: any) => {
             let valueObj: any = {};
@@ -138,7 +99,7 @@ export class DatasetService {
             return valueObj;
         }
 
-        const retValues = result.dataset.values;
+        const retValues = dataset.values;
         let values = [];
 
         if(Array.isArray(retValues)) {
@@ -236,11 +197,6 @@ export class DatasetService {
      * Realiza a importação de um dataset específico
      */
     public static async import() {
-        if (!workspace.workspaceFolders) {
-            window.showInformationMessage("Você precisa estar em um diretório / workspace.");
-            return;
-        }
-
         const server = await ServerService.getSelect();
 
         if (!server) {
@@ -263,11 +219,6 @@ export class DatasetService {
      * Realiza a importação de vários datasets
      */
     public static async importMany() {
-        if (!workspace.workspaceFolders) {
-            window.showInformationMessage("Você precisa estar em um diretório / workspace.");
-            return;
-        }
-
         const server = await ServerService.getSelect();
 
         if (!server) {
@@ -435,13 +386,7 @@ export class DatasetService {
      * Criar arquivo de dataset
      */
     public static async saveFile(name: string, content: string) {
-        if (!workspace.workspaceFolders) {
-            window.showInformationMessage("Você precisa estar em um diretório / workspace.");
-            return;
-        }
-
-        const workspaceFolderUri = workspace.workspaceFolders[0].uri;
-        const datasetUri = Uri.joinPath(workspaceFolderUri, "datasets", name + ".js");
+        const datasetUri = Uri.joinPath(UtilsService.getWorkspaceUri(), "datasets", name + ".js");
 
         await workspace.fs.writeFile(
             datasetUri,
