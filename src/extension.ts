@@ -85,7 +85,7 @@ export function activate(context: vscode.ExtensionContext) {
 export function deactivate() { }
 
 /**
- * Cria um arquivo contendo um novo Dataset
+ * Cria um Dataset
  */
 async function createDataset() {
     let dataset: string = await vscode.window.showInputBox({
@@ -118,7 +118,7 @@ async function createDataset() {
 }
 
 /**
- * Cria um arquivo contendo um novo Dataset
+ * Cria um arquivo contendo um novo Mecanismo customizado
  */
 async function createMechanism() {
     let mechanism: string = await vscode.window.showInputBox({
@@ -140,7 +140,7 @@ async function createMechanism() {
         await vscode.workspace.fs.stat(mechanismUri);
         return vscode.window.showTextDocument(mechanismUri);
     } catch (err) {
-        console.error(err);
+
     }
 
     await vscode.workspace.fs.writeFile(
@@ -151,7 +151,7 @@ async function createMechanism() {
 }
 
 /**
- * Cria um novo formulário
+ * Cria um Formulário
  */
 async function createForm() {
     let formName: string = await vscode.window.showInputBox({
@@ -175,7 +175,7 @@ async function createForm() {
         await vscode.workspace.fs.stat(formUri);
         return vscode.window.showTextDocument(formUri);
     } catch (err) {
-        console.log(err);
+
     }
 
     await vscode.workspace.fs.writeFile(formUri, readFileSync(vscode.Uri.joinPath(TemplateService.templatesUri, 'form.txt').fsPath));
@@ -183,7 +183,7 @@ async function createForm() {
 }
 
 /**
- * Cria um novo evento de formulário
+ * Cria um Evento de Formulário
  */
 async function createFormEvent(folderUri: vscode.Uri) {
     // Ativado pela Tecla de Atalho
@@ -202,8 +202,10 @@ async function createFormEvent(folderUri: vscode.Uri) {
 
     const formName: string = folderUri.path.replace(/.*\/forms\/([^/]+).*/, "$1");
 
-    const eventName: string = await vscode.window.showQuickPick(
-        TemplateService.formEventsNames,
+    const newFunctionOption = 'Nova Função';
+
+    let eventName: string = await vscode.window.showQuickPick(
+        TemplateService.formEventsNames.concat(newFunctionOption),
         {
             canPickMany: false,
             placeHolder: "Selecione o Evento"
@@ -212,6 +214,21 @@ async function createFormEvent(folderUri: vscode.Uri) {
 
     if (!eventName) {
         return;
+    }
+
+    let isNewFunction = false;
+
+    if (eventName == newFunctionOption) {
+        eventName = await vscode.window.showInputBox({
+            prompt: "Qual o nome da Nova Função (sem espaços e sem caracteres especiais)?",
+            placeHolder: "nomeFuncao"
+        }) || "";
+
+        if (!eventName) {
+            return;
+        }
+
+        isNewFunction = true;
     }
 
     const eventFilename = eventName + ".js";
@@ -232,13 +249,16 @@ async function createFormEvent(folderUri: vscode.Uri) {
 
     await vscode.workspace.fs.writeFile(
         eventUri,
-        readFileSync(vscode.Uri.joinPath(TemplateService.formEventsUri, `${eventName}.txt`).fsPath)
+        isNewFunction
+            ? Buffer.from(createEmptyFunction(eventName), "utf-8")
+            : readFileSync(vscode.Uri.joinPath(TemplateService.formEventsUri, `${eventName}.txt`).fsPath)
     );
+
     vscode.window.showTextDocument(eventUri);
 }
 
 /**
- * Cria um novo evento Global
+ * Cria um Evento Global
  */
 async function createGlobalEvent(folderUri: vscode.Uri) {
     const eventName: string = await vscode.window.showQuickPick(
@@ -275,7 +295,7 @@ async function createGlobalEvent(folderUri: vscode.Uri) {
 }
 
 /**
- * Cria um novo evento de Processo
+ * Cria um Evento de Processo
  */
 async function createWorkflowEvent(folderUri: vscode.Uri) {
     // Ativado pelo Atalho
