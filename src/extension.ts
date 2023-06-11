@@ -16,16 +16,37 @@ export function activate(context: vscode.ExtensionContext) {
     // Carrega os templates de criação de artefatos
     TemplateService.init(context);
 
-    context.subscriptions.push(vscode.commands.registerCommand("fluiggers-fluig-vscode-extension.installDeclarationLibrary", installDeclarationLibrary));
+    context.subscriptions.push(vscode.commands.registerCommand(
+        "fluiggers-fluig-vscode-extension.installDeclarationLibrary",
+        installDeclarationLibrary
+    ));
 
     // Criação de artefatos
 
-    context.subscriptions.push(vscode.commands.registerCommand("fluiggers-fluig-vscode-extension.newDataset", createDataset));
-    context.subscriptions.push(vscode.commands.registerCommand("fluiggers-fluig-vscode-extension.newForm", createForm));
-    context.subscriptions.push(vscode.commands.registerCommand("fluiggers-fluig-vscode-extension.newFormEvent", createFormEvent));
-    context.subscriptions.push(vscode.commands.registerCommand("fluiggers-fluig-vscode-extension.newWorkflowEvent", createWorkflowEvent));
-    context.subscriptions.push(vscode.commands.registerCommand("fluiggers-fluig-vscode-extension.newGlobalEvent", createGlobalEvent));
-    context.subscriptions.push(vscode.commands.registerCommand("fluiggers-fluig-vscode-extension.newMechanism", createMechanism));
+    context.subscriptions.push(vscode.commands.registerCommand(
+        "fluiggers-fluig-vscode-extension.newDataset",
+        createDataset
+    ));
+    context.subscriptions.push(vscode.commands.registerCommand(
+        "fluiggers-fluig-vscode-extension.newForm",
+        createForm
+    ));
+    context.subscriptions.push(vscode.commands.registerCommand(
+        "fluiggers-fluig-vscode-extension.newFormEvent",
+        createFormEvent
+    ));
+    context.subscriptions.push(vscode.commands.registerCommand(
+        "fluiggers-fluig-vscode-extension.newWorkflowEvent",
+        createWorkflowEvent
+    ));
+    context.subscriptions.push(vscode.commands.registerCommand(
+        "fluiggers-fluig-vscode-extension.newGlobalEvent",
+        createGlobalEvent
+    ));
+    context.subscriptions.push(vscode.commands.registerCommand(
+        "fluiggers-fluig-vscode-extension.newMechanism",
+        createMechanism
+    ));
 
     // Servidores
 
@@ -55,12 +76,30 @@ export function activate(context: vscode.ExtensionContext) {
 
     // Importação de artefatos
 
-    context.subscriptions.push(vscode.commands.registerCommand("fluiggers-fluig-vscode-extension.importDataset", DatasetService.import));
-    context.subscriptions.push(vscode.commands.registerCommand("fluiggers-fluig-vscode-extension.importManyDataset", DatasetService.importMany));
-    context.subscriptions.push(vscode.commands.registerCommand("fluiggers-fluig-vscode-extension.importForm", FormService.import));
-    context.subscriptions.push(vscode.commands.registerCommand("fluiggers-fluig-vscode-extension.importManyForm", FormService.importMany));
-    context.subscriptions.push(vscode.commands.registerCommand("fluiggers-fluig-vscode-extension.importGlobalEvent", GlobalEventService.import));
-    context.subscriptions.push(vscode.commands.registerCommand("fluiggers-fluig-vscode-extension.importManyGlobalEvent", GlobalEventService.importMany));
+    context.subscriptions.push(vscode.commands.registerCommand(
+        "fluiggers-fluig-vscode-extension.importDataset",
+        DatasetService.import
+    ));
+    context.subscriptions.push(vscode.commands.registerCommand(
+        "fluiggers-fluig-vscode-extension.importManyDataset",
+        DatasetService.importMany
+    ));
+    context.subscriptions.push(vscode.commands.registerCommand(
+        "fluiggers-fluig-vscode-extension.importForm",
+        FormService.import
+    ));
+    context.subscriptions.push(vscode.commands.registerCommand(
+        "fluiggers-fluig-vscode-extension.importManyForm",
+        FormService.importMany
+    ));
+    context.subscriptions.push(vscode.commands.registerCommand(
+        "fluiggers-fluig-vscode-extension.importGlobalEvent",
+        GlobalEventService.import
+    ));
+    context.subscriptions.push(vscode.commands.registerCommand(
+        "fluiggers-fluig-vscode-extension.importManyGlobalEvent",
+        GlobalEventService.importMany
+    ));
 
     // Exportação de artefatos
 
@@ -193,7 +232,10 @@ async function createForm() {
 
     }
 
-    await vscode.workspace.fs.writeFile(formUri, readFileSync(vscode.Uri.joinPath(TemplateService.templatesUri, 'form.txt').fsPath));
+    await vscode.workspace.fs.writeFile(
+        formUri,
+        readFileSync(vscode.Uri.joinPath(TemplateService.templatesUri, 'form.txt').fsPath)
+    );
     vscode.window.showTextDocument(formUri);
 }
 
@@ -396,8 +438,14 @@ function installDeclarationLibrary() {
     };
 
     Promise.all([
-        axios.get("https://raw.githubusercontent.com/fluiggers/fluig-declaration-type/master/jsconfig.json", axiosConfig),
-        axios.get("https://raw.githubusercontent.com/fluiggers/fluig-declaration-type/master/fluig.d.ts", axiosConfig)
+        axios.get(
+            "https://raw.githubusercontent.com/fluiggers/fluig-declaration-type/master/jsconfig.json",
+            axiosConfig
+        ),
+        axios.get(
+            "https://raw.githubusercontent.com/fluiggers/fluig-declaration-type/master/fluig.d.ts",
+            axiosConfig
+        )
     ])
     .then(function ([jsConfig, fluigDeclarations]) {
         jsConfig.data.pipe(createWriteStream(vscode.Uri.joinPath(workspaceUri, "jsconfig.json").fsPath));
