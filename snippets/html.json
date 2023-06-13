@@ -10,7 +10,7 @@
             "    </div>",
             "</div>$0"
         ],
-        "description": "Cria um campo do tipo Texto."
+        "description": "Cria um campo do tipo text."
     },
 
     "fluig-input-textarea": {
@@ -24,7 +24,7 @@
             "    </div>",
             "</div>$0"
         ],
-        "description": "Cria um campo do tipo Texto."
+        "description": "Cria um campo do tipo textarea."
     },
 
     "fluig-input-zoom": {

@@ -5,7 +5,8 @@ body {
     font-size: var(--vscode-editor-font-size);
 }
 
-body.vscode-dark .form-select, body.vscode-high-contrast:not(.vscode-high-contrast-light) .form-select {
+body.vscode-dark .form-select,
+body.vscode-high-contrast:not(.vscode-high-contrast-light) .form-select {
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='white' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e")
 }
 
@@ -13,14 +14,17 @@ body.vscode-dark .form-select, body.vscode-high-contrast:not(.vscode-high-contra
     color: var(--vscode-input-placeholderForeground);
 }
 
-.form-control, .form-select, .select2-container--bootstrap .select2-search--dropdown .select2-search__field {
+.form-control,
+.form-select,
+.select2-container--bootstrap .select2-search--dropdown .select2-search__field {
     background-color: var(--vscode-input-background);
     color: var(--vscode-input-foreground);
     border: 1px solid var(--vscode-input-border, var(--bs-gray));
     font-size: var(--vscode-editor-font-size);
 }
 
-.form-control:focus, .select2-container--bootstrap .select2-search--dropdown .select2-search__field {
+.form-control:focus,
+.select2-container--bootstrap .select2-search--dropdown .select2-search__field {
     background-color: var(--vscode-input-background);
     color: var(--vscode-input-foreground);
     border-color: var(--vscode-focusBorder);
@@ -33,8 +37,11 @@ body.vscode-dark .form-select, body.vscode-high-contrast:not(.vscode-high-contra
 }
 
 .btn-primary:hover,
-.btn-primary.focus, .btn-primary:focus,
-.btn-primary:not(:disabled):not(.disabled).active, .btn-primary:not(:disabled):not(.disabled):active, .show>.btn-primary.dropdown-toggle {
+.btn-primary.focus,
+.btn-primary:focus,
+.btn-primary:not(:disabled):not(.disabled).active,
+.btn-primary:not(:disabled):not(.disabled):active,
+.show>.btn-primary.dropdown-toggle {
     background-color: var(--vscode-button-hoverBackground, var(--bs-primary));
     border-color: var(--vscode-button-separator);
 }
@@ -46,14 +53,19 @@ body.vscode-dark .form-select, body.vscode-high-contrast:not(.vscode-high-contra
 }
 
 .btn-secondary:hover,
-.btn-secondary.focus, .btn-secondary:focus,
-.btn-secondary:not(:disabled):not(.disabled).active, .btn-secondary:not(:disabled):not(.disabled):active, .show>.btn-secondary.dropdown-toggle {
+.btn-secondary.focus,
+.btn-secondary:focus,
+.btn-secondary:not(:disabled):not(.disabled).active,
+.btn-secondary:not(:disabled):not(.disabled):active,
+.show>.btn-secondary.dropdown-toggle {
     border-color: var(--vscode-button-separator);
     color: var(--vscode-button-secondaryForeground);
     background-color: var(--vscode-button-hoverBackground, var(--bs-secondary));
 }
 
-.btn.disabled, .btn:disabled, fieldset:disabled .btn {
+.btn.disabled,
+.btn:disabled,
+fieldset:disabled .btn {
     color: inherit;
     pointer-events: none;
     background-color: inherit;
@@ -118,7 +130,8 @@ body.vscode-dark .form-select, body.vscode-high-contrast:not(.vscode-high-contra
     border: 1px solid var(--vscode-input-border, var(--bs-gray));
 }
 
-.table thead th, .table tbody td {
+.table thead th,
+.table tbody td {
     border-bottom: 1px solid var(--vscode-input-border, var(--bs-gray));
 }
 
@@ -132,7 +145,9 @@ div.dt-button-info h2 {
     background-color: var(--vscode-editor-background);
 }
 
-.table-bordered, .table-bordered td, .table-bordered th {
+.table-bordered,
+.table-bordered td,
+.table-bordered th {
     border: 1px solid var(--vscode-input-border, var(--bs-gray));
 }
 
@@ -152,7 +167,8 @@ div.dt-button-info h2 {
     color: var(--vscode-editor-foreground);
 }
 
-.modal-content, .tab-content {
+.modal-content,
+.tab-content {
     background-color: var(--vscode-editor-background);
     border: 1px solid var(--vscode-input-border, var(--bs-gray));
 }
@@ -178,15 +194,38 @@ div.dt-button-info h2 {
     border-bottom-color: transparent;
 }
 
-.nav-tabs .nav-link:focus, .nav-tabs .nav-link:hover {
+.nav-tabs .nav-link:focus,
+.nav-tabs .nav-link:hover {
     border-color: var(--vscode-input-border, var(--bs-gray)) var(--vscode-input-border, var(--bs-gray)) var(--vscode-input-border, var(--bs-gray));
 }
 
-table.dataTable thead>tr>th.sorting:before, table.dataTable thead>tr>th.sorting:after, table.dataTable thead>tr>th.sorting_asc:before, table.dataTable thead>tr>th.sorting_asc:after, table.dataTable thead>tr>th.sorting_desc:before, table.dataTable thead>tr>th.sorting_desc:after, table.dataTable thead>tr>th.sorting_asc_disabled:before, table.dataTable thead>tr>th.sorting_asc_disabled:after, table.dataTable thead>tr>th.sorting_desc_disabled:before, table.dataTable thead>tr>th.sorting_desc_disabled:after, table.dataTable thead>tr>td.sorting:before, table.dataTable thead>tr>td.sorting:after, table.dataTable thead>tr>td.sorting_asc:before, table.dataTable thead>tr>td.sorting_asc:after, table.dataTable thead>tr>td.sorting_desc:before, table.dataTable thead>tr>td.sorting_desc:after, table.dataTable thead>tr>td.sorting_asc_disabled:before, table.dataTable thead>tr>td.sorting_asc_disabled:after, table.dataTable thead>tr>td.sorting_desc_disabled:before, table.dataTable thead>tr>td.sorting_desc_disabled:after {
+table.dataTable thead>tr>th.sorting:before,
+table.dataTable thead>tr>th.sorting:after,
+table.dataTable thead>tr>th.sorting_asc:before,
+table.dataTable thead>tr>th.sorting_asc:after,
+table.dataTable thead>tr>th.sorting_desc:before,
+table.dataTable thead>tr>th.sorting_desc:after,
+table.dataTable thead>tr>th.sorting_asc_disabled:before,
+table.dataTable thead>tr>th.sorting_asc_disabled:after,
+table.dataTable thead>tr>th.sorting_desc_disabled:before,
+table.dataTable thead>tr>th.sorting_desc_disabled:after,
+table.dataTable thead>tr>td.sorting:before,
+table.dataTable thead>tr>td.sorting:after,
+table.dataTable thead>tr>td.sorting_asc:before,
+table.dataTable thead>tr>td.sorting_asc:after,
+table.dataTable thead>tr>td.sorting_desc:before,
+table.dataTable thead>tr>td.sorting_desc:after,
+table.dataTable thead>tr>td.sorting_asc_disabled:before,
+table.dataTable thead>tr>td.sorting_asc_disabled:after,
+table.dataTable thead>tr>td.sorting_desc_disabled:before,
+table.dataTable thead>tr>td.sorting_desc_disabled:after {
     opacity: 0.6;
 }
 
-table.dataTable thead>tr>th.sorting_asc:before, table.dataTable thead>tr>th.sorting_desc:after, table.dataTable thead>tr>td.sorting_asc:before, table.dataTable thead>tr>td.sorting_desc:after {
+table.dataTable thead>tr>th.sorting_asc:before,
+table.dataTable thead>tr>th.sorting_desc:after,
+table.dataTable thead>tr>td.sorting_asc:before,
+table.dataTable thead>tr>td.sorting_desc:after {
     opacity: 1;
 }
 

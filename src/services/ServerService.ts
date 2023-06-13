@@ -1,3 +1,4 @@
+import { QuickPickItem } from "vscode";
 import { ServerConfig } from "../models/ServerConfig";
 import { ServerDTO } from "../models/ServerDTO";
 import { UtilsService } from "./UtilsService";
@@ -5,8 +6,9 @@ import { window, Uri } from "vscode";
 import { Server } from "../models/Server";
 
 export class ServerService {
-    private static PATH = Uri.joinPath(UtilsService.getWorkspace(), '.vscode').fsPath;
-    private static FILE_SERVER_CONFIG = Uri.joinPath(UtilsService.getWorkspace(), '.vscode', 'servers.json').fsPath;
+    private static PATH = Uri.joinPath(UtilsService.getWorkspaceUri(), '.vscode').fsPath;
+    private static FILE_SERVER_CONFIG = Uri.joinPath(UtilsService.getWorkspaceUri(), '.vscode', 'servers.json').fsPath;
+    private static SELECTED_SERVER: string = "";
 
     /**
      * Adiciona um novo servidor
@@ -87,8 +89,7 @@ export class ServerService {
     }
 
     public static async getSelect() {
-        const serversConfig = ServerService.getServerConfig();
-        const servers = serversConfig.configurations.map(server => ({ label: server.name }));
+        const servers = ServerService.getServersLabels();
 
         const result = await window.showQuickPick(servers, {
             placeHolder: "Selecione o servidor",
@@ -98,7 +99,31 @@ export class ServerService {
             return;
         }
 
+        ServerService.SELECTED_SERVER = result.label;
+
         return new Server(ServerService.findByName(result.label));
+    }
+
+    private static getServersLabels() {
+        const serversConfig = ServerService.getServerConfig();
+        const serversLabels: QuickPickItem[] = [];
+        let hasSelectedServer = false;
+
+        for (let i = 0; i < serversConfig.configurations.length; ++i) {
+            const serverName = serversConfig.configurations[i].name;
+
+            if (serverName === ServerService.SELECTED_SERVER) {
+                hasSelectedServer = true;
+                continue;
+            }
+            serversLabels.push({ label: serverName });
+        }
+
+        if (hasSelectedServer) {
+            serversLabels.unshift({ label: ServerService.SELECTED_SERVER});
+        }
+
+        return serversLabels;
     }
 
     /**
@@ -121,8 +146,6 @@ export class ServerService {
         const fs = require('fs');
         const serverConfig: ServerConfig = {
             version: "0.0.1",
-            permissions: undefined,
-            connectedServer: undefined,
             configurations: []
         };
 
