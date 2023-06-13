@@ -2,6 +2,12 @@
 
 Lista de atualizações da Extensão.
 
+## 1.22.0
+
+- Várias melhorias de refatoração do código para facilitar compreensão.
+- Não inicializa a Extensão caso o VS Code não esteja com Diretório, ou Workspace, aberto.
+- Mantém último servidor utilizado no topo da lista de seleção para agilizar importação/exportação de artefatos.
+
 ## 1.21.0
 
 Permite indicar o campo descritor ao exportar formulário.
