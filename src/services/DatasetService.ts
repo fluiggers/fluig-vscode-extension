@@ -73,27 +73,21 @@ export class DatasetService {
             order: {item: order}
         };
 
-        const dataset = await soap.createClientAsync(uri, { handleNilAsNull: true })
+        const dataset = await soap.createClientAsync(uri)
             .then(client => client.getDatasetAsync(params))
             .then(response => response[0].dataset);
 
         const columns = Array.isArray(dataset.columns) ? dataset.columns : [dataset.columns];
 
         const mountValue = (item: any) => {
-            let valueObj: any = {};
+            const valueObj: any = {};
+            const values = Array.isArray(item.value) ? item.value : [item.value];
 
-            for(let index = 0; index < columns.length; index++) {
-                const column = columns[index];
-
-                let value = Array.isArray(item.value) ? item.value[index] : item.value;
-
-                if (value !== null && value['$value'] !== undefined) {
-                    value = value['$value'];
-                } else {
-                    value = "";
-                }
-
-                valueObj[column] = value;
+            for (let index = 0; index < columns.length; index++) {
+                valueObj[columns[index]] = (values[index] !== undefined && values[index]['$value'] !== undefined)
+                    ? values[index]['$value']
+                    : ""
+                ;
             }
 
             return valueObj;
@@ -102,10 +96,8 @@ export class DatasetService {
         const retValues = dataset.values;
         let values = [];
 
-        if(Array.isArray(retValues)) {
-            values = retValues.map((item: any) => {
-                return mountValue(item);
-            });
+        if (Array.isArray(retValues)) {
+            values = retValues.map(item => mountValue(item));
         } else if(retValues !== undefined && retValues !== null) {
             const item = retValues;
             values.push(mountValue(item));
