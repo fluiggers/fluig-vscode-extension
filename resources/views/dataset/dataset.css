@@ -14,7 +14,8 @@
     margin-right: 10px;
 }
 
-#tbResultDataset th, #tbResultDataset td {
+#tbResultDataset th,
+#tbResultDataset td {
     white-space: nowrap;
 }
 
@@ -60,7 +61,8 @@
     padding-left: 1.5rem;
 }
 
-#tabOrders .form-switch .form-check-input, #tabOrders .form-switch .form-check-label {
+#tabOrders .form-switch .form-check-input,
+#tabOrders .form-switch .form-check-label {
     cursor: pointer;
 }
 
