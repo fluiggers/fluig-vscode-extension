@@ -2,6 +2,10 @@
 
 Lista de atualizações da Extensão.
 
+## 1.22.1
+
+- Corrige exportação de Formulário: estava utilizando erroneamente o login ao invés da matrícula como publisherId.
+
 ## 1.22.0
 
 - Várias melhorias de refatoração do código para facilitar compreensão.
