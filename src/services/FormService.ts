@@ -391,7 +391,7 @@ export class FormService {
             for (let eventPath of glob.sync(formFolder + "/events/*.js")) {
                 const customEvent: CustomizationEventsDTO = {
                     eventDescription: readFileSync(eventPath).toString("utf-8"),
-                    eventId: basename(eventPath),
+                    eventId: basename(eventPath, '.js'),
                 };
                 params.customEvents.item.push(customEvent);
             }
@@ -480,7 +480,7 @@ export class FormService {
             for (let eventPath of glob.sync(formFolder + "/events/*.js")) {
                 const customEvent: CustomizationEventsDTO = {
                     eventDescription: readFileSync(eventPath).toString("utf-8"),
-                    eventId: basename(eventPath),
+                    eventId: basename(eventPath, '.js'),
                     eventVersAnt: false,
                 };
                 params.customEvents.item.push(customEvent);

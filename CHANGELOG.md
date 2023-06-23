@@ -2,6 +2,10 @@
 
 Lista de atualizações da Extensão.
 
+## 1.22.2
+
+- Remove a extensão `.js` do nome do evento ao exportar Formulário;
+
 ## 1.22.1
 
 - Corrige exportação de Formulário: estava utilizando erroneamente o login ao invés da matrícula como publisherId.
