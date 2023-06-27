@@ -73,10 +73,12 @@ export class DatasetService {
             order: {item: order}
         };
 
-        const dataset = await soap.createClientAsync(uri)
-            .then(client => client.getDatasetAsync(params))
-            .then(response => response[0].dataset);
+        const client = await soap.createClientAsync(uri);
 
+        // Forçando a trazer os resultados nulos
+        client.wsdl.options.handleNilAsNull = true;
+
+        const dataset = await client.getDatasetAsync(params).then((response: any) => response[0].dataset);
         const columns = Array.isArray(dataset.columns) ? dataset.columns : [dataset.columns];
 
         const mountValue = (item: any) => {
@@ -84,10 +86,11 @@ export class DatasetService {
             const values = Array.isArray(item.value) ? item.value : [item.value];
 
             for (let index = 0; index < columns.length; index++) {
-                valueObj[columns[index]] = (values[index] !== undefined && values[index]['$value'] !== undefined)
-                    ? values[index]['$value']
-                    : ""
-                ;
+                if (values[index] && values[index]['$value']) {
+                    valueObj[columns[index]] = values[index]['$value'];
+                } else {
+                    valueObj[columns[index]] = null;
+                }
             }
 
             return valueObj;

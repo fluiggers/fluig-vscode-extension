@@ -2,6 +2,10 @@
 
 Lista de atualizações da Extensão.
 
+## 1.22.3
+
+- Corrige a visualização de Datasets forçando a trazer os resultados nulos para não dar problema na exibição dos campos;
+
 ## 1.22.2
 
 - Remove a extensão `.js` do nome do evento ao exportar Formulário;
