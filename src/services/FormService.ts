@@ -328,7 +328,6 @@ export class FormService {
             }
         } catch (err) {
             window.showErrorMessage("Erro ao exportar Formulário.");
-            console.log(err);
         }
     }
 
