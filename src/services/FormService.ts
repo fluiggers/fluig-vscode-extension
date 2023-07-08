@@ -33,7 +33,7 @@ export class FormService {
             .then((client) => {
                 return client.getCardIndexesWithoutApproverAsync(params);
             }).then((response) => {
-                return response[0].result.item || [];
+                return response[0]?.result?.item || [];
             });
     }
 
@@ -53,13 +53,13 @@ export class FormService {
             .then((client) => {
                 return client.getAttachmentsListAsync(params);
             }).then((response) => {
-                return response[0].result;
-            }).then((result) => {
-                if (!Array.isArray(result.item)) {
-                    return [result.item];
+                return response[0]?.result?.item || [];
+            }).then((items) => {
+                if (!Array.isArray(items)) {
+                    return [items];
                 }
 
-                return result.item;
+                return items;
             });
     }
 
@@ -100,13 +100,13 @@ export class FormService {
             .then((client) => {
                 return client.getCustomizationEventsAsync(params);
             }).then((response) => {
-                return response[0].result;
-            }).then((result) => {
-                if (!Array.isArray(result.item)) {
-                    return [result.item];
+                return response[0]?.result?.item || [];
+            }).then((items) => {
+                if (!Array.isArray(items)) {
+                    return [items];
                 }
 
-                return result.item;
+                return items;
             });
     }
 
@@ -201,9 +201,11 @@ export class FormService {
 
         const events = await FormService.getCustomizationEvents(server, form.documentId);
 
-        for (let item of events) {
-            workspace.fs.writeFile(Uri.joinPath(folderUri, item.eventId + ".js"), Buffer.from(item.eventDescription, "utf-8"));
+        for (let event of events) {
+            workspace.fs.writeFile(Uri.joinPath(folderUri, event.eventId + ".js"), Buffer.from(event.eventDescription, "utf-8"));
         }
+
+        window.showInformationMessage("O formulário foi importado!");
     }
 
     /**
@@ -256,7 +258,7 @@ export class FormService {
             }
         });
 
-        window.showInformationMessage("Os formulários foram importados com sucesso!");
+        window.showInformationMessage("Os formulários foram importados!");
     }
 
     public static async export(fileUri: Uri) {
@@ -400,10 +402,10 @@ export class FormService {
                 const client = await await soap.createClientAsync(FormService.getUri(server));
                 const response = await client.createSimpleCardIndexWithDatasetPersisteTypeAsync(params);
 
-                if (response[0].result.item.webServiceMessage === 'ok') {
+                if (response[0]?.result?.item?.webServiceMessage === 'ok') {
                     window.showInformationMessage(`Formulário ${formName} exportado com sucesso!`);
                 } else {
-                    window.showErrorMessage(response[0].result.item.webServiceMessage);
+                    window.showErrorMessage(response[0]?.result?.item?.webServiceMessage);
                 }
             } catch (err) {
                 window.showErrorMessage("Erro ao exportar Formulário.");
@@ -450,7 +452,7 @@ export class FormService {
                 publisherId: server.userCode,
                 documentId: selectedForm.documentId,
                 descriptionField: descriptionField,
-                cardDescription: "",
+                cardDescription: selectedForm.documentDescription,
                 datasetName: newDatasetName,
                 Attachments: {
                     item: []
@@ -490,10 +492,10 @@ export class FormService {
                 const client = await await soap.createClientAsync(FormService.getUri(server));
                 const response = await client.updateSimpleCardIndexWithDatasetAndGeneralInfoAsync(params);
 
-                if (response[0].result.item.webServiceMessage === 'ok') {
+                if (response[0]?.result?.item?.webServiceMessage === 'ok') {
                     window.showInformationMessage(`Formulário ${formName} exportado com sucesso!`);
                 } else {
-                    window.showErrorMessage(response[0].result.item.webServiceMessage);
+                    window.showErrorMessage(response[0]?.result?.item?.webServiceMessage);
                 }
             } catch (err) {
                 window.showErrorMessage("Erro ao exportar Formulário.");
