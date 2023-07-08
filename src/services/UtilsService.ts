@@ -22,4 +22,29 @@ export class UtilsService {
 
         return `${schema}://${server.host}${port}`;
     }
+
+    /**
+     * Confirma a senha do servidor para exportar artefatos
+     */
+    public static async confirmPassword(server: ServerDTO): Promise<boolean> {
+        let isPasswordCorrect: boolean = true;
+
+        do {
+            const confirmPassword = await vscode.window.showInputBox({
+                prompt: "Informe a senha do servidor " + server.name,
+                password: true
+            }) || "";
+
+            if (!confirmPassword) {
+                return false;
+            } else if (confirmPassword !== server.password) {
+                vscode.window.showWarningMessage(`A senha informada para o servidor "${server.name}" está incorreta!`);
+                isPasswordCorrect = false;
+            } else {
+                isPasswordCorrect = true;
+            }
+        } while (!isPasswordCorrect);
+
+        return isPasswordCorrect;
+    }
 }
