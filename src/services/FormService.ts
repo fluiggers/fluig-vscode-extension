@@ -268,24 +268,8 @@ export class FormService {
             return;
         }
 
-        if (server.confirmExporting) {
-            let isPasswordCorrect: boolean = true;
-
-            do {
-                const confirmPassword = await window.showInputBox({
-                    prompt: "Informe a senha do servidor " + server.name,
-                    password: true
-                }) || "";
-
-                if (!confirmPassword) {
-                    return;
-                } else if (confirmPassword !== server.password) {
-                    window.showWarningMessage(`A senha informada para o servidor "${server.name}" está incorreta!`);
-                    isPasswordCorrect = false;
-                } else {
-                    isPasswordCorrect = true;
-                }
-            } while (!isPasswordCorrect);
+        if (server.confirmExporting && !(await UtilsService.confirmPassword(server))) {
+            return;
         }
 
         const formFolderName: string = fileUri.path.replace(/.*\/forms\/([^/]+).*/, "$1");
