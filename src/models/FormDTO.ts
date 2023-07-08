@@ -10,7 +10,7 @@ export interface FormDTO {
     documentId?: number;
     publisherId: string;
     documentDescription?: string;
-    cardDescription: string;
+    cardDescription?: string;
     datasetName: string;
     Attachments: AttachmentArrayDTO;
     customEvents: CustomizationEventsArrayDTO;
