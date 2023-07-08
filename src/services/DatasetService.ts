@@ -73,10 +73,7 @@ export class DatasetService {
             order: {item: order}
         };
 
-        const client = await soap.createClientAsync(uri);
-
-        // Forçando a trazer os resultados nulos
-        client.wsdl.options.handleNilAsNull = true;
+        const client = await soap.createClientAsync(uri, { handleNilAsNull: true, disableCache: true });
 
         const dataset = await client.getDatasetAsync(params).then((response: any) => response[0].dataset);
         const columns = Array.isArray(dataset.columns) ? dataset.columns : [dataset.columns];
