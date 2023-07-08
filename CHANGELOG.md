@@ -2,6 +2,10 @@
 
 Lista de atualizações da Extensão.
 
+## 1.22.4
+
+- Adiciona a descrição do formulário ao atualizar formulário no Fluig;
+
 ## 1.22.3
 
 - Corrige a visualização de Datasets forçando a trazer os resultados nulos para não dar problema na exibição dos campos;

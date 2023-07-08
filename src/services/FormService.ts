@@ -33,7 +33,7 @@ export class FormService {
             .then((client) => {
                 return client.getCardIndexesWithoutApproverAsync(params);
             }).then((response) => {
-                return response[0].result.item || [];
+                return response[0]?.result?.item || [];
             });
     }
 
@@ -53,13 +53,13 @@ export class FormService {
             .then((client) => {
                 return client.getAttachmentsListAsync(params);
             }).then((response) => {
-                return response[0].result;
-            }).then((result) => {
-                if (!Array.isArray(result.item)) {
-                    return [result.item];
+                return response[0]?.result?.item || [];
+            }).then((items) => {
+                if (!Array.isArray(items)) {
+                    return [items];
                 }
 
-                return result.item;
+                return items;
             });
     }
 
@@ -100,13 +100,13 @@ export class FormService {
             .then((client) => {
                 return client.getCustomizationEventsAsync(params);
             }).then((response) => {
-                return response[0].result;
-            }).then((result) => {
-                if (!Array.isArray(result.item)) {
-                    return [result.item];
+                return response[0]?.result?.item || [];
+            }).then((items) => {
+                if (!Array.isArray(items)) {
+                    return [items];
                 }
 
-                return result.item;
+                return items;
             });
     }
 
@@ -201,9 +201,11 @@ export class FormService {
 
         const events = await FormService.getCustomizationEvents(server, form.documentId);
 
-        for (let item of events) {
-            workspace.fs.writeFile(Uri.joinPath(folderUri, item.eventId + ".js"), Buffer.from(item.eventDescription, "utf-8"));
+        for (let event of events) {
+            workspace.fs.writeFile(Uri.joinPath(folderUri, event.eventId + ".js"), Buffer.from(event.eventDescription, "utf-8"));
         }
+
+        window.showInformationMessage("O formulário foi importado!");
     }
 
     /**
@@ -256,39 +258,18 @@ export class FormService {
             }
         });
 
-        window.showInformationMessage("Os formulários foram importados com sucesso!");
+        window.showInformationMessage("Os formulários foram importados!");
     }
 
     public static async export(fileUri: Uri) {
-        if (!workspace.workspaceFolders || !workspace.workspaceFolders[0]) {
-            window.showInformationMessage("Você precisa estar em um diretório / workspace.");
-            return;
-        }
-
         const server = await ServerService.getSelect();
 
         if (!server) {
             return;
         }
 
-        if (server.confirmExporting) {
-            let isPasswordCorrect: boolean = true;
-
-            do {
-                const confirmPassword = await window.showInputBox({
-                    prompt: "Informe a senha do servidor " + server.name,
-                    password: true
-                }) || "";
-
-                if (!confirmPassword) {
-                    return;
-                } else if (confirmPassword !== server.password) {
-                    window.showWarningMessage(`A senha informada para o servidor "${server.name}" está incorreta!`);
-                    isPasswordCorrect = false;
-                } else {
-                    isPasswordCorrect = true;
-                }
-            } while (!isPasswordCorrect);
+        if (server.confirmExporting && !(await UtilsService.confirmPassword(server))) {
+            return;
         }
 
         const formFolderName: string = fileUri.path.replace(/.*\/forms\/([^/]+).*/, "$1");
@@ -302,203 +283,184 @@ export class FormService {
             return;
         }
 
-        if (selectedForm == "novo") {
+        const params = selectedForm == "novo"
+            ? await FormService.getCreateFormParams(server, formName)
+            : await FormService.getUpdateFormParams(server, selectedForm)
+        ;
 
-            const newFormName = await window.showInputBox({
-                prompt: "Qual o nome do Formulário?",
-                value: formName
-            }) || "";
-
-            if (!newFormName) {
-                return;
-            }
-
-            const newDatasetName = await window.showInputBox({
-                prompt: "Qual o nome do Dataset do Formulário?",
-                value: `ds_${newFormName}`
-            }) || "";
-
-            if (!newDatasetName) {
-                return;
-            }
-
-            const parentDocumentId = await window.showInputBox({
-                prompt: "Qual o id da Pasta onde salvar o Formulário?",
-                value: "2"
-            }) || "";
-
-            if (!parentDocumentId) {
-                return;
-            }
-
-            const persistenceType = await window.showQuickPick(
-                [
-                    {
-                        label: "Tabelas de Banco de Dados (recomendado)",
-                        value: 0
-                    },
-                    {
-                        label: "Numa única tabela (pequena quantidade de registros)",
-                        value: 1
-                    }
-                ],
-                {
-                    placeHolder: "Tipo de Armazenamento?"
-                }
-            );
-
-            if (!persistenceType) {
-                return;
-            }
-
-            const cardDescription = await window.showInputBox({
-                prompt: "Nome do campo descritor (deixe em branco para usar o padrão)",
-                value: ""
-            }) || "";
-
-            const params: FormDTO = {
-                username: server.username,
-                password: server.password,
-                companyId: server.companyId,
-                publisherId: server.userCode,
-                parentDocumentId: parseInt(parentDocumentId),
-                documentDescription: newFormName,
-                cardDescription: cardDescription,
-                datasetName: newDatasetName,
-                Attachments: {
-                    item: []
-                },
-                customEvents: {
-                    item: [],
-                },
-                persistenceType: persistenceType.value,
-            };
-
-            const workspaceFolder = workspace.workspaceFolders[0];
-            const formFolder = Uri.joinPath(workspaceFolder.uri, 'forms', formFolderName).fsPath;
-
-            for (let attachmentPath of glob.sync(formFolder + "/**/*.*", {nodir: true, ignore: formFolder + "/events/**/*.*"})) {
-                const pathParsed = parse(attachmentPath);
-
-                const attachment: AttachmentDTO = {
-                    fileName: pathParsed.base,
-                    filecontent: readFileSync(attachmentPath).toString("base64"),
-                    principal: pathParsed.ext.toLowerCase().includes('htm') && formName === pathParsed.name,
-                };
-                params.Attachments.item.push(attachment);
-            }
-
-            for (let eventPath of glob.sync(formFolder + "/events/*.js")) {
-                const customEvent: CustomizationEventsDTO = {
-                    eventDescription: readFileSync(eventPath).toString("utf-8"),
-                    eventId: basename(eventPath, '.js'),
-                };
-                params.customEvents.item.push(customEvent);
-            }
-
-            try {
-                const client = await await soap.createClientAsync(FormService.getUri(server));
-                const response = await client.createSimpleCardIndexWithDatasetPersisteTypeAsync(params);
-
-                if (response[0].result.item.webServiceMessage === 'ok') {
-                    window.showInformationMessage(`Formulário ${formName} exportado com sucesso!`);
-                } else {
-                    window.showErrorMessage(response[0].result.item.webServiceMessage);
-                }
-            } catch (err) {
-                window.showErrorMessage("Erro ao exportar Formulário.");
-            }
-        } else {
-            const newDatasetName = await window.showInputBox({
-                prompt: "Qual o nome do Dataset do Formulário?",
-                value: selectedForm.datasetName
-            }) || "";
-
-            if (!newDatasetName) {
-                return;
-            }
-
-            const versionOption = await window.showQuickPick(
-                [
-                    {
-                        label: "Criar Nova Versão",
-                        value: "2",
-                    },
-                    {
-                        label: "Manter Versão",
-                        value: "0",
-                    }
-                ],
-                {
-                    placeHolder: "Controle de Versão"
-                }
-            );
-
-            if (!versionOption) {
-                return;
-            }
-
-            const descriptionField = await window.showInputBox({
-                prompt: "Nome do campo descritor (deixe em branco para usar o padrão)",
-                value: selectedForm.cardDescription,
-            }) || "";
-
-            const params: FormDTO = {
-                username: server.username,
-                password: server.password,
-                companyId: server.companyId,
-                publisherId: server.userCode,
-                documentId: selectedForm.documentId,
-                descriptionField: descriptionField,
-                cardDescription: "",
-                datasetName: newDatasetName,
-                Attachments: {
-                    item: []
-                },
-                customEvents: {
-                    item: [],
-                },
-                generalInfo: {
-                    versionOption: versionOption.value
-                },
-            };
-
-            const workspaceFolder = workspace.workspaceFolders[0];
-            const formFolder = Uri.joinPath(workspaceFolder.uri, 'forms', formFolderName).fsPath;
-
-            for (let attachmentPath of glob.sync(formFolder + "/**/*.*", {nodir: true, ignore: formFolder + "/events/**/*.*"})) {
-                const pathParsed = parse(attachmentPath);
-
-                const attachment: AttachmentDTO = {
-                    fileName: pathParsed.base,
-                    filecontent: readFileSync(attachmentPath).toString("base64"),
-                    principal: pathParsed.ext.toLowerCase().includes('htm') && formName === pathParsed.name,
-                };
-                params.Attachments.item.push(attachment);
-            }
-
-            for (let eventPath of glob.sync(formFolder + "/events/*.js")) {
-                const customEvent: CustomizationEventsDTO = {
-                    eventDescription: readFileSync(eventPath).toString("utf-8"),
-                    eventId: basename(eventPath, '.js'),
-                    eventVersAnt: false,
-                };
-                params.customEvents.item.push(customEvent);
-            }
-
-            try {
-                const client = await await soap.createClientAsync(FormService.getUri(server));
-                const response = await client.updateSimpleCardIndexWithDatasetAndGeneralInfoAsync(params);
-
-                if (response[0].result.item.webServiceMessage === 'ok') {
-                    window.showInformationMessage(`Formulário ${formName} exportado com sucesso!`);
-                } else {
-                    window.showErrorMessage(response[0].result.item.webServiceMessage);
-                }
-            } catch (err) {
-                window.showErrorMessage("Erro ao exportar Formulário.");
-            }
+        if (params == null) {
+            return;
         }
+
+        const formFolder = Uri.joinPath(UtilsService.getWorkspaceUri(), 'forms', formFolderName).fsPath;
+
+        for (let attachmentPath of glob.sync(formFolder + "/**/*.*", {nodir: true, ignore: formFolder + "/events/**/*.*"})) {
+            const pathParsed = parse(attachmentPath);
+
+            const attachment: AttachmentDTO = {
+                fileName: pathParsed.base,
+                filecontent: readFileSync(attachmentPath).toString("base64"),
+                principal: pathParsed.ext.toLowerCase().includes('htm') && formName === pathParsed.name,
+            };
+            params.Attachments.item.push(attachment);
+        }
+
+        for (let eventPath of glob.sync(formFolder + "/events/*.js")) {
+            const customEvent: CustomizationEventsDTO = {
+                eventDescription: readFileSync(eventPath).toString("utf-8"),
+                eventId: basename(eventPath, '.js'),
+                eventVersAnt: false, // talvez precise tratar isso
+            };
+            params.customEvents.item.push(customEvent);
+        }
+
+        try {
+            const client = await await soap.createClientAsync(FormService.getUri(server));
+            const response = selectedForm == "novo"
+                ? await client.createSimpleCardIndexWithDatasetPersisteTypeAsync(params)
+                : await client.updateSimpleCardIndexWithDatasetAndGeneralInfoAsync(params)
+            ;
+
+            if (response[0]?.result?.item?.webServiceMessage === 'ok') {
+                window.showInformationMessage(`Formulário ${formName} exportado com sucesso!`);
+            } else {
+                window.showErrorMessage(response[0]?.result?.item?.webServiceMessage);
+            }
+        } catch (err) {
+            window.showErrorMessage("Erro ao exportar Formulário.");
+        }
+    }
+
+    private static async getCreateFormParams(server: ServerDTO, formName: string): Promise<FormDTO|null> {
+        const newFormName = await window.showInputBox({
+            prompt: "Qual o nome do Formulário?",
+            value: formName
+        }) || "";
+
+        if (!newFormName) {
+            return null;
+        }
+
+        const newDatasetName = await window.showInputBox({
+            prompt: "Qual o nome do Dataset do Formulário?",
+            value: `ds_${newFormName}`
+        }) || "";
+
+        if (!newDatasetName) {
+            return null;
+        }
+
+        const parentDocumentId = await window.showInputBox({
+            prompt: "Qual o id da Pasta onde salvar o Formulário?",
+            value: "2"
+        }) || "";
+
+        if (!parentDocumentId) {
+            return null;
+        }
+
+        const persistenceType = await window.showQuickPick(
+            [
+                {
+                    label: "Tabelas de Banco de Dados (recomendado)",
+                    value: 0
+                },
+                {
+                    label: "Numa única tabela (pequena quantidade de registros)",
+                    value: 1
+                }
+            ],
+            {
+                placeHolder: "Tipo de Armazenamento?"
+            }
+        );
+
+        if (!persistenceType) {
+            return null;
+        }
+
+        const cardDescription = await window.showInputBox({
+            prompt: "Nome do campo descritor (deixe em branco para usar o padrão)",
+            value: ""
+        }) || "";
+
+        const params: FormDTO = {
+            username: server.username,
+            password: server.password,
+            companyId: server.companyId,
+            publisherId: server.userCode,
+            parentDocumentId: parseInt(parentDocumentId),
+            documentDescription: newFormName,
+            cardDescription: cardDescription,
+            datasetName: newDatasetName,
+            Attachments: {
+                item: []
+            },
+            customEvents: {
+                item: [],
+            },
+            persistenceType: persistenceType.value,
+        };
+
+        return params;
+    }
+
+    private static async getUpdateFormParams(server: ServerDTO, selectedForm: DocumentDTO): Promise<FormDTO|null> {
+        const newDatasetName = await window.showInputBox({
+            prompt: "Qual o nome do Dataset do Formulário?",
+            value: selectedForm.datasetName
+        }) || "";
+
+        if (!newDatasetName) {
+            return null;
+        }
+
+        const versionOption = await window.showQuickPick(
+            [
+                {
+                    label: "Criar Nova Versão",
+                    value: "2",
+                },
+                {
+                    label: "Manter Versão",
+                    value: "0",
+                }
+            ],
+            {
+                placeHolder: "Controle de Versão"
+            }
+        );
+
+        if (!versionOption) {
+            return null;
+        }
+
+        const descriptionField = await window.showInputBox({
+            prompt: "Nome do campo descritor (deixe em branco para usar o padrão)",
+            value: selectedForm.cardDescription,
+        }) || "";
+
+        const params: FormDTO = {
+            username: server.username,
+            password: server.password,
+            companyId: server.companyId,
+            publisherId: server.userCode,
+            documentId: selectedForm.documentId,
+            descriptionField: descriptionField,
+            cardDescription: selectedForm.documentDescription,
+            datasetName: newDatasetName,
+            Attachments: {
+                item: []
+            },
+            customEvents: {
+                item: [],
+            },
+            generalInfo: {
+                versionOption: versionOption.value
+            },
+        };
+
+        return params;
     }
 
     private static async getExportFormSelected(server: ServerDTO, formNameOrId: string|number) {
