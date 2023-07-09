@@ -158,6 +158,7 @@ async function createDataset() {
     const datasetUri = vscode.Uri.joinPath(UtilsService.getWorkspaceUri(), "datasets", dataset);
 
     try {
+        // Se Dataset já existe carrega o arquivo no editor
         await vscode.workspace.fs.stat(datasetUri);
         return vscode.window.showTextDocument(datasetUri);
     } catch (err) {
@@ -191,6 +192,7 @@ async function createMechanism() {
     const mechanismUri = vscode.Uri.joinPath(UtilsService.getWorkspaceUri(), "mechanisms", mechanism);
 
     try {
+        // Se Mecanismo já existe carrega o arquivo no editor
         await vscode.workspace.fs.stat(mechanismUri);
         return vscode.window.showTextDocument(mechanismUri);
     } catch (err) {
@@ -226,6 +228,7 @@ async function createForm() {
     );
 
     try {
+        // Se Formulário já existe carrega o arquivo no editor
         await vscode.workspace.fs.stat(formUri);
         return vscode.window.showTextDocument(formUri);
     } catch (err) {
@@ -298,6 +301,7 @@ async function createFormEvent(folderUri: vscode.Uri) {
     );
 
     try {
+        // Se Evento já existe carrega o arquivo no editor
         await vscode.workspace.fs.stat(eventUri);
         return vscode.window.showTextDocument(eventUri);
     } catch (err) {
@@ -338,6 +342,7 @@ async function createGlobalEvent(folderUri: vscode.Uri) {
     );
 
     try {
+        // Se Evento já existe carrega o arquivo no editor
         await vscode.workspace.fs.stat(eventUri);
         return vscode.window.showTextDocument(eventUri);
     } catch (err) {
@@ -412,6 +417,7 @@ async function createWorkflowEvent(folderUri: vscode.Uri) {
     );
 
     try {
+        // Se Evento já existe carrega o arquivo no editor
         await vscode.workspace.fs.stat(eventUri);
         return vscode.window.showTextDocument(eventUri);
     } catch (err) {
@@ -455,7 +461,7 @@ function installDeclarationLibrary() {
 }
 
 /**
- * Cria o conteúdo de função compartilhada no processo
+ * Cria o conteúdo de evento/função compartilhada
  *
  * @param functionName Nome da Função
  * @returns Definição da função
