@@ -167,11 +167,6 @@ export class FormService {
      * Realiza a importação de um formulário específico
      */
      public static async import() {
-        if (!workspace.workspaceFolders || !workspace.workspaceFolders[0]) {
-            window.showInformationMessage("Você precisa estar em um diretório / workspace.");
-            return;
-        }
-
         const server = await ServerService.getSelect();
 
         if (!server) {
@@ -184,7 +179,7 @@ export class FormService {
             return;
         }
 
-        let folderUri = Uri.joinPath(workspace.workspaceFolders[0].uri, 'forms', form.documentDescription);
+        let folderUri = Uri.joinPath(UtilsService.getWorkspaceUri(), 'forms', form.documentDescription);
 
         const fileNames = await FormService.getFileNames(server, form.documentId);
 
@@ -212,11 +207,6 @@ export class FormService {
      * Realiza a importação de vários formulários
      */
      public static async importMany() {
-        if (!workspace.workspaceFolders || !workspace.workspaceFolders[0]) {
-            window.showInformationMessage("Você precisa estar em um diretório / workspace.");
-            return;
-        }
-
         const server = await ServerService.getSelect();
 
         if (!server) {
@@ -229,14 +219,14 @@ export class FormService {
             return;
         }
 
-        const workspaceFolder = workspace.workspaceFolders[0];
+        const workspaceFolderUri = UtilsService.getWorkspaceUri();
 
         forms.map(async form => {
             if (!form) {
                 return;
             }
 
-            let folderUri = Uri.joinPath(workspaceFolder.uri, 'forms', form.documentDescription);
+            let folderUri = Uri.joinPath(workspaceFolderUri, 'forms', form.documentDescription);
 
             const fileNames = await FormService.getFileNames(server, form.documentId);
 

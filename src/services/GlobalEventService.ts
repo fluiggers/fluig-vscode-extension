@@ -75,11 +75,6 @@ export class GlobalEventService {
      * Realiza a importação de um evento global
      */
      public static async import() {
-        if (!workspace.workspaceFolders) {
-            window.showInformationMessage("Você precisa estar em um diretório / workspace.");
-            return;
-        }
-
         const server = await ServerService.getSelect();
 
         if (!server) {
@@ -102,11 +97,6 @@ export class GlobalEventService {
      * Realiza a importação de vários eventos globais
      */
     public static async importMany() {
-        if (!workspace.workspaceFolders) {
-            window.showInformationMessage("Você precisa estar em um diretório / workspace.");
-            return;
-        }
-
         const server = await ServerService.getSelect();
 
         if (!server) {
@@ -131,13 +121,7 @@ export class GlobalEventService {
      * Criar arquivo de evento global
      */
      public static async saveFile(name: string, content: string) {
-        if (!workspace.workspaceFolders) {
-            window.showInformationMessage("Você precisa estar em um diretório / workspace.");
-            return;
-        }
-
-        const workspaceFolderUri = workspace.workspaceFolders[0].uri;
-        const uri = Uri.joinPath(workspaceFolderUri, "events", name + ".js");
+        const uri = Uri.joinPath(UtilsService.getWorkspaceUri(), "events", name + ".js");
 
         await workspace.fs.writeFile(
             uri,
