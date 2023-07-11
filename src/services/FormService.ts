@@ -315,7 +315,7 @@ export class FormService {
         }
 
         try {
-            const client = await await soap.createClientAsync(FormService.getUri(server));
+            const client = await soap.createClientAsync(FormService.getUri(server));
             const response = selectedForm == "novo"
                 ? await client.createSimpleCardIndexWithDatasetPersisteTypeAsync(params)
                 : await client.updateSimpleCardIndexWithDatasetAndGeneralInfoAsync(params)
