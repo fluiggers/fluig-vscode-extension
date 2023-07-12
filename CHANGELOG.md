@@ -2,6 +2,10 @@
 
 Lista de atualizações da Extensão.
 
+## 1.22.5
+
+- Remove código duplicado;
+
 ## 1.22.4
 
 - Adiciona a descrição do formulário ao atualizar formulário no Fluig;
