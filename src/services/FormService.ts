@@ -299,7 +299,7 @@ export class FormService {
             const customEvent: CustomizationEventsDTO = {
                 eventDescription: readFileSync(eventPath).toString("utf-8"),
                 eventId: basename(eventPath, '.js'),
-                eventVersAnt: false, // talvez precise tratar isso
+                eventVersAnt: false, // talvez precise tratar isso quando for novo
             };
             params.customEvents.item.push(customEvent);
         }
