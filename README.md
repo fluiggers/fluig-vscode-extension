@@ -1,5 +1,7 @@
 # Fluig - Extensão para Desenvolvimento no VSCode
 
+![Visual Studio Marketplace Version (including pre-releases)](https://img.shields.io/visual-studio-marketplace/v/fluiggers.fluiggers-fluig-vscode-extension) ![Visual Studio Marketplace Installs](https://img.shields.io/visual-studio-marketplace/i/fluiggers.fluiggers-fluig-vscode-extension) ![GitHub](https://img.shields.io/github/license/fluiggers/fluig-vscode-extension) ![Visual Studio Marketplace Rating (Stars)](https://img.shields.io/visual-studio-marketplace/stars/fluiggers.fluiggers-fluig-vscode-extension)
+
 Extensão para facilitar o desenvolvimento na plataforma TOTVS Fluig utilizando o VSCode.
 
 Essa extensão adiciona alguns comandos para criar arquivos e snippets HTML e JavaScript, além de
@@ -10,7 +12,9 @@ pressionando F1 (Command Palette), sendo obrigatório ter um Diretório / Worksp
 
 ![Opções](images/opcoes.jpg)
 
-**Aviso**: Essa extensão não é mantida pela TOTVS e não possuí suporte da TOTVS. Sendo uma extensão feita pela comunidade de desenvolvedores para Fluig. O ambiente oficial para desenvolvimento no Fluig continua sendo o Eclipse Luna, conforme documentação oficial do Fluig.
+## Aviso
+
+Essa extensão não é mantida pela TOTVS e não possuí suporte da TOTVS. Sendo uma extensão feita pela comunidade de desenvolvedores para Fluig. O ambiente oficial para desenvolvimento no Fluig continua sendo o Eclipse Luna, conforme documentação oficial do Fluig.
 
 ## Instalação
 
