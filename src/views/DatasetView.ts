@@ -1,6 +1,4 @@
 import * as vscode from 'vscode';
-import * as path from 'path';
-import { ServerDTO } from '../models/ServerDTO';
 import * as fs from 'fs';
 import { Server } from '../models/Server';
 import { DatasetService } from '../services/DatasetService';
@@ -11,13 +9,13 @@ export class DatasetView {
     private currentPanel: vscode.WebviewPanel | undefined = undefined;
     private server: Server;
 
-    constructor(private context: vscode.ExtensionContext, serverDto: ServerDTO) {
-        this.server = new Server(serverDto);
+    constructor(private context: vscode.ExtensionContext, server: Server) {
+        this.server = server;
     }
 
-    public async show() {
+    public show() {
         this.currentPanel = this.createWebViewPanel();
-        this.currentPanel.webview.html = await this.getWebViewContent();
+        this.currentPanel.webview.html = this.getWebViewContent();
         this.currentPanel.onDidDispose(
             () => this.currentPanel = undefined,
             null
@@ -28,7 +26,7 @@ export class DatasetView {
         );
     }
 
-    private async getWebViewContent() {
+    private getWebViewContent() {
         const htmlPath = vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'views', 'dataset', 'dataset.html');
         const runTemplate = compile(fs.readFileSync(htmlPath.with({ scheme: 'vscode-resource' }).fsPath));
 
@@ -106,7 +104,7 @@ export class DatasetView {
             });
 
             vscode.window.showErrorMessage(`Erro ao carregar os datasets do servidor ${this.server.name}. Erro retornado: ${message}`);
-        };
+        }
     }
 
     private async consultDataset(queryInformation: any) {
@@ -137,6 +135,6 @@ export class DatasetView {
             });
 
             vscode.window.showErrorMessage(`Erro ao consultar o Dataset ${queryInformation.datasetId}. Erro retornado: ${message}`);
-        };
+        }
     }
 }

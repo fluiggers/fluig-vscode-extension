@@ -6,6 +6,14 @@ Lista de atualizações da Extensão.
 
 - Remove código duplicado;
 
+## 1.23.0
+
+- Agrupado os menus de contexto por funcionalidades;
+- Adicionado o menu de contexto Consulta Dataset para facilitar o seu uso;
+- Criado o GlobalStorageService para armazenar o último parentDocumentId utilizado;
+- Alterado a ordem dos campos "Manter Versão" e "Criar Nova Versão" para evitar de criar nova versão sem querer;
+- Criado o pacote extensions para melhor organização dos comandos;
+
 ## 1.22.4
 
 - Adiciona a descrição do formulário ao atualizar formulário no Fluig;

@@ -1,10 +1,10 @@
 import * as vscode from 'vscode';
-import * as path from 'path';
-import { ServerDTO } from '../models/ServerDTO';
-import { ServerService } from '../services/ServerService';
+import {ServerDTO} from '../models/ServerDTO';
+import {ServerService} from '../services/ServerService';
 import * as fs from 'fs';
-import { UserService } from '../services/UserService';
-import { Server } from '../models/Server';
+import {UserService} from '../services/UserService';
+import {Server} from '../models/Server';
+
 const compile = require('template-literal');
 
 export class ServerView {
@@ -22,9 +22,7 @@ export class ServerView {
         this.currentPanel = this.createWebViewPanel();
         this.currentPanel.webview.html = this.getWebViewContent();
         this.currentPanel.onDidDispose(
-            () => {
-                this.currentPanel = undefined;
-            },
+            () => this.currentPanel = undefined,
             null
         );
         this.currentPanel.webview.onDidReceiveMessage(
@@ -35,7 +33,7 @@ export class ServerView {
 
     private getWebViewContent() {
         const htmlPath = vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'views', 'server', 'server.html');
-        const runTemplate = compile(fs.readFileSync(htmlPath.with({ scheme: 'vscode-resource' }).fsPath));
+        const runTemplate = compile(fs.readFileSync(htmlPath.with({scheme: 'vscode-resource'}).fsPath));
 
         return runTemplate({
             jquery: this.currentPanel?.webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'libs', 'jquery.min.js')),

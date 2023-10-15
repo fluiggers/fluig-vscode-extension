@@ -2,7 +2,7 @@
     "name": "fluiggers-fluig-vscode-extension",
     "displayName": "Fluig - Extensão para Desenvolvimento",
     "description": "Extensão para agilizar o desenvolvimento para o TOTVS Fluig no VS Code",
-    "version": "1.22.5",
+    "version": "1.23.0",
     "publisher": "Fluiggers",
     "icon": "images/icon.png",
     "repository": {
@@ -118,6 +118,11 @@
                 "category": "Fluig"
             },
             {
+                "command": "fluiggers-fluig-vscode-extension.searchDataset",
+                "title": "Consultar Dataset",
+                "category": "Fluig"
+            },
+            {
                 "command": "fluiggers-fluig-vscode-extension.importForm",
                 "title": "Importar Formulário",
                 "category": "Fluig"
@@ -186,63 +191,67 @@
             "explorer/context": [
                 {
                     "command": "fluiggers-fluig-vscode-extension.newDataset",
-                    "group": "1_Fluig@1"
-                },
-                {
-                    "command": "fluiggers-fluig-vscode-extension.newForm",
-                    "group": "1_Fluig@2"
-                },
-                {
-                    "command": "fluiggers-fluig-vscode-extension.newGlobalEvent",
-                    "group": "1_Fluig@3"
-                },
-                {
-                    "command": "fluiggers-fluig-vscode-extension.newMechanism",
-                    "group": "1_Fluig@4"
-                },
-                {
-                    "command": "fluiggers-fluig-vscode-extension.importDataset",
-                    "group": "1_Fluig@5"
+                    "group": "1_Fluig1Dataset@1"
                 },
                 {
                     "command": "fluiggers-fluig-vscode-extension.importManyDataset",
-                    "group": "1_Fluig@6"
+                    "group": "1_Fluig1Dataset@2"
                 },
                 {
-                    "command": "fluiggers-fluig-vscode-extension.importForm",
-                    "group": "1_Fluig@7"
-                },
-                {
-                    "command": "fluiggers-fluig-vscode-extension.importManyForm",
-                    "group": "1_Fluig@8"
-                },
-                {
-                    "command": "fluiggers-fluig-vscode-extension.importGlobalEvent",
-                    "group": "1_Fluig@9"
-                },
-                {
-                    "command": "fluiggers-fluig-vscode-extension.importManyGlobalEvent",
-                    "group": "1_Fluig@10"
+                    "command": "fluiggers-fluig-vscode-extension.importDataset",
+                    "group": "1_Fluig1Dataset@3"
                 },
                 {
                     "command": "fluiggers-fluig-vscode-extension.exportDataset",
                     "when": "resourcePath =~ /[\\/\\\\]datasets[\\/\\\\].+$/",
-                    "group": "1_Fluig@0"
+                    "group": "1_Fluig1Dataset@4"
                 },
                 {
-                    "command": "fluiggers-fluig-vscode-extension.exportForm",
-                    "when": "resourcePath =~ /[\\/\\\\]forms[\\/\\\\].+$/",
-                    "group": "1_Fluig@0"
+                    "command": "fluiggers-fluig-vscode-extension.searchDataset",
+                    "group": "1_Fluig1Dataset@5"
+                },
+                {
+                    "command": "fluiggers-fluig-vscode-extension.newForm",
+                    "group": "1_Fluig2Form@1"
                 },
                 {
                     "command": "fluiggers-fluig-vscode-extension.newFormEvent",
                     "when": "resourcePath =~ /[\\/\\\\]forms[\\/\\\\].+$/",
-                    "group": "1_Fluig@0"
+                    "group": "1_Fluig2Form@2"
+                },
+                {
+                    "command": "fluiggers-fluig-vscode-extension.importManyForm",
+                    "group": "1_Fluig2Form@3"
+                },
+                {
+                    "command": "fluiggers-fluig-vscode-extension.importForm",
+                    "group": "1_Fluig2Form@4"
+                },
+                {
+                    "command": "fluiggers-fluig-vscode-extension.exportForm",
+                    "when": "resourcePath =~ /[\\/\\\\]forms[\\/\\\\].+$/",
+                    "group": "1_Fluig2Form@5"
+                },
+                {
+                    "command": "fluiggers-fluig-vscode-extension.newGlobalEvent",
+                    "group": "1_Fluig3GlobalEvent@1"
+                },
+                {
+                    "command": "fluiggers-fluig-vscode-extension.importManyGlobalEvent",
+                    "group": "1_Fluig3GlobalEvent@2"
+                },
+                {
+                    "command": "fluiggers-fluig-vscode-extension.importGlobalEvent",
+                    "group": "1_Fluig3GlobalEvent@3"
                 },
                 {
                     "command": "fluiggers-fluig-vscode-extension.newWorkflowEvent",
                     "when": "resourceExtname == .process || resourcePath =~ /[\\/\\\\]workflow[\\/\\\\]scripts[\\/\\\\].+\\.js$/",
-                    "group": "1_Fluig@0"
+                    "group": "1_Fluig4Workflow@1"
+                },
+                {
+                    "command": "fluiggers-fluig-vscode-extension.newMechanism",
+                    "group": "1_Fluig4Workflow@2"
                 }
             ],
             "view/title": [

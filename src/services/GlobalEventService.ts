@@ -5,7 +5,6 @@ import * as https from 'https';
 import { GlobalEventDTO } from "../models/GlobalEventDTO";
 import { window, workspace, Uri } from "vscode";
 import { ServerService } from "./ServerService";
-import * as path from "path";
 
 export class GlobalEventService {
 
