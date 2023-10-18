@@ -1,16 +1,17 @@
-import { ServerDTO } from "../models/ServerDTO";
-import { Uri } from "vscode";
+import * as vscode from "vscode";
+import {Uri, window, workspace} from "vscode";
+import {ServerDTO} from "../models/ServerDTO";
 import * as soap from 'soap';
-import { window, workspace } from "vscode";
-import { ServerService } from "./ServerService";
-import { DocumentDTO } from "../models/DocumentDTO";
-import { CustomizationEventsDTO } from "../models/CustomizationEventsDTO";
-import { UtilsService } from "./UtilsService";
-import { glob } from "glob";
-import { readFileSync } from "fs";
-import { parse, basename } from "path";
-import { FormDTO } from "../models/FormDTO";
-import { AttachmentDTO } from "../models/AttachmentDTO";
+import {ServerService} from "./ServerService";
+import {DocumentDTO} from "../models/DocumentDTO";
+import {CustomizationEventsDTO} from "../models/CustomizationEventsDTO";
+import {UtilsService} from "./UtilsService";
+import {glob} from "glob";
+import {readFileSync} from "fs";
+import {basename, parse} from "path";
+import {FormDTO} from "../models/FormDTO";
+import {AttachmentDTO} from "../models/AttachmentDTO";
+import {GlobalStorageService} from "./GlobalStorageService";
 
 export class FormService {
 
@@ -130,9 +131,7 @@ export class FormService {
 
         const endPosition = result.label.indexOf(" - ");
         const documentId = result.label.substring(0, endPosition);
-        const form = forms.find(form => form.documentId.toString() === documentId);
-
-        return form;
+        return forms.find(form => form.documentId.toString() === documentId);
     }
 
     /**
@@ -157,9 +156,7 @@ export class FormService {
         return result.map(item => {
             const endPosition = item.label.indexOf(" - ");
             const documentId = item.label.substring(0, endPosition);
-            const form = forms.find(form => form.documentId.toString() === documentId);
-
-            return form;
+            return forms.find(form => form.documentId.toString() === documentId);
         });
     }
 
@@ -251,7 +248,7 @@ export class FormService {
         window.showInformationMessage("Os formulários foram importados!");
     }
 
-    public static async export(fileUri: Uri) {
+    public static async export(context: vscode.ExtensionContext, fileUri: Uri) {
         const server = await ServerService.getSelect();
 
         if (!server) {
@@ -274,7 +271,7 @@ export class FormService {
         }
 
         const params = selectedForm == "novo"
-            ? await FormService.getCreateFormParams(server, formName)
+            ? await FormService.getCreateFormParams(context, server, formName)
             : await FormService.getUpdateFormParams(server, selectedForm)
         ;
 
@@ -311,17 +308,18 @@ export class FormService {
                 : await client.updateSimpleCardIndexWithDatasetAndGeneralInfoAsync(params)
             ;
 
-            if (response[0]?.result?.item?.webServiceMessage === 'ok') {
+            const message = response[0]?.result?.item?.webServiceMessage;
+            if (message === 'ok') {
                 window.showInformationMessage(`Formulário ${formName} exportado com sucesso!`);
             } else {
-                window.showErrorMessage(response[0]?.result?.item?.webServiceMessage);
+                window.showErrorMessage(message || 'Verifique o id da Pasta onde irá salvar o Formulário!');
             }
         } catch (err) {
             window.showErrorMessage("Erro ao exportar Formulário.");
         }
     }
 
-    private static async getCreateFormParams(server: ServerDTO, formName: string): Promise<FormDTO|null> {
+    private static async getCreateFormParams(context: vscode.ExtensionContext, server: ServerDTO, formName: string): Promise<FormDTO|null> {
         const newFormName = await window.showInputBox({
             prompt: "Qual o nome do Formulário?",
             value: formName
@@ -341,13 +339,14 @@ export class FormService {
         }
 
         const parentDocumentId = await window.showInputBox({
-            prompt: "Qual o id da Pasta onde salvar o Formulário?",
-            value: "2"
+            prompt: "Qual o id da Pasta onde irá salvar o Formulário?",
+            value: GlobalStorageService.getLastParentDocumentId(context, server)
         }) || "";
 
         if (!parentDocumentId) {
             return null;
         }
+        GlobalStorageService.updateLastParentDocumentId(context, server, parentDocumentId);
 
         const persistenceType = await window.showQuickPick(
             [
@@ -374,7 +373,7 @@ export class FormService {
             value: ""
         }) || "";
 
-        const params: FormDTO = {
+        return {
             username: server.username,
             password: server.password,
             companyId: server.companyId,
@@ -391,8 +390,6 @@ export class FormService {
             },
             persistenceType: persistenceType.value,
         };
-
-        return params;
     }
 
     private static async getUpdateFormParams(server: ServerDTO, selectedForm: DocumentDTO): Promise<FormDTO|null> {
@@ -408,12 +405,12 @@ export class FormService {
         const versionOption = await window.showQuickPick(
             [
                 {
-                    label: "Criar Nova Versão",
-                    value: "2",
-                },
-                {
                     label: "Manter Versão",
                     value: "0",
+                },
+                {
+                    label: "Criar Nova Versão",
+                    value: "2",
                 }
             ],
             {
@@ -430,7 +427,7 @@ export class FormService {
             value: selectedForm.cardDescription,
         }) || "";
 
-        const params: FormDTO = {
+        return {
             username: server.username,
             password: server.password,
             companyId: server.companyId,
@@ -449,8 +446,6 @@ export class FormService {
                 versionOption: versionOption.value
             },
         };
-
-        return params;
     }
 
     private static async getExportFormSelected(server: ServerDTO, formNameOrId: string|number) {
@@ -494,8 +489,6 @@ export class FormService {
 
         const endPosition = result.label.indexOf(" - ");
         const documentId = result.label.substring(0, endPosition);
-        const form = forms.find(form => form.documentId.toString() === documentId);
-
-        return form;
+        return forms.find(form => form.documentId.toString() === documentId);
     }
 }
