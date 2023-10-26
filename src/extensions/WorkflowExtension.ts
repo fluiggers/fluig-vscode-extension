@@ -65,7 +65,7 @@ export class WorkflowExtension {
 
         const processName: string =
             folderUri.path.endsWith(".process")
-                ? folderUri.path.replace(/.*\/(\w+)\.process$/, "$1")
+                ? folderUri.path.replace(/.*\/workflow\/diagrams\/([^.]+).+\.process$/, "$1")
                 : folderUri.path.replace(/.*\/workflow\/scripts\/([^.]+).+\.js$/, "$1");
 
         const eventFilename = `${processName}.${eventName}.js`;
