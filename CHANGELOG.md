@@ -2,9 +2,10 @@
 
 Lista de atualizações da Extensão.
 
-## 1.22.5
+## 1.23.1
 
-- Remove código duplicado;
+- Altera snippet de criação de função de formatar data para algo mais simples;
+- Corrige criação de evento de processo quando o nome do processo possuí espaços;
 
 ## 1.23.0
 
@@ -13,6 +14,10 @@ Lista de atualizações da Extensão.
 - Criado o GlobalStorageService para armazenar o último parentDocumentId utilizado;
 - Alterado a ordem dos campos "Manter Versão" e "Criar Nova Versão" para evitar de criar nova versão sem querer;
 - Criado o pacote extensions para melhor organização dos comandos;
+
+## 1.22.5
+
+- Remove código duplicado;
 
 ## 1.22.4
 

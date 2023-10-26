@@ -44,9 +44,8 @@
             "        format = \"dd/MM/yyyy\";",
             "    }",
             "",
-            "    var data = java.time.LocalDateTime.now();",
-            "    var formatter = java.time.format.DateTimeFormatter.ofPattern(format);",
-            "    return data.format(formatter);",
+            "    var formatter = new java.text.SimpleDateFormat(format);",
+            "    return formatter.format(new java.util.Date());",
             "}",
             "$0"
         ],
