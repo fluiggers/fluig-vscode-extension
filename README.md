@@ -53,6 +53,7 @@ aberto.
 - [Novo Evento de Formulário](#novo-evento-de-formulário);
 - [Novo Evento de Processo](#novo-evento-de-processo);
 - [Novo Mecanismo Customizado](#novo-mecanismo-customizado);
+- [Novo Widget](#novo-widget);
 - [Importar Dataset e Importar Vários Datasets](#importar-dataset);
 - [Exportar Dataset](#exportar-dataset);
 - [Importar Formulário e Importar Vários Formulários](#importar-formulário);
@@ -197,6 +198,13 @@ Esse comando cria um arquivo JavaScript, após você preencher o nome do Mecanis
 
 O arquivo vem com a função padrão que retorna os usuários que podem ser selecionados pelo
 mecanismo de atribuição.
+
+Você pode executar esse comando no **Command Palette** e no menu de contexto no **File Explorer**.
+
+## Novo Widget
+
+Esse comando cria uma estrutura básica de widget, após você preencher o nome do Widget, no
+diretório `wcm/widget`.
 
 Você pode executar esse comando no **Command Palette** e no menu de contexto no **File Explorer**.
 

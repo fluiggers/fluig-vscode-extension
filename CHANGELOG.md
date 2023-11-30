@@ -2,6 +2,13 @@
 
 Lista de atualizações da Extensão.
 
+## 1.24.0
+
+- Corrige o bug do tipo de persistência ao exportar novo formulário. Erroneamente a extensão
+trocava os valores enviados, enviando 0 ("Numa única tabela") quando a intenção era enviar
+1 ("Tabela de Banco de Dados);
+- Adiciona a funcionalidade "Novo Widget", criando uma estrutura padrão de widget;
+
 ## 1.23.1
 
 - Altera snippet de criação de função de formatar data para algo mais simples;

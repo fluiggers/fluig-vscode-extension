@@ -2,7 +2,7 @@
     "name": "fluiggers-fluig-vscode-extension",
     "displayName": "Fluig - Extensão para Desenvolvimento",
     "description": "Extensão para agilizar o desenvolvimento para o TOTVS Fluig no VS Code",
-    "version": "1.23.1",
+    "version": "1.24.0",
     "publisher": "Fluiggers",
     "icon": "images/icon.png",
     "repository": {
@@ -22,6 +22,10 @@
         {
             "name": "Bruno Araujo",
             "url": "https://github.com/brunotda"
+        },
+        {
+            "name": "Jhonatan Serafim",
+            "url": "https://github.com/jhonnytuba"
         }
     ],
     "engines": {
