@@ -352,11 +352,11 @@ export class FormService {
             [
                 {
                     label: "Tabelas de Banco de Dados (recomendado)",
-                    value: 0
+                    value: 1
                 },
                 {
                     label: "Numa única tabela (pequena quantidade de registros)",
-                    value: 1
+                    value: 0
                 }
             ],
             {
