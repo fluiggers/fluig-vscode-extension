@@ -18,6 +18,10 @@
         {
             "name": "Pedro Costa",
             "url": "https://github.com/pedro-costa-neto"
+        },
+        {
+            "name": "Bruno Araujo",
+            "url": "https://github.com/brunotda"
         }
     ],
     "engines": {
@@ -64,6 +68,11 @@
             {
                 "command": "fluiggers-fluig-vscode-extension.newMechanism",
                 "title": "Novo Mecanismo Customizado",
+                "category": "Fluig"
+            },
+            {
+                "command": "fluiggers-fluig-vscode-extension.newWidget",
+                "title": "Novo Widget",
                 "category": "Fluig"
             },
             {
@@ -252,6 +261,10 @@
                 {
                     "command": "fluiggers-fluig-vscode-extension.newMechanism",
                     "group": "1_Fluig4Workflow@2"
+                },
+                {
+                    "command": "fluiggers-fluig-vscode-extension.newWidget",
+                    "group": "1_Fluig5WCM@1"
                 }
             ],
             "view/title": [
