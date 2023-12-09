@@ -247,7 +247,7 @@ indicar um nome de Dataset para o formulário e o modo de persistência (em uma 
 
 Ao editar um formulário você pode indicar se deve ou não atualizar a versão.
 
-É obrigatório que o nome do arquivo HTML seja igual ao nome da pasta do diretório que está no seu computador (o nome do formulário no servidor
+É obrigatório que o nome do arquivo HTML seja igual ao nome do diretório em que está armazenado (o nome do formulário no servidor
 é indiferente), pois é isso que determina qual é o arquivo principal do formulário.
 
 ## Importar Evento Global
