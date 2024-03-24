@@ -2,6 +2,14 @@
 
 Lista de atualizações da Extensão.
 
+## 1.25.0
+
+Adiciona dois snippets para facilitar a criação e edição de registro de formulário via
+SOAP ECMCardService.
+
+- fluig-soap-card-create
+- fluig-soap-card-update
+
 ## 1.24.0
 
 - Corrige o bug do tipo de persistência ao exportar novo formulário. Erroneamente a extensão
