@@ -293,6 +293,8 @@ ser utilizado em qual dos dois ambientes.
 - **fluig-function-data**: cria uma função que retorna a data atual formatada no padrão solicitado;
 - **fluig-paifilho-loop**: cria um loop for percorrendo os elementos de uma tabela pai filho em evento de Formulário;
 - **fluig-paifilho-loop-workflow**: cria um loop for percorrendo os elementos de uma tabela pai filho em evento de Processo;
+- **fluig-soap-card-create**: cria uma instância do SOAP ECMCardService com alguns itens preenchidos para criar um registro no formulário;
+- **fluig-soap-card-update**: cria uma instância do SOAP ECMCardService com alguns itens preenchidos para editar um registro do formulário;
 
 ### Snippets para Front-End
 

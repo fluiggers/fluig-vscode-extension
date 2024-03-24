@@ -2,7 +2,7 @@
     "name": "fluiggers-fluig-vscode-extension",
     "displayName": "Fluig - Extensão para Desenvolvimento",
     "description": "Extensão para agilizar o desenvolvimento para o TOTVS Fluig no VS Code",
-    "version": "1.24.0",
+    "version": "1.25.0",
     "publisher": "Fluiggers",
     "icon": "images/icon.png",
     "repository": {
@@ -318,7 +318,7 @@
                 }
             ]
         },
-        "keybindings":[
+        "keybindings": [
             {
                 "command": "fluiggers-fluig-vscode-extension.exportDataset",
                 "key": "ctrl+f9",
