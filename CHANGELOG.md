@@ -2,6 +2,12 @@
 
 Lista de atualizações da Extensão.
 
+## 1.25.1
+
+Atualiza a documentação adicionando informações sobre a obrigatoriedade de abrir uma pasta
+para que os comandos sejam inicializados e sobre a extensão só funcionar com um projeto
+aberto por vez.
+
 ## 1.25.0
 
 Adiciona dois snippets para facilitar a criação e edição de registro de formulário via
