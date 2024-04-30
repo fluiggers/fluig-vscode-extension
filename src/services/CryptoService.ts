@@ -1,5 +1,6 @@
 import { env } from 'vscode';
 import * as crypto from 'crypto';
+import * as CryptoJS from 'crypto-js';
 
 const algorithm = 'aes-256-cbc';
 
@@ -31,5 +32,12 @@ export class CryptoService {
         decrypted = Buffer.concat([decrypted, decipher.final()]);
 
         return decrypted.toString("utf-8");
+    }
+
+    /**
+     * @todo Remover essa função, e a lib crypto-js, após o período de adaptação para a nova criptogria
+     */
+    public static decryptOld(text: string) {
+        return CryptoJS.AES.decrypt(text, env.machineId).toString(CryptoJS.enc.Utf8);
     }
 }
