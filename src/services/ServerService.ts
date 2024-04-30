@@ -4,6 +4,7 @@ import { ServerDTO } from "../models/ServerDTO";
 import { UtilsService } from "./UtilsService";
 import { window, Uri } from "vscode";
 import { Server } from "../models/Server";
+import { CryptoService } from "./CryptoService";
 
 export class ServerService {
     private static PATH = Uri.joinPath(UtilsService.getWorkspaceUri(), '.vscode').fsPath;
@@ -145,7 +146,7 @@ export class ServerService {
     private static createServerConfig() {
         const fs = require('fs');
         const serverConfig: ServerConfig = {
-            version: "0.0.1",
+            version: "1.0.0",
             configurations: []
         };
 
@@ -169,10 +170,39 @@ export class ServerService {
      */
     public static getServerConfig(): ServerConfig {
         const fs = require('fs');
+
         if (!fs.existsSync(ServerService.FILE_SERVER_CONFIG)) {
             ServerService.createServerConfig();
         }
 
-        return JSON.parse(fs.readFileSync(ServerService.FILE_SERVER_CONFIG).toString());
+        const serverConfig = JSON.parse(fs.readFileSync(ServerService.FILE_SERVER_CONFIG).toString());
+
+        /**
+         * @todo Remover essa validação, e a lib crypto-js, após o período de adaptação para a nova criptogria
+         */
+        if (serverConfig.version === "0.0.1") {
+            return ServerService.updateServerConfig(serverConfig);
+        }
+
+        return serverConfig;
+    }
+
+    /**
+     * @todo Remover essa função, e a lib crypto-js, após o período de adaptação para a nova criptogria
+     */
+    private static updateServerConfig(serverConfig: ServerConfig): ServerConfig {
+        serverConfig.version = "1.0.0";
+
+        serverConfig.configurations = serverConfig.configurations.map((oldServer: ServerDTO) => {
+            const server = new Server(oldServer);
+            server.password = CryptoService.decryptOld(oldServer.password);
+            return server;
+        });
+
+        ServerService.writeServerConfig(serverConfig);
+
+        window.showInformationMessage("Criptografia das senhas foi atualizada.");
+
+        return ServerService.getServerConfig();
     }
 }
