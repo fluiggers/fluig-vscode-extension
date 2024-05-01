@@ -3,12 +3,15 @@ import * as crypto from 'crypto';
 import * as CryptoJS from 'crypto-js';
 
 const algorithm = 'aes-256-cbc';
+const keyLength = 32;
+const saltLength = 16;
+const ivLength = 16;
 
 export class CryptoService {
     public static encrypt(text: string): string {
-        const iv = crypto.randomBytes(16);
-        const salt = crypto.randomBytes(32);
-        const secretKey = crypto.scryptSync(env.machineId, salt, 32);
+        const iv = crypto.randomBytes(ivLength);
+        const salt = crypto.randomBytes(saltLength);
+        const secretKey = crypto.scryptSync(env.machineId, salt, keyLength);
 
         const cipher = crypto.createCipheriv(algorithm, secretKey, iv);
 
@@ -24,7 +27,7 @@ export class CryptoService {
 
     public static decrypt(encrypted: string) {
         const data = JSON.parse(Buffer.from(encrypted, "base64").toString("utf-8"));
-        const secretKey = crypto.scryptSync(env.machineId, Buffer.from(data.salt, "hex"), 32);
+        const secretKey = crypto.scryptSync(env.machineId, Buffer.from(data.salt, "hex"), keyLength);
 
         const decipher = crypto.createDecipheriv(algorithm, secretKey, Buffer.from(data.iv, "hex"));
 
