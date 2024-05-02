@@ -25,7 +25,7 @@ export class CryptoService {
         })).toString("base64");
     }
 
-    public static decrypt(encrypted: string) {
+    public static decrypt(encrypted: string): string {
         const data = JSON.parse(Buffer.from(encrypted, "base64").toString("utf-8"));
         const secretKey = crypto.scryptSync(env.machineId, Buffer.from(data.salt, "hex"), keyLength);
 
@@ -40,7 +40,7 @@ export class CryptoService {
     /**
      * @todo Remover essa função, e a lib crypto-js, após o período de adaptação para a nova criptogria
      */
-    public static decryptOld(text: string) {
+    public static decryptOld(text: string): string {
         return CryptoJS.AES.decrypt(text, env.machineId).toString(CryptoJS.enc.Utf8);
     }
 }
