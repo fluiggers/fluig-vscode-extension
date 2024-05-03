@@ -5,6 +5,7 @@ import { UtilsService } from "./UtilsService";
 import { window, Uri } from "vscode";
 import { Server } from "../models/Server";
 import { CryptoService } from "./CryptoService";
+import * as fs from 'fs';
 
 export class ServerService {
     private static PATH = Uri.joinPath(UtilsService.getWorkspaceUri(), '.vscode').fsPath;
@@ -131,8 +132,6 @@ export class ServerService {
      * Retorna o caminho do arquivo Server Config
      */
     public static getFileServerConfig(): string {
-        const fs = require('fs');
-
         if (!fs.existsSync(ServerService.FILE_SERVER_CONFIG)) {
             ServerService.createServerConfig();
         }
@@ -144,7 +143,6 @@ export class ServerService {
      * Cria o arquivo de configuração dos servidores
      */
     private static createServerConfig() {
-        const fs = require('fs');
         const serverConfig: ServerConfig = {
             version: "1.0.0",
             configurations: []
@@ -161,7 +159,6 @@ export class ServerService {
      * Criar / Alterar o arquivo de servidores
      */
     private static writeServerConfig(serverConfig: ServerConfig) {
-        const fs = require('fs');
         fs.writeFileSync(ServerService.FILE_SERVER_CONFIG, JSON.stringify(serverConfig, null, "\t"));
     }
 
@@ -169,8 +166,6 @@ export class ServerService {
      * Leitura do arquivo Server Config
      */
     public static getServerConfig(): ServerConfig {
-        const fs = require('fs');
-
         if (!fs.existsSync(ServerService.FILE_SERVER_CONFIG)) {
             ServerService.createServerConfig();
         }
