@@ -7,7 +7,7 @@
 
 Extensão para facilitar o desenvolvimento na plataforma TOTVS Fluig utilizando o VSCode.
 
-![Menu de Contexto](images/menu_contexto.jpg) ![Menu de F1](images/menu_f1.jpg)
+![Menu de F1](images/menu_f1.jpg) ![Menu de Contexto](images/menu_contexto.jpg)
 
 ## Aviso
 

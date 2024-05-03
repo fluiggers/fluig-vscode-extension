@@ -1,6 +1,5 @@
-import * as vscode from "vscode";
 import { ServerDTO } from "./ServerDTO";
-import * as CryptoJS from 'crypto-js';
+import { CryptoService } from "../services/CryptoService";
 
 /**
  * Configuração do Servidor com criptografia da senha
@@ -20,14 +19,14 @@ export class Server implements ServerDTO {
 
     get password(): string {
         if (!this.decryptedPassword) {
-            this.decryptedPassword = CryptoJS.AES.decrypt(this._password, vscode.env.machineId).toString(CryptoJS.enc.Utf8);
+            this.decryptedPassword = CryptoService.decrypt(this._password);
         }
 
         return this.decryptedPassword;
     }
 
     set password(password: string) {
-        this._password = CryptoJS.AES.encrypt(password, vscode.env.machineId).toString();
+        this._password = CryptoService.encrypt(password);
     }
 
     constructor(server?: ServerDTO) {

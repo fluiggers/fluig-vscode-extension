@@ -16,24 +16,15 @@
 
         $("#btnSalvar").addClass("loading").attr("disabled", true);
 
-        const id = document.getElementById("id").value;
-        const name = document.getElementById("name").value;
-        const host  = document.getElementById("host").value;
-        const ssl = document.getElementById("ssl").value == "yes";
-        const port = document.getElementById("port").value;
-        const username = document.getElementById("username").value;
-        const password = document.getElementById("password").value;
-        const confirmExporting = document.getElementById("confirm_pass_exporting").value == "yes";
-
         vscode.postMessage({
-            id,
-            name,
-            host,
-            ssl,
-            port,
-            username,
-            password,
-            confirmExporting
+            id: document.getElementById("id").value,
+            name: document.getElementById("name").value,
+            host: document.getElementById("host").value,
+            ssl: document.getElementById("ssl").value == "yes",
+            port: document.getElementById("port").value,
+            username: document.getElementById("username").value,
+            password: document.getElementById("password").value,
+            confirmExporting: document.getElementById("confirm_pass_exporting").value == "yes",
         });
     }
 

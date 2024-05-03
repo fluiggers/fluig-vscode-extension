@@ -2,6 +2,17 @@
 
 Lista de atualizações da Extensão.
 
+## 1.26.0
+
+Atualiza a criptografia utilizada para salvar as senhas dos servidores, garantindo maior
+segurança.
+
+Por alguns meses a antiga biblioteca de criptografia continuará na extensão para que a
+atualização da criptografia das senhas já salvas seja automática para os usuários.
+
+Na próxima atualização menor a antiga biblioteca de criptografia será removida e a partir
+desse momento os usuários serão obrigados a atualizar a senha manualmente, editando o servidor.
+
 ## 1.25.1
 
 Atualiza a documentação adicionando informações sobre a obrigatoriedade de abrir uma pasta
