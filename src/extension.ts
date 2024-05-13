@@ -1,15 +1,15 @@
-import * as vscode from "vscode";
-import {TemplateExtension} from "./extensions/TemplateExtension";
-import {LibraryExtension} from "./extensions/LibraryExtension";
-import {DatasetExtension} from "./extensions/DatasetExtension";
-import {FormExtension} from "./extensions/FormExtension";
-import {WidgetExtension} from "./extensions/WidgetExtension";
-import {WorkflowExtension} from "./extensions/WorkflowExtension";
-import {GlobalEventExtension} from "./extensions/GlobalEventExtension";
-import {ServerExtension} from "./extensions/ServerExtension";
+import { ExtensionContext, workspace } from "vscode";
+import { TemplateExtension } from "./extensions/TemplateExtension";
+import { LibraryExtension } from "./extensions/LibraryExtension";
+import { DatasetExtension } from "./extensions/DatasetExtension";
+import { FormExtension } from "./extensions/FormExtension";
+import { WidgetExtension } from "./extensions/WidgetExtension";
+import { WorkflowExtension } from "./extensions/WorkflowExtension";
+import { GlobalEventExtension } from "./extensions/GlobalEventExtension";
+import { ServerExtension } from "./extensions/ServerExtension";
 
-export function activate(context: vscode.ExtensionContext) {
-    if (!vscode.workspace.workspaceFolders) {
+export function activate(context: ExtensionContext) {
+    if (!workspace.workspaceFolders) {
         throw "É necessário estar em Workspace / Diretório.";
     }
 

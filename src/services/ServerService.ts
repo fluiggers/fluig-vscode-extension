@@ -1,11 +1,9 @@
-import { QuickPickItem } from "vscode";
+import { existsSync, mkdirSync, writeFileSync, readFileSync } from 'fs';
+import { window, Uri, QuickPickItem } from "vscode";
+import { UtilsService } from "./UtilsService";
 import { ServerConfig } from "../models/ServerConfig";
 import { ServerDTO } from "../models/ServerDTO";
-import { UtilsService } from "./UtilsService";
-import { window, Uri } from "vscode";
 import { Server } from "../models/Server";
-import { CryptoService } from "./CryptoService";
-import * as fs from 'fs';
 
 export class ServerService {
     private static PATH = Uri.joinPath(UtilsService.getWorkspaceUri(), '.vscode').fsPath;
@@ -132,7 +130,7 @@ export class ServerService {
      * Retorna o caminho do arquivo Server Config
      */
     public static getFileServerConfig(): string {
-        if (!fs.existsSync(ServerService.FILE_SERVER_CONFIG)) {
+        if (!existsSync(ServerService.FILE_SERVER_CONFIG)) {
             ServerService.createServerConfig();
         }
 
@@ -148,56 +146,28 @@ export class ServerService {
             configurations: []
         };
 
-        if (!fs.existsSync(ServerService.PATH)) {
-            fs.mkdirSync(ServerService.PATH);
+        if (!existsSync(ServerService.PATH)) {
+            mkdirSync(ServerService.PATH);
         }
 
-        fs.writeFileSync(ServerService.FILE_SERVER_CONFIG, JSON.stringify(serverConfig, null, "\t"));
+        writeFileSync(ServerService.FILE_SERVER_CONFIG, JSON.stringify(serverConfig, null, "\t"));
     }
 
     /**
      * Criar / Alterar o arquivo de servidores
      */
     private static writeServerConfig(serverConfig: ServerConfig) {
-        fs.writeFileSync(ServerService.FILE_SERVER_CONFIG, JSON.stringify(serverConfig, null, "\t"));
+        writeFileSync(ServerService.FILE_SERVER_CONFIG, JSON.stringify(serverConfig, null, "\t"));
     }
 
     /**
      * Leitura do arquivo Server Config
      */
     public static getServerConfig(): ServerConfig {
-        if (!fs.existsSync(ServerService.FILE_SERVER_CONFIG)) {
+        if (!existsSync(ServerService.FILE_SERVER_CONFIG)) {
             ServerService.createServerConfig();
         }
 
-        const serverConfig = JSON.parse(fs.readFileSync(ServerService.FILE_SERVER_CONFIG).toString());
-
-        /**
-         * @todo Remover essa validação, e a lib crypto-js, após o período de adaptação para a nova criptogria
-         */
-        if (serverConfig.version === "0.0.1") {
-            return ServerService.updateServerConfig(serverConfig);
-        }
-
-        return serverConfig;
-    }
-
-    /**
-     * @todo Remover essa função, e a lib crypto-js, após o período de adaptação para a nova criptogria
-     */
-    private static updateServerConfig(serverConfig: ServerConfig): ServerConfig {
-        serverConfig.version = "1.0.0";
-
-        serverConfig.configurations = serverConfig.configurations.map((oldServer: ServerDTO) => {
-            const server = new Server(oldServer);
-            server.password = CryptoService.decryptOld(oldServer.password);
-            return server;
-        });
-
-        ServerService.writeServerConfig(serverConfig);
-
-        window.showInformationMessage("Criptografia das senhas foi atualizada.");
-
-        return ServerService.getServerConfig();
+        return JSON.parse(readFileSync(ServerService.FILE_SERVER_CONFIG).toString());
     }
 }
