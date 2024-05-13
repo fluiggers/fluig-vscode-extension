@@ -18,21 +18,21 @@ function clean(cb) {
 
 function buildJquery(cb) {
     src('node_modules/jquery/dist/jquery.min.js')
-        .pipe(dest(`${destFolder}/libs`));
+    .pipe(dest(`${destFolder}/libs`));
 
     cb();
 }
 
 function buildBootstrapCss(cb) {
     src('node_modules/bootstrap/dist/css/bootstrap.min.css')
-        .pipe(dest(`${destFolder}/libs`));
+    .pipe(dest(`${destFolder}/libs`));
 
     cb();
 }
 
 function buildBootstrapJs(cb) {
     src('node_modules/bootstrap/dist/js/bootstrap.min.js')
-        .pipe(dest(`${destFolder}/libs`));
+    .pipe(dest(`${destFolder}/libs`));
 
     cb();
 }
@@ -42,8 +42,8 @@ function buildSelect2Css(cb) {
         'node_modules/select2/dist/css/select2.min.css',
         'node_modules/select2-bootstrap-5-theme/dist/select2-bootstrap-5-theme.min.css',
     ])
-        .pipe(concat('select2.min.css'))
-        .pipe(dest(`${destFolder}/libs`));
+    .pipe(concat('select2.min.css'))
+    .pipe(dest(`${destFolder}/libs`));
 
     cb();
 }
@@ -53,10 +53,10 @@ function buildSelect2Js(cb) {
         'node_modules/select2/dist/js/select2.full.min.js',
         'node_modules/select2/dist/js/i18n/pt-BR.js',
     ])
-        .pipe(concat('select2.min.js'))
-        .pipe(footer(`\n$.fn.select2.defaults.set("language", "pt-BR");\n`))
-        .pipe(footer(`\n$(document).on('select2:open', () => document.querySelector('.select2-search__field').focus());\n`)) // Corrige bug JQuery + Select2 no foco
-        .pipe(dest(`${destFolder}/libs`));
+    .pipe(concat('select2.min.js'))
+    .pipe(footer(`\n$.fn.select2.defaults.set("language", "pt-BR");\n`))
+    .pipe(footer(`\n$(document).on('select2:open', () => document.querySelector('.select2-search__field').focus());\n`)) // Corrige bug JQuery + Select2 no foco
+    .pipe(dest(`${destFolder}/libs`));
 
     cb();
 }
@@ -68,8 +68,8 @@ function buildDatatablesCss(cb) {
         'node_modules/datatables.net-fixedheader-bs5/css/fixedHeader.bootstrap5.min.css',
         'node_modules/datatables.net-scroller-bs5/css/scroller.bootstrap5.min.css',
     ])
-        .pipe(concat('datatables.min.css'))
-        .pipe(dest(`${destFolder}/libs`));
+    .pipe(concat('datatables.min.css'))
+    .pipe(dest(`${destFolder}/libs`));
 
     cb();
 }
@@ -89,53 +89,56 @@ function buildDatatablesJs(cb) {
         'node_modules/datatables.net-scroller/js/dataTables.scroller.min.js',
         'node_modules/datatables.net-scroller-bs5/js/scroller.bootstrap5.min.js',
     ])
-        .pipe(concat('datatables.min.js'))
-        .pipe(footer(`\n$.extend($.fn.dataTable.defaults, {language: ${ptBrJson}});\n`))
-        .pipe(dest(`${destFolder}/libs`));
+    .pipe(concat('datatables.min.js'))
+    .pipe(footer(`\n$.extend($.fn.dataTable.defaults, {language: ${ptBrJson}});\n`))
+    .pipe(dest(`${destFolder}/libs`));
 
     cb();
 }
 
 function buildHtml5Sortable(cb) {
     src('node_modules/html5sortable/dist/html5sortable.min.js')
-        .pipe(dest(`${destFolder}/libs`));
+    .pipe(dest(`${destFolder}/libs`));
 
     cb();
 }
 
 function buildResourcesCss(cb) {
     src('resources/**/*.css')
-        .pipe(cleanCSS())
-        .pipe(dest(destFolder));
+    .pipe(cleanCSS())
+    .pipe(dest(destFolder));
 
     cb();
 }
 
 function buildResourcesJs(cb) {
     src('resources/**/*.js')
-        .pipe(uglify())
-        .pipe(dest(destFolder));
+    .pipe(uglify())
+    .pipe(dest(destFolder));
 
     cb();
 }
 
 function buildResourcesHtml(cb) {
     src('resources/**/*.html')
-        .pipe(dest(destFolder));
+    .pipe(dest(destFolder));
 
     cb();
 }
 
 function buildResourcesImages(cb) {
-    src('resources/images/**/*.{jpg,jpeg,png,svg}')
-        .pipe(dest('dist/images'));
+    src(
+        'resources/images/**/*.{jpg,jpeg,png,svg}',
+        { encoding: false }
+    )
+    .pipe(dest('dist/images'));
 
     cb();
 }
 
 function buildTemplates(cb) {
     src('templates/**')
-        .pipe(dest('dist/templates'));
+    .pipe(dest('dist/templates'));
 
     cb();
 }
