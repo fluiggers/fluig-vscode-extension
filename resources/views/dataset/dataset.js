@@ -135,10 +135,39 @@
         dataTable = $tbResult.DataTable({
             order: [],
             fixedHeader: true,
-            dom: '<lf><rt><ip><B>',
-            buttons: ['copy', 'excel'],
             scrollX: true,
+            layout: {
+                topStart: 'pageLength',
+                topEnd: 'search',
+                bottomStart: 'info',
+                bottomEnd: 'paging',
+                bottom2Start: {
+                    buttons: [
+                        {
+                            extend: 'copyHtml5',
+                            text: "Copiar",
+                            title: null,
+                            header: true,
+                            footer: false,
+                        },
+                        {
+                            extend: 'excelHtml5',
+                            text: "Exportar Excel",
+                            filename() {
+                                return getExcelName();
+                            },
+                            title() {
+                                return getExcelName();
+                            },
+                        },
+                    ],
+                },
+            }
         });
+    }
+
+    function getExcelName() {
+        return serverName + ' - ' + document.getElementById("dataset").value;
     }
 
     function getResultQuery() {
