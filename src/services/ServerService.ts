@@ -4,7 +4,9 @@ import { UtilsService } from "./UtilsService";
 import { ServerConfig } from "../models/ServerConfig";
 import { ServerDTO } from "../models/ServerDTO";
 import { Server } from "../models/Server";
+import { UserService } from './UserService';
 
+const SERVER_CONFIG_VERSION = '1.0.0';
 export class ServerService {
     private static PATH = Uri.joinPath(UtilsService.getWorkspaceUri(), '.vscode').fsPath;
     private static FILE_SERVER_CONFIG = Uri.joinPath(UtilsService.getWorkspaceUri(), '.vscode', 'servers.json').fsPath;
@@ -142,7 +144,7 @@ export class ServerService {
      */
     private static createServerConfig() {
         const serverConfig: ServerConfig = {
-            version: "1.0.0",
+            version: SERVER_CONFIG_VERSION,
             configurations: []
         };
 
@@ -169,5 +171,60 @@ export class ServerService {
         }
 
         return JSON.parse(readFileSync(ServerService.FILE_SERVER_CONFIG).toString());
+    }
+
+    public static async checkServerConfigVersion() {
+        let serverConfig = ServerService.getServerConfig();
+
+        if (serverConfig.version === SERVER_CONFIG_VERSION) {
+            return true;
+        }
+
+        if (!serverConfig.configurations.length) {
+            ServerService.createServerConfig();
+            return true;
+        }
+
+        const answer = await window.showWarningMessage(
+            "Arquivo de Configuração está Desatualizado.",
+            {
+                detail: "Para atualizar o arquivo você terá que digitar a senha de todos os servidores (aconselhável fazer backup antes).\n\nDeseja continuar?.",
+                modal: true,
+            },
+            "Sim"
+        );
+
+        if (answer !== "Sim") {
+            return false;
+        }
+
+        for (const serverDto of serverConfig.configurations) {
+            const server = new Server(serverDto);
+            server.password = (await window.showInputBox({
+                prompt: `Digite a senha do usuário ${server.username} no servidor ${server.name}`,
+                ignoreFocusOut: true,
+                password: true,
+                placeHolder: "Digite a senha",
+            })) || "";
+
+            try {
+                const response = await UserService.getUser(server);
+
+                if (!response.data.content) {
+                    window.showWarningMessage(`Erro ao salvar senha do servidor ${server.name}.`);
+                }
+
+                ServerService.update(server);
+            } catch (e) {
+                window.showErrorMessage(`Falha na conexão com o servidor ${server.name}. Erro retornado: ${e}`);
+            }
+        }
+
+        serverConfig = ServerService.getServerConfig();
+
+        serverConfig.version = SERVER_CONFIG_VERSION;
+        ServerService.writeServerConfig(serverConfig);
+
+        return true;
     }
 }
