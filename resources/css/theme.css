@@ -245,3 +245,7 @@ body.vscode-high-contrast:not(.vscode-high-contrast-light) .modal-header .btn-cl
 .dtfh-floatingparent.dtfh-floatingparenthead table {
     background-color: var(--vscode-editor-background) !important;
 }
+
+div.dt-scroll-body {
+    border-bottom-color: var(--vscode-input-border);
+}

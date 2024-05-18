@@ -79,7 +79,7 @@ function buildDatatablesJs(cb) {
 
     src([
         'node_modules/jszip/dist/jszip.min.js',
-        'node_modules/datatables.net/js/jquery.dataTables.min.js',
+        'node_modules/datatables.net/js/dataTables.min.js',
         'node_modules/datatables.net-bs5/js/dataTables.bootstrap5.min.js',
         'node_modules/datatables.net-buttons/js/dataTables.buttons.min.js',
         'node_modules/datatables.net-buttons/js/buttons.html5.min.js',
