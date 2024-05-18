@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { glob } from "glob";
+import { globSync } from "glob";
 import { basename } from "path";
 
 export class TemplateService {
@@ -20,7 +20,7 @@ export class TemplateService {
      * @returns Nome dos arquivos sem a extensão
      */
     static getTemplatesNameFromPath(templatesUri: vscode.Uri): string[] {
-        return glob.sync(vscode.Uri.joinPath(templatesUri, '*.txt').fsPath)
+        return globSync(vscode.Uri.joinPath(templatesUri, '*.txt').path)
             .map(filename => basename(filename, '.txt'));
     }
 
