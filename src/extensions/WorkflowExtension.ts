@@ -1,7 +1,8 @@
 import * as vscode from 'vscode';
-import {UtilsService} from "../services/UtilsService";
-import {readFileSync} from "fs";
-import {TemplateService} from "../services/TemplateService";
+import { UtilsService } from "../services/UtilsService";
+import { readFileSync } from "fs";
+import { TemplateService } from "../services/TemplateService";
+import { AttributionMechanismService } from '../services/AttributionMechanismService';
 
 export class WorkflowExtension {
 
@@ -13,6 +14,18 @@ export class WorkflowExtension {
         context.subscriptions.push(vscode.commands.registerCommand(
             "fluiggers-fluig-vscode-extension.newMechanism",
             WorkflowExtension.createMechanism
+        ));
+        context.subscriptions.push(vscode.commands.registerCommand(
+            "fluiggers-fluig-vscode-extension.importManyMechanisms",
+            AttributionMechanismService.importMany
+        ));
+        context.subscriptions.push(vscode.commands.registerCommand(
+            "fluiggers-fluig-vscode-extension.importMechanism",
+            AttributionMechanismService.import
+        ));
+        context.subscriptions.push(vscode.commands.registerCommand(
+            "fluiggers-fluig-vscode-extension.exportMechanism",
+            WorkflowExtension.exportMechanism
         ));
     }
 
@@ -125,5 +138,18 @@ export class WorkflowExtension {
             readFileSync(vscode.Uri.joinPath(TemplateService.templatesUri, 'createMechanism.txt').fsPath)
         );
         vscode.window.showTextDocument(mechanismUri);
+    }
+
+    private static exportMechanism(fileUri: vscode.Uri) {
+        // Ativado pela Tecla de Atalho
+        if (!fileUri) {
+            if (!vscode.window.activeTextEditor) {
+                vscode.window.showErrorMessage("Não há editor de texto ativo com Mecanismo Customizado");
+                return;
+            }
+            fileUri = vscode.window.activeTextEditor.document.uri;
+        }
+
+        AttributionMechanismService.export(fileUri);
     }
 }

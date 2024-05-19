@@ -75,6 +75,21 @@
                 "category": "Fluig"
             },
             {
+                "command": "fluiggers-fluig-vscode-extension.importManyMechanisms",
+                "title": "Importar Vários Mecanismos Customizados",
+                "category": "Fluig"
+            },
+            {
+                "command": "fluiggers-fluig-vscode-extension.importMechanism",
+                "title": "Importar Mecanismo Customizado",
+                "category": "Fluig"
+            },
+            {
+                "command": "fluiggers-fluig-vscode-extension.exportMechanism",
+                "title": "Exportar Mecanismo Customizado",
+                "category": "Fluig"
+            },
+            {
                 "command": "fluiggers-fluig-vscode-extension.newWidget",
                 "title": "Novo Widget",
                 "category": "Fluig"
@@ -185,6 +200,10 @@
                     "when": "false"
                 },
                 {
+                    "command": "fluiggers-fluig-vscode-extension.exportMechanism",
+                    "when": "false"
+                },
+                {
                     "command": "fluiggers-fluig-vscode-extension.exportForm",
                     "when": "false"
                 },
@@ -263,8 +282,21 @@
                     "group": "1_Fluig4Workflow@1"
                 },
                 {
-                    "command": "fluiggers-fluig-vscode-extension.newMechanism",
+                    "command": "fluiggers-fluig-vscode-extension.exportMechanism",
+                    "when": "resourcePath =~ /[\\/\\\\]mechanisms[\\/\\\\].+$/",
                     "group": "1_Fluig4Workflow@2"
+                },
+                {
+                    "command": "fluiggers-fluig-vscode-extension.newMechanism",
+                    "group": "1_Fluig4Workflow@3"
+                },
+                {
+                    "command": "fluiggers-fluig-vscode-extension.importManyMechanisms",
+                    "group": "1_Fluig4Workflow@4"
+                },
+                {
+                    "command": "fluiggers-fluig-vscode-extension.importMechanism",
+                    "group": "1_Fluig4Workflow@5"
                 },
                 {
                     "command": "fluiggers-fluig-vscode-extension.newWidget",
@@ -324,6 +356,12 @@
                 "key": "ctrl+f9",
                 "mac": "cmd+f9",
                 "when": "editorTextFocus && resourcePath =~ /[\\/\\\\]datasets[\\/\\\\].+$/"
+            },
+            {
+                "command": "fluiggers-fluig-vscode-extension.exportMechanism",
+                "key": "ctrl+f9",
+                "mac": "cmd+f9",
+                "when": "editorTextFocus && resourcePath =~ /[\\/\\\\]mechanisms[\\/\\\\].+$/"
             },
             {
                 "command": "fluiggers-fluig-vscode-extension.exportForm",

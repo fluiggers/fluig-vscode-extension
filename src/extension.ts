@@ -7,6 +7,7 @@ import { WidgetExtension } from "./extensions/WidgetExtension";
 import { WorkflowExtension } from "./extensions/WorkflowExtension";
 import { GlobalEventExtension } from "./extensions/GlobalEventExtension";
 import { ServerExtension } from "./extensions/ServerExtension";
+import { AttributionMechanismService } from "./services/AttributionMechanismService";
 
 export function activate(context: ExtensionContext) {
     if (!workspace.workspaceFolders) {
