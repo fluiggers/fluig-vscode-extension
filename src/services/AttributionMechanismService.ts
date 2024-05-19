@@ -11,9 +11,13 @@ import { readFileSync } from 'fs';
 const basePath = "/ecm/api/rest/ecm/mechanism/";
 
 export class AttributionMechanismService {
-    private static async list(server: ServerDTO): Promise<AttributionMechanismDTO[]> {
+    private static getBasePath(server: ServerDTO, action: string): string {
         const host = UtilsService.getHost(server);
-        const endpoint = `${host}${basePath}getCustomAttributionMechanismList?username=${encodeURIComponent(server.username)}&password=${encodeURIComponent(server.password)}`;
+        return `${host}${basePath}${action}?username=${encodeURIComponent(server.username)}&password=${encodeURIComponent(server.password)}`;
+    }
+
+    private static async list(server: ServerDTO): Promise<AttributionMechanismDTO[]> {
+        const endpoint = AttributionMechanismService.getBasePath(server, "getCustomAttributionMechanismList");
 
         const agent = new https.Agent({
             rejectUnauthorized: false
@@ -33,8 +37,7 @@ export class AttributionMechanismService {
     }
 
     private static async create(server: ServerDTO, mechanism: AttributionMechanismDTO) {
-        const host = UtilsService.getHost(server);
-        const endpoint = `${host}${basePath}createAttributionMechanism?username=${encodeURIComponent(server.username)}&password=${encodeURIComponent(server.password)}`;
+        const endpoint = AttributionMechanismService.getBasePath(server, "createAttributionMechanism");
 
         const agent = new https.Agent({
             rejectUnauthorized: false
@@ -46,8 +49,7 @@ export class AttributionMechanismService {
     }
 
     private static async update(server: ServerDTO, mechanism: AttributionMechanismDTO) {
-        const host = UtilsService.getHost(server);
-        const endpoint = `${host}${basePath}updateAttributionMechanism?username=${encodeURIComponent(server.username)}&password=${encodeURIComponent(server.password)}`;
+        const endpoint = AttributionMechanismService.getBasePath(server, "updateAttributionMechanism");
 
         const agent = new https.Agent({
             rejectUnauthorized: false
@@ -59,8 +61,7 @@ export class AttributionMechanismService {
     }
 
     private static async delete(server: ServerDTO, mechanismId: string) {
-        const host = UtilsService.getHost(server);
-        const endpoint = `${host}${basePath}deleteAttributionMechanism?username=${encodeURIComponent(server.username)}&password=${encodeURIComponent(server.password)}&mechanismId=${mechanismId}`;
+        const endpoint = AttributionMechanismService.getBasePath(server, "deleteAttributionMechanism") + `&mechanismId=${mechanismId}`;
 
         const agent = new https.Agent({
             rejectUnauthorized: false
