@@ -70,6 +70,16 @@
                 "category": "Fluig"
             },
             {
+                "command": "fluiggers-fluig-vscode-extension.exportGlobalEvent",
+                "title": "Exportar Evento Global",
+                "category": "Fluig"
+            },
+            {
+                "command": "fluiggers-fluig-vscode-extension.deleteGlobalEvent",
+                "title": "Excluir Evento Global",
+                "category": "Fluig"
+            },
+            {
                 "command": "fluiggers-fluig-vscode-extension.newMechanism",
                 "title": "Novo Mecanismo Customizado",
                 "category": "Fluig"
@@ -200,6 +210,10 @@
                     "when": "false"
                 },
                 {
+                    "command": "fluiggers-fluig-vscode-extension.exportGlobalEvent",
+                    "when": "false"
+                },
+                {
                     "command": "fluiggers-fluig-vscode-extension.exportMechanism",
                     "when": "false"
                 },
@@ -265,16 +279,21 @@
                     "group": "1_Fluig2Form@5"
                 },
                 {
-                    "command": "fluiggers-fluig-vscode-extension.newGlobalEvent",
+                    "command": "fluiggers-fluig-vscode-extension.exportGlobalEvent",
+                    "when": "resourcePath =~ /[\\/\\\\]events[\\/\\\\].+$/",
                     "group": "1_Fluig3GlobalEvent@1"
                 },
                 {
-                    "command": "fluiggers-fluig-vscode-extension.importManyGlobalEvent",
+                    "command": "fluiggers-fluig-vscode-extension.newGlobalEvent",
                     "group": "1_Fluig3GlobalEvent@2"
                 },
                 {
-                    "command": "fluiggers-fluig-vscode-extension.importGlobalEvent",
+                    "command": "fluiggers-fluig-vscode-extension.importManyGlobalEvent",
                     "group": "1_Fluig3GlobalEvent@3"
+                },
+                {
+                    "command": "fluiggers-fluig-vscode-extension.importGlobalEvent",
+                    "group": "1_Fluig3GlobalEvent@4"
                 },
                 {
                     "command": "fluiggers-fluig-vscode-extension.newWorkflowEvent",
@@ -362,6 +381,12 @@
                 "key": "ctrl+f9",
                 "mac": "cmd+f9",
                 "when": "editorTextFocus && resourcePath =~ /[\\/\\\\]mechanisms[\\/\\\\].+$/"
+            },
+            {
+                "command": "fluiggers-fluig-vscode-extension.exportGlobalEvent",
+                "key": "ctrl+f9",
+                "mac": "cmd+f9",
+                "when": "editorTextFocus && resourcePath =~ /[\\/\\\\]events[\\/\\\\].+$/"
             },
             {
                 "command": "fluiggers-fluig-vscode-extension.exportForm",

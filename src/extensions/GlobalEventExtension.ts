@@ -12,12 +12,20 @@ export class GlobalEventExtension {
             GlobalEventExtension.createGlobalEvent
         ));
         context.subscriptions.push(vscode.commands.registerCommand(
+            "fluiggers-fluig-vscode-extension.exportGlobalEvent",
+            GlobalEventExtension.exportGlobalEvent
+        ));
+        context.subscriptions.push(vscode.commands.registerCommand(
             "fluiggers-fluig-vscode-extension.importManyGlobalEvent",
             GlobalEventService.importMany
         ));
         context.subscriptions.push(vscode.commands.registerCommand(
             "fluiggers-fluig-vscode-extension.importGlobalEvent",
             GlobalEventService.import
+        ));
+        context.subscriptions.push(vscode.commands.registerCommand(
+            "fluiggers-fluig-vscode-extension.deleteGlobalEvent",
+            GlobalEventService.delete
         ));
     }
 
@@ -57,5 +65,18 @@ export class GlobalEventExtension {
             readFileSync(vscode.Uri.joinPath(TemplateService.globalEventsUri, `${eventName}.txt`).fsPath)
         );
         vscode.window.showTextDocument(eventUri);
+    }
+
+    private static exportGlobalEvent(fileUri: vscode.Uri) {
+        // Ativado pela Tecla de Atalho
+        if (!fileUri) {
+            if (!vscode.window.activeTextEditor) {
+                vscode.window.showErrorMessage("Não há editor de texto ativo com Evento Global");
+                return;
+            }
+            fileUri = vscode.window.activeTextEditor.document.uri;
+        }
+
+        GlobalEventService.export(fileUri);
     }
 }
