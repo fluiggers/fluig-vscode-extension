@@ -124,7 +124,6 @@ export class DatasetService {
      * Exportar dataset existente
      */
     public static async updateDataset(server: ServerDTO, dataset: DatasetStructureDTO) {
-        console.log("Vamos atualizar o dataset");
         const uri = DatasetService.getBasePath(server, "editDataset") + "&confirmnewstructure=false";
 
         return await fetch(
@@ -137,7 +136,7 @@ export class DatasetService {
                 method: "POST",
                 body: JSON.stringify(dataset),
             }
-        ).then(r => { console.log(r); return r.json() });
+        ).then(r => r.json());
     }
 
     /**
@@ -341,8 +340,6 @@ export class DatasetService {
         } else {
             result = await DatasetService.updateDataset(server, datasetStructure);
         }
-
-        console.log(result);
 
         if (result.content === 'OK') {
             window.showInformationMessage("Dataset " + datasetId + " exportado com sucesso!");
