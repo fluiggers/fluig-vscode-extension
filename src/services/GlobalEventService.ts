@@ -1,7 +1,5 @@
-import axios from "axios";
 import { ServerDTO } from "../models/ServerDTO";
 import { UtilsService } from "./UtilsService";
-import * as https from 'https';
 import { GlobalEventDTO } from "../models/GlobalEventDTO";
 import { window, workspace, Uri } from "vscode";
 import { ServerService } from "./ServerService";
@@ -22,18 +20,23 @@ export class GlobalEventService {
     private static async getEventList(server: ServerDTO): Promise<GlobalEventDTO[]> {
         const endpoint = GlobalEventService.getBasePath(server, "getEventList");
 
-        const agent = new https.Agent({
-            rejectUnauthorized: false
-        });
+        try {
+            const response:any = await fetch(
+                endpoint,
+                { headers: { "Accept": "application/json" } }
+            ).then(r => r.json());
 
-        const result = await axios.get(endpoint, {
-            httpsAgent: agent,
-            headers: {
-                Accept: 'application/json',
+            if (response.message) {
+                window.showErrorMessage(response.message.message);
+                return [];
             }
-        });
 
-        return result.data;
+            return response;
+        } catch (error) {
+            window.showErrorMessage("Erro: " + error);
+        }
+
+        return [];
     }
 
     private static async saveEventList(server: ServerDTO, globalEvents: GlobalEventDTO[]) {
@@ -199,25 +202,17 @@ export class GlobalEventService {
         }
 
         const endpoint = GlobalEventService.getBasePath(server, "deleteGlobalEvent");
-        const agent = new https.Agent({
-            rejectUnauthorized: false
-        });
 
         eventList.forEach(async event => {
-            const result = await axios.delete(
+            const result:any = await fetch(
                 endpoint + `&eventName=${event.globalEventPK.eventId}`,
-                {
-                    httpsAgent: agent,
-                    headers: {
-                        Accept: 'application/json',
-                    }
-                }
-            );
+                { method: "DELETE",  headers: { "Accept": "application/json" } }
+            ).then(r => r.json());
 
-            if (result.data.content === "OK") {
+            if (result.content === "OK") {
                 window.showInformationMessage("Evento Global " + event.globalEventPK.eventId + " removido com sucesso!");
             } else {
-                window.showErrorMessage("Erro ao remover Evento Global " + event.globalEventPK.eventId + "! " + result.data.message.message);
+                window.showErrorMessage("Erro ao remover Evento Global " + event.globalEventPK.eventId + "! " + result.message.message);
             }
         });
     }

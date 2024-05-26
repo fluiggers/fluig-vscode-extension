@@ -208,9 +208,9 @@ export class ServerService {
             })) || "";
 
             try {
-                const response = await UserService.getUser(server);
+                const response:any = await UserService.getUser(server);
 
-                if (!response.data.content) {
+                if (!response.content) {
                     window.showWarningMessage(`Erro ao salvar senha do servidor ${server.name}.`);
                 }
 

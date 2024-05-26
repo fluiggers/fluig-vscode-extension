@@ -1,6 +1,4 @@
-import * as vscode from 'vscode';
-import * as https from 'https';
-import axios from 'axios';
+import { Uri, window, workspace } from 'vscode';
 import { basename } from "path";
 import { UtilsService } from './UtilsService';
 import { ServerDTO } from '../models/ServerDTO';
@@ -19,19 +17,26 @@ export class AttributionMechanismService {
     private static async list(server: ServerDTO): Promise<AttributionMechanismDTO[]> {
         const endpoint = AttributionMechanismService.getBasePath(server, "getCustomAttributionMechanismList");
 
-        const agent = new https.Agent({
-            rejectUnauthorized: false
-        });
+        try {
+            const response:any = await fetch(
+                endpoint,
+                {
+                    headers: {
+                        "Accept": "application/json",
+                        "Content-Type": "application/json",
+                    }
+                }
+            ).then(r => r.json());
 
-        const result = await axios.get(endpoint, {
-            httpsAgent: agent
-        });
+            if (response.message) {
+                window.showErrorMessage(response.message.message);
+                return [];
+            }
 
-        if (result.status === 200 && !result.data.content) {
-            return result.data;
+            return response;
+        } catch (error) {
+            window.showErrorMessage("Erro: " + error);
         }
-
-        vscode.window.showErrorMessage(result.data.message.message);
 
         return [];
     }
@@ -39,37 +44,72 @@ export class AttributionMechanismService {
     private static async create(server: ServerDTO, mechanism: AttributionMechanismDTO) {
         const endpoint = AttributionMechanismService.getBasePath(server, "createAttributionMechanism");
 
-        const agent = new https.Agent({
-            rejectUnauthorized: false
-        });
-
-        return await axios.post(endpoint, mechanism, {
-            httpsAgent: agent
-        });
+        try {
+            return await fetch(
+                endpoint,
+                {
+                    headers: {
+                        "Accept": "application/json",
+                        "Content-Type": "application/json",
+                    },
+                    method: "POST",
+                    body: JSON.stringify(mechanism),
+                }
+            ).then(r => r.json());
+        } catch (error) {
+            return {
+                message: {
+                    message: "Erro: " + error
+                }
+            }
+        }
     }
 
     private static async update(server: ServerDTO, mechanism: AttributionMechanismDTO) {
         const endpoint = AttributionMechanismService.getBasePath(server, "updateAttributionMechanism");
 
-        const agent = new https.Agent({
-            rejectUnauthorized: false
-        });
-
-        return await axios.post(endpoint, mechanism, {
-            httpsAgent: agent
-        });
+        try {
+            return await fetch(
+                endpoint,
+                {
+                    headers: {
+                        "Accept": "application/json",
+                        "Content-Type": "application/json",
+                    },
+                    method: "POST",
+                    body: JSON.stringify(mechanism),
+                }
+            ).then(r => r.json());
+        } catch (error) {
+            return {
+                message: {
+                    message: "Erro: " + error
+                }
+            }
+        }
     }
 
     private static async delete(server: ServerDTO, mechanismId: string) {
         const endpoint = AttributionMechanismService.getBasePath(server, "deleteAttributionMechanism") + `&mechanismId=${mechanismId}`;
 
-        const agent = new https.Agent({
-            rejectUnauthorized: false
-        });
-
-        const result = await axios.delete(endpoint, {
-            httpsAgent: agent
-        });
+        try {
+            return await fetch(
+                endpoint,
+                {
+                    headers: {
+                        "Accept": "application/json",
+                        "Content-Type": "application/json",
+                    },
+                    method: "DELETE",
+                }
+            ).then(r => r.json());
+        } catch (error) {
+            return {
+                message: {
+                    message: "Erro: " + error
+                }
+            }
+        }
     }
 
     /**
@@ -78,7 +118,7 @@ export class AttributionMechanismService {
     public static async getOptionSelected(server: ServerDTO): Promise<AttributionMechanismDTO|null> {
         const mechanisms = await AttributionMechanismService.list(server);
         const items = mechanisms.map(mechanism => ({ label: mechanism.attributionMecanismPK.attributionMecanismId, detail: mechanism.name }));
-        const result = await vscode.window.showQuickPick(items, {
+        const result = await window.showQuickPick(items, {
             placeHolder: "Selecione o Mecanismo de Atribuição"
         });
 
@@ -95,7 +135,7 @@ export class AttributionMechanismService {
     public static async getOptionsSelected(server: ServerDTO): Promise<AttributionMechanismDTO[]> {
         const mechanisms = await AttributionMechanismService.list(server);
         const items = mechanisms.map(mechanism => ({ label: mechanism.attributionMecanismPK.attributionMecanismId, detail: mechanism.name }));
-        const result = await vscode.window.showQuickPick(items, {
+        const result = await window.showQuickPick(items, {
             placeHolder: "Selecione o Mecanismo de Atribuição",
             canPickMany: true
         });
@@ -152,7 +192,7 @@ export class AttributionMechanismService {
     /**
      * Cria ou Atualiza Mecanismo de Atribuição no servidor
      */
-    public static async export(fileUri: vscode.Uri) {
+    public static async export(fileUri: Uri) {
         const server = await ServerService.getSelect();
 
         if (!server) {
@@ -179,7 +219,7 @@ export class AttributionMechanismService {
             items.unshift(mechanismSelected);
         }
 
-        mechanismSelected = (await vscode.window.showQuickPick(items, {
+        mechanismSelected = (await window.showQuickPick(items, {
             placeHolder: "Criar ou Editar Mecanismo Customizado?"
         })) || { label: "", detail: "" };
 
@@ -197,7 +237,7 @@ export class AttributionMechanismService {
             let existMechanism: boolean = false;
 
             do {
-                mechanismId = await vscode.window.showInputBox({
+                mechanismId = await window.showInputBox({
                     prompt: "Qual o código do Mecanismo Customizado (sem espaços e sem caracteres especiais)?",
                     placeHolder: "mecanismo_customizado",
                     value: mechanismId
@@ -210,7 +250,7 @@ export class AttributionMechanismService {
                 existMechanism = mechanisms.find((mechanism => mechanism.attributionMecanismPK.attributionMecanismId === mechanismId)) !== undefined;
 
                 if (existMechanism) {
-                    vscode.window.showWarningMessage(`O mecanismo "${mechanismId}" já existe no servidor "${server.name}"!`);
+                    window.showWarningMessage(`O mecanismo "${mechanismId}" já existe no servidor "${server.name}"!`);
                 }
             } while (existMechanism);
 
@@ -232,13 +272,13 @@ export class AttributionMechanismService {
             mechanismStructure = mechanisms.find(mechanism => mechanism.attributionMecanismPK.attributionMecanismId === mechanismId);
         }
 
-        name = await vscode.window.showInputBox({
+        name = await window.showInputBox({
             prompt: "Qual o nome do Mecanismo Customizado?",
             placeHolder: "Nome do Mecanismo",
             value: mechanismStructure?.name || mechanismId
         }) || "";
 
-        description = await vscode.window.showInputBox({
+        description = await window.showInputBox({
             prompt: "Qual a descrição do Mecanismo Customizado?",
             placeHolder: "Descrição do Mecanismo",
             value: mechanismStructure?.description || mechanismId
@@ -265,10 +305,10 @@ export class AttributionMechanismService {
             result = await AttributionMechanismService.update(server, mechanismStructure);
         }
 
-        if (result.data.content === 'OK') {
-            vscode.window.showInformationMessage("Mecanismo Customizado " + mechanismId + " exportado com sucesso!");
+        if (result.content === 'OK') {
+            window.showInformationMessage("Mecanismo Customizado " + mechanismId + " exportado com sucesso!");
         } else {
-            vscode.window.showErrorMessage("Falha ao exportar o Mecanismo Customizado " + mechanismId + "!\n\n" + result.data.message.message);
+            window.showErrorMessage("Falha ao exportar o Mecanismo Customizado " + mechanismId + "!\n\n" + result.message.message);
         }
     }
 
@@ -276,14 +316,14 @@ export class AttributionMechanismService {
      * Cria o arquivo de Mecanismo de Atribuição
      */
     private static async saveFile(name: string, content: string) {
-        const fileUri = vscode.Uri.joinPath(UtilsService.getWorkspaceUri(), "mechanisms", name + ".js");
+        const fileUri = Uri.joinPath(UtilsService.getWorkspaceUri(), "mechanisms", name + ".js");
 
-        await vscode.workspace.fs.writeFile(
+        await workspace.fs.writeFile(
             fileUri,
             Buffer.from(content, "utf-8")
         );
 
-        vscode.window.showTextDocument(fileUri);
-        vscode.window.showInformationMessage("Mecanismo de Atribuição " + name + " importado com sucesso!");
+        window.showTextDocument(fileUri);
+        window.showInformationMessage("Mecanismo de Atribuição " + name + " importado com sucesso!");
     }
 }

@@ -1,6 +1,4 @@
-import axios from "axios";
 import { ServerDTO } from "../models/ServerDTO";
-import * as https from 'https';
 import { ServerService } from "./ServerService";
 import { window, workspace, Uri } from "vscode";
 import { basename } from "path";
@@ -10,7 +8,13 @@ import { UtilsService } from "./UtilsService";
 import { readFileSync } from "fs";
 import * as soap from 'soap';
 
+const basePath = "/ecm/api/rest/ecm/dataset/";
+
 export class DatasetService {
+    private static getBasePath(server: ServerDTO, action: string): string {
+        const host = UtilsService.getHost(server);
+        return `${host}${basePath}${action}?username=${encodeURIComponent(server.username)}&password=${encodeURIComponent(server.password)}`;
+    }
 
     /**
      * Retorna uma lista com todos os datasets do servidor
@@ -43,21 +47,9 @@ export class DatasetService {
     /**
      * Retorna as informações e estrutura de um dataset específico
      */
-    public static async getDataset(server: ServerDTO, datasetId: string) {
-        const uri = UtilsService.getHost(server)
-            + "/ecm/api/rest/ecm/dataset/loadDataset"
-            + "?username=" +  encodeURIComponent(server.username)
-            + "&password=" +  encodeURIComponent(server.password)
-            + "&datasetId=" + encodeURIComponent(datasetId)
-        ;
-
-        const agent = new https.Agent({
-            rejectUnauthorized: false
-        });
-
-        return await axios.get(uri, {
-            httpsAgent: agent
-        });
+    public static async getDataset(server: ServerDTO, datasetId: string):Promise<any> {
+        const endpoint = DatasetService.getBasePath(server, "loadDataset") + "&datasetId=" + encodeURIComponent(datasetId);
+        return await fetch(endpoint, { headers: { "Accept": "application/json" } }).then(r => r.json());
     }
 
     public static async getResultDataset(server: ServerDTO, datasetId: string, fields: string[], constraints: [], order: string[]) {
@@ -113,39 +105,39 @@ export class DatasetService {
      * Exportar novo dataset
      */
     public static async createDataset(server: ServerDTO, dataset: DatasetStructureDTO) {
-        const uri = UtilsService.getHost(server)
-            + "/ecm/api/rest/ecm/dataset/createDataset"
-            + "?username=" + encodeURIComponent(server.username)
-            + "&password=" + encodeURIComponent(server.password)
-        ;
+        const uri = DatasetService.getBasePath(server, "createDataset");
 
-        const agent = new https.Agent({
-            rejectUnauthorized: false
-        });
-
-        return await axios.post(uri, dataset, {
-            httpsAgent: agent
-        });
+        return await fetch(
+            uri,
+            {
+                headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json",
+                },
+                method: "POST",
+                body: JSON.stringify(dataset),
+            }
+        ).then(r => r.json());
     }
 
     /**
      * Exportar dataset existente
      */
     public static async updateDataset(server: ServerDTO, dataset: DatasetStructureDTO) {
-        const uri = UtilsService.getHost(server)
-            + "/ecm/api/rest/ecm/dataset/editDataset"
-            + "?username=" + encodeURIComponent(server.username)
-            + "&password=" + encodeURIComponent(server.password)
-            + "&confirmnewstructure=false"
-        ;
+        console.log("Vamos atualizar o dataset");
+        const uri = DatasetService.getBasePath(server, "editDataset") + "&confirmnewstructure=false";
 
-        const agent = new https.Agent({
-            rejectUnauthorized: false
-        });
-
-        return await axios.post(uri, dataset, {
-            httpsAgent: agent
-        });
+        return await fetch(
+            uri,
+            {
+                headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json",
+                },
+                method: "POST",
+                body: JSON.stringify(dataset),
+            }
+        ).then(r => { console.log(r); return r.json() });
     }
 
     /**
@@ -195,15 +187,15 @@ export class DatasetService {
             return;
         }
 
-        const dataset = await DatasetService.getOptionSelected(server);
+        const dataset:any = await DatasetService.getOptionSelected(server);
 
         if (!dataset) {
             return;
         }
 
         DatasetService.saveFile(
-            dataset.data.datasetPK.datasetId,
-            dataset.data.datasetImpl
+            dataset.datasetPK.datasetId,
+            dataset.datasetImpl
         );
     }
 
@@ -226,8 +218,8 @@ export class DatasetService {
         datasets.map(async (item: any) => {
             const dataset = await item;
             DatasetService.saveFile(
-                dataset.data.datasetPK.datasetId,
-                dataset.data.datasetImpl
+                dataset.datasetPK.datasetId,
+                dataset.datasetImpl
             );
         });
     }
@@ -320,8 +312,7 @@ export class DatasetService {
         } else {
             datasetId = dataset.label;
 
-            const datasetOld = await DatasetService.getDataset(server, datasetId);
-            datasetStructure = datasetOld.data;
+            datasetStructure = await DatasetService.getDataset(server, datasetId);
 
             description = await window.showInputBox({
                 prompt: "Qual a descrição do dataset?",
@@ -351,10 +342,12 @@ export class DatasetService {
             result = await DatasetService.updateDataset(server, datasetStructure);
         }
 
-        if (result.data.content === 'OK') {
+        console.log(result);
+
+        if (result.content === 'OK') {
             window.showInformationMessage("Dataset " + datasetId + " exportado com sucesso!");
         } else {
-            window.showInformationMessage("Falha ao exportar o dataset " + datasetId + "!");
+            window.showInformationMessage("Falha ao exportar o dataset " + datasetId + "!\n" + result.message.message);
         }
     }
 
