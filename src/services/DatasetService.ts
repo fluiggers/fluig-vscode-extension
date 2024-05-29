@@ -10,10 +10,18 @@ import * as soap from 'soap';
 
 const basePath = "/ecm/api/rest/ecm/dataset/";
 
+const headers = {
+    "Accept": "application/json",
+    "Content-Type": "application/json",
+}
+
 export class DatasetService {
-    private static getBasePath(server: ServerDTO, action: string): string {
-        const host = UtilsService.getHost(server);
-        return `${host}${basePath}${action}?username=${encodeURIComponent(server.username)}&password=${encodeURIComponent(server.password)}`;
+    private static getBasePath(server: ServerDTO, action: string): URL {
+        const url = new URL(`${UtilsService.getHost(server)}${basePath}${action}`);
+        url.searchParams.append("username", server.username);
+        url.searchParams.append("password", server.password);
+
+        return url;
     }
 
     /**
@@ -48,8 +56,10 @@ export class DatasetService {
      * Retorna as informações e estrutura de um dataset específico
      */
     public static async getDataset(server: ServerDTO, datasetId: string):Promise<any> {
-        const endpoint = DatasetService.getBasePath(server, "loadDataset") + "&datasetId=" + encodeURIComponent(datasetId);
-        return await fetch(endpoint, { headers: { "Accept": "application/json" } }).then(r => r.json());
+        const url = DatasetService.getBasePath(server, "loadDataset");
+        url.searchParams.append("datasetId", datasetId);
+
+        return await fetch(url, { headers }).then(r => r.json());
     }
 
     public static async getResultDataset(server: ServerDTO, datasetId: string, fields: string[], constraints: [], order: string[]) {
@@ -105,15 +115,10 @@ export class DatasetService {
      * Exportar novo dataset
      */
     public static async createDataset(server: ServerDTO, dataset: DatasetStructureDTO) {
-        const uri = DatasetService.getBasePath(server, "createDataset");
-
         return await fetch(
-            uri,
+            DatasetService.getBasePath(server, "createDataset"),
             {
-                headers: {
-                    "Accept": "application/json",
-                    "Content-Type": "application/json",
-                },
+                headers,
                 method: "POST",
                 body: JSON.stringify(dataset),
             }
@@ -124,15 +129,13 @@ export class DatasetService {
      * Exportar dataset existente
      */
     public static async updateDataset(server: ServerDTO, dataset: DatasetStructureDTO) {
-        const uri = DatasetService.getBasePath(server, "editDataset") + "&confirmnewstructure=false";
+        const url = DatasetService.getBasePath(server, "editDataset");
+        url.searchParams.append("confirmnewstructure", "false");
 
         return await fetch(
-            uri,
+            url,
             {
-                headers: {
-                    "Accept": "application/json",
-                    "Content-Type": "application/json",
-                },
+                headers,
                 method: "POST",
                 body: JSON.stringify(dataset),
             }

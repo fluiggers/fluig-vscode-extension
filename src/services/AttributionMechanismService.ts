@@ -8,25 +8,25 @@ import { readFileSync } from 'fs';
 
 const basePath = "/ecm/api/rest/ecm/mechanism/";
 
+const headers = {
+    "Accept": "application/json",
+    "Content-Type": "application/json",
+};
+
 export class AttributionMechanismService {
-    private static getBasePath(server: ServerDTO, action: string): string {
-        const host = UtilsService.getHost(server);
-        return `${host}${basePath}${action}?username=${encodeURIComponent(server.username)}&password=${encodeURIComponent(server.password)}`;
+    private static getBasePath(server: ServerDTO, action: string): URL {
+        const url = new URL(`${UtilsService.getHost(server)}${basePath}${action}`);
+        url.searchParams.append("username", server.username);
+        url.searchParams.append("password", server.password);
+
+        return url;
     }
 
     private static async list(server: ServerDTO): Promise<AttributionMechanismDTO[]> {
-        const endpoint = AttributionMechanismService.getBasePath(server, "getCustomAttributionMechanismList");
+        const url = AttributionMechanismService.getBasePath(server, "getCustomAttributionMechanismList");
 
         try {
-            const response:any = await fetch(
-                endpoint,
-                {
-                    headers: {
-                        "Accept": "application/json",
-                        "Content-Type": "application/json",
-                    }
-                }
-            ).then(r => r.json());
+            const response:any = await fetch(url, { headers }).then(r => r.json());
 
             if (response.message) {
                 window.showErrorMessage(response.message.message);
@@ -42,16 +42,11 @@ export class AttributionMechanismService {
     }
 
     private static async create(server: ServerDTO, mechanism: AttributionMechanismDTO) {
-        const endpoint = AttributionMechanismService.getBasePath(server, "createAttributionMechanism");
-
         try {
             return await fetch(
-                endpoint,
+                AttributionMechanismService.getBasePath(server, "createAttributionMechanism"),
                 {
-                    headers: {
-                        "Accept": "application/json",
-                        "Content-Type": "application/json",
-                    },
+                    headers,
                     method: "POST",
                     body: JSON.stringify(mechanism),
                 }
@@ -66,16 +61,11 @@ export class AttributionMechanismService {
     }
 
     private static async update(server: ServerDTO, mechanism: AttributionMechanismDTO) {
-        const endpoint = AttributionMechanismService.getBasePath(server, "updateAttributionMechanism");
-
         try {
             return await fetch(
-                endpoint,
+                AttributionMechanismService.getBasePath(server, "updateAttributionMechanism"),
                 {
-                    headers: {
-                        "Accept": "application/json",
-                        "Content-Type": "application/json",
-                    },
+                    headers,
                     method: "POST",
                     body: JSON.stringify(mechanism),
                 }
@@ -90,16 +80,14 @@ export class AttributionMechanismService {
     }
 
     private static async delete(server: ServerDTO, mechanismId: string) {
-        const endpoint = AttributionMechanismService.getBasePath(server, "deleteAttributionMechanism") + `&mechanismId=${mechanismId}`;
+        const url = AttributionMechanismService.getBasePath(server, "deleteAttributionMechanism");
+        url.searchParams.append("mechanismId", mechanismId);
 
         try {
             return await fetch(
-                endpoint,
+                url,
                 {
-                    headers: {
-                        "Accept": "application/json",
-                        "Content-Type": "application/json",
-                    },
+                    headers,
                     method: "DELETE",
                 }
             ).then(r => r.json());

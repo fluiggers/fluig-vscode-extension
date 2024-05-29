@@ -9,20 +9,21 @@ import { readFileSync } from "fs";
 const basePath = "/ecm/api/rest/ecm/globalevent/";
 
 export class GlobalEventService {
-    private static getBasePath(server: ServerDTO, action: string): string {
-        const host = UtilsService.getHost(server);
-        return `${host}${basePath}${action}?username=${encodeURIComponent(server.username)}&password=${encodeURIComponent(server.password)}`;
+    private static getBasePath(server: ServerDTO, action: string): URL {
+        const url = new URL(`${UtilsService.getHost(server)}${basePath}${action}`);
+        url.searchParams.append("username", server.username);
+        url.searchParams.append("password", server.password);
+
+        return url;
     }
 
     /**
      * Retorna uma lista com todos os eventos globais
      */
     private static async getEventList(server: ServerDTO): Promise<GlobalEventDTO[]> {
-        const endpoint = GlobalEventService.getBasePath(server, "getEventList");
-
         try {
             const response:any = await fetch(
-                endpoint,
+                GlobalEventService.getBasePath(server, "getEventList"),
                 { headers: { "Accept": "application/json" } }
             ).then(r => r.json());
 
@@ -50,7 +51,10 @@ export class GlobalEventService {
         };
 
         try {
-            return await fetch(GlobalEventService.getBasePath(server, "saveEventList"), requestOptions).then(r => r.json());
+            return await fetch(
+                GlobalEventService.getBasePath(server, "saveEventList"),
+                requestOptions
+            ).then(r => r.json());
         } catch (error) {
             window.showErrorMessage("Erro: " + error);
         }
@@ -201,11 +205,13 @@ export class GlobalEventService {
             return;
         }
 
-        const endpoint = GlobalEventService.getBasePath(server, "deleteGlobalEvent");
+        const url = GlobalEventService.getBasePath(server, "deleteGlobalEvent");
 
         eventList.forEach(async event => {
+            url.searchParams.set("eventName", event.globalEventPK.eventId);
+
             const result:any = await fetch(
-                endpoint + `&eventName=${event.globalEventPK.eventId}`,
+                url,
                 { method: "DELETE",  headers: { "Accept": "application/json" } }
             ).then(r => r.json());
 

@@ -7,12 +7,12 @@ export class UserService {
      * Obter informações do usuário
      */
     public static getUser(server: ServerDTO): Promise<any> {
-        const uri: string = UtilsService.getHost(server)
-            + "/portal/api/rest/wcmservice/rest/user/findUserByLogin"
-            + "?username=" + encodeURIComponent(server.username)
-            + "&password=" + encodeURIComponent(server.password)
-            + "&login=" + encodeURIComponent(server.username);
+        const url = new URL(UtilsService.getHost(server) + "/portal/api/rest/wcmservice/rest/user/findUserByLogin");
 
-        return fetch(uri).then(r => r.json());
+        url.searchParams.append("username", server.username);
+        url.searchParams.append("password", server.password);
+        url.searchParams.append("login", server.username);
+
+        return fetch(url).then(r => r.json());
     }
 }
