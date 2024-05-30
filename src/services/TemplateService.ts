@@ -21,7 +21,10 @@ export class TemplateService {
      */
     static getTemplatesNameFromPath(templatesUri: Uri): string[] {
         return globSync(Uri.joinPath(templatesUri, '*.txt').path)
-            .map(filename => basename(filename, '.txt'));
+            .map(filename => basename(filename, ".txt"))
+            .sort((a, b) => a.localeCompare(b))
+        ;
+        // return globSync(Uri.joinPath(templatesUri, '*.txt').path).map(filename => basename(filename, '.txt'));
     }
 
     /**
