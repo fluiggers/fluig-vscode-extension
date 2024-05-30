@@ -6,7 +6,7 @@ import { DatasetDTO } from "../models/DatasetDTO";
 import { DatasetStructureDTO } from "../models/DatasetStructureDTO";
 import { UtilsService } from "./UtilsService";
 import { readFileSync } from "fs";
-import * as soap from 'soap';
+import { createClientAsync } from 'soap';
 
 const basePath = "/ecm/api/rest/ecm/dataset/";
 
@@ -16,14 +16,6 @@ const headers = {
 }
 
 export class DatasetService {
-    private static getBasePath(server: ServerDTO, action: string): URL {
-        const url = new URL(`${UtilsService.getHost(server)}${basePath}${action}`);
-        url.searchParams.append("username", server.username);
-        url.searchParams.append("password", server.password);
-
-        return url;
-    }
-
     /**
      * Retorna uma lista com todos os datasets do servidor
      */
@@ -36,7 +28,7 @@ export class DatasetService {
             password: server.password
         };
 
-        return soap.createClientAsync(uri)
+        return createClientAsync(uri)
             .then((client) => {
                 return client.findAllFormulariesDatasetsAsync(params);
             }).then((response) => {
@@ -56,10 +48,10 @@ export class DatasetService {
      * Retorna as informações e estrutura de um dataset específico
      */
     public static async getDataset(server: ServerDTO, datasetId: string):Promise<any> {
-        const url = DatasetService.getBasePath(server, "loadDataset");
-        url.searchParams.append("datasetId", datasetId);
-
-        return await fetch(url, { headers }).then(r => r.json());
+        return await fetch(
+            UtilsService.getRestUrl(server, basePath, "loadDataset", { "datasetId": datasetId }),
+            { headers }
+        ).then(r => r.json());
     }
 
     public static async getResultDataset(server: ServerDTO, datasetId: string, fields: string[], constraints: [], order: string[]) {
@@ -75,7 +67,7 @@ export class DatasetService {
             order: {item: order}
         };
 
-        const client = await soap.createClientAsync(uri, { handleNilAsNull: true, disableCache: true });
+        const client = await createClientAsync(uri, { handleNilAsNull: true, disableCache: true });
 
         const dataset = await client.getDatasetAsync(params).then((response: any) => response[0].dataset);
         const columns = Array.isArray(dataset.columns) ? dataset.columns : [dataset.columns];
@@ -116,7 +108,7 @@ export class DatasetService {
      */
     public static async createDataset(server: ServerDTO, dataset: DatasetStructureDTO) {
         return await fetch(
-            DatasetService.getBasePath(server, "createDataset"),
+            UtilsService.getRestUrl(server, basePath, "createDataset"),
             {
                 headers,
                 method: "POST",
@@ -129,11 +121,8 @@ export class DatasetService {
      * Exportar dataset existente
      */
     public static async updateDataset(server: ServerDTO, dataset: DatasetStructureDTO) {
-        const url = DatasetService.getBasePath(server, "editDataset");
-        url.searchParams.append("confirmnewstructure", "false");
-
         return await fetch(
-            url,
+            UtilsService.getRestUrl(server, basePath, "editDataset", { "confirmnewstructure": "false" }),
             {
                 headers,
                 method: "POST",

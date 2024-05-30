@@ -7,6 +7,7 @@ import { Server } from "../models/Server";
 import { UserService } from './UserService';
 
 const SERVER_CONFIG_VERSION = '1.0.0';
+
 export class ServerService {
     private static PATH = Uri.joinPath(UtilsService.getWorkspaceUri(), '.vscode').fsPath;
     private static FILE_SERVER_CONFIG = Uri.joinPath(UtilsService.getWorkspaceUri(), '.vscode', 'servers.json').fsPath;
@@ -30,7 +31,7 @@ export class ServerService {
     }
 
     /**
-     * Remover um servidor
+     * Remove um servidor
      */
     public static delete(id: string) {
         const serverConfig = ServerService.getServerConfig();

@@ -14,16 +14,8 @@ const headers = {
 };
 
 export class AttributionMechanismService {
-    private static getBasePath(server: ServerDTO, action: string): URL {
-        const url = new URL(`${UtilsService.getHost(server)}${basePath}${action}`);
-        url.searchParams.append("username", server.username);
-        url.searchParams.append("password", server.password);
-
-        return url;
-    }
-
     private static async list(server: ServerDTO): Promise<AttributionMechanismDTO[]> {
-        const url = AttributionMechanismService.getBasePath(server, "getCustomAttributionMechanismList");
+        const url = UtilsService.getRestUrl(server, basePath, "getCustomAttributionMechanismList");
 
         try {
             const response:any = await fetch(url, { headers }).then(r => r.json());
@@ -44,7 +36,7 @@ export class AttributionMechanismService {
     private static async create(server: ServerDTO, mechanism: AttributionMechanismDTO) {
         try {
             return await fetch(
-                AttributionMechanismService.getBasePath(server, "createAttributionMechanism"),
+                UtilsService.getRestUrl(server, basePath, "createAttributionMechanism"),
                 {
                     headers,
                     method: "POST",
@@ -63,7 +55,7 @@ export class AttributionMechanismService {
     private static async update(server: ServerDTO, mechanism: AttributionMechanismDTO) {
         try {
             return await fetch(
-                AttributionMechanismService.getBasePath(server, "updateAttributionMechanism"),
+                UtilsService.getRestUrl(server, basePath, "updateAttributionMechanism"),
                 {
                     headers,
                     method: "POST",
@@ -80,8 +72,7 @@ export class AttributionMechanismService {
     }
 
     private static async delete(server: ServerDTO, mechanismId: string) {
-        const url = AttributionMechanismService.getBasePath(server, "deleteAttributionMechanism");
-        url.searchParams.append("mechanismId", mechanismId);
+        const url = UtilsService.getRestUrl(server, basePath, "deleteAttributionMechanism", { "mechanismId": mechanismId });
 
         try {
             return await fetch(

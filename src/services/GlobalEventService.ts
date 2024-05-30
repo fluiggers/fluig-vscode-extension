@@ -9,21 +9,13 @@ import { readFileSync } from "fs";
 const basePath = "/ecm/api/rest/ecm/globalevent/";
 
 export class GlobalEventService {
-    private static getBasePath(server: ServerDTO, action: string): URL {
-        const url = new URL(`${UtilsService.getHost(server)}${basePath}${action}`);
-        url.searchParams.append("username", server.username);
-        url.searchParams.append("password", server.password);
-
-        return url;
-    }
-
     /**
      * Retorna uma lista com todos os eventos globais
      */
     private static async getEventList(server: ServerDTO): Promise<GlobalEventDTO[]> {
         try {
             const response:any = await fetch(
-                GlobalEventService.getBasePath(server, "getEventList"),
+                UtilsService.getRestUrl(server, basePath, "getEventList"),
                 { headers: { "Accept": "application/json" } }
             ).then(r => r.json());
 
@@ -52,7 +44,7 @@ export class GlobalEventService {
 
         try {
             return await fetch(
-                GlobalEventService.getBasePath(server, "saveEventList"),
+                UtilsService.getRestUrl(server, basePath, "saveEventList"),
                 requestOptions
             ).then(r => r.json());
         } catch (error) {
@@ -205,7 +197,7 @@ export class GlobalEventService {
             return;
         }
 
-        const url = GlobalEventService.getBasePath(server, "deleteGlobalEvent");
+        const url = UtilsService.getRestUrl(server, basePath, "deleteGlobalEvent");
 
         eventList.forEach(async event => {
             url.searchParams.set("eventName", event.globalEventPK.eventId);

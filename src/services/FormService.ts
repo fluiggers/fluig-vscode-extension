@@ -1,17 +1,16 @@
-import * as vscode from "vscode";
-import {Uri, window, workspace} from "vscode";
-import {ServerDTO} from "../models/ServerDTO";
-import * as soap from 'soap';
-import {ServerService} from "./ServerService";
-import {DocumentDTO} from "../models/DocumentDTO";
-import {CustomizationEventsDTO} from "../models/CustomizationEventsDTO";
-import {UtilsService} from "./UtilsService";
-import {glob} from "glob";
-import {readFileSync} from "fs";
-import {basename, parse} from "path";
-import {FormDTO} from "../models/FormDTO";
-import {AttachmentDTO} from "../models/AttachmentDTO";
-import {GlobalStorageService} from "./GlobalStorageService";
+import { ExtensionContext, Uri, window, workspace } from "vscode";
+import { ServerDTO } from "../models/ServerDTO";
+import { createClientAsync } from 'soap';
+import { ServerService } from "./ServerService";
+import { DocumentDTO } from "../models/DocumentDTO";
+import { CustomizationEventsDTO } from "../models/CustomizationEventsDTO";
+import { UtilsService } from "./UtilsService";
+import { glob } from "glob";
+import { readFileSync } from "fs";
+import { basename, parse } from "path";
+import { FormDTO } from "../models/FormDTO";
+import { AttachmentDTO } from "../models/AttachmentDTO";
+import { GlobalStorageService } from "./GlobalStorageService";
 
 export class FormService {
 
@@ -30,7 +29,7 @@ export class FormService {
             colleagueId: server.userCode
         };
 
-        return soap.createClientAsync(FormService.getUri(server))
+        return createClientAsync(FormService.getUri(server))
             .then((client) => {
                 return client.getCardIndexesWithoutApproverAsync(params);
             }).then((response) => {
@@ -50,7 +49,7 @@ export class FormService {
             colleagueId: server.userCode
         };
 
-        return soap.createClientAsync(FormService.getUri(server))
+        return createClientAsync(FormService.getUri(server))
             .then((client) => {
                 return client.getAttachmentsListAsync(params);
             }).then((response) => {
@@ -78,7 +77,7 @@ export class FormService {
             nomeArquivo: fileName
         };
 
-        return soap.createClientAsync(FormService.getUri(server))
+        return createClientAsync(FormService.getUri(server))
             .then((client) => {
                 return client.getCardIndexContentAsync(params);
             }).then((response) => {
@@ -97,7 +96,7 @@ export class FormService {
             documentId: documentId
         };
 
-        return soap.createClientAsync(FormService.getUri(server))
+        return createClientAsync(FormService.getUri(server))
             .then((client) => {
                 return client.getCustomizationEventsAsync(params);
             }).then((response) => {
@@ -248,7 +247,7 @@ export class FormService {
         window.showInformationMessage("Os formulários foram importados!");
     }
 
-    public static async export(context: vscode.ExtensionContext, fileUri: Uri) {
+    public static async export(context: ExtensionContext, fileUri: Uri) {
         const server = await ServerService.getSelect();
 
         if (!server) {
@@ -302,7 +301,7 @@ export class FormService {
         }
 
         try {
-            const client = await soap.createClientAsync(FormService.getUri(server));
+            const client = await createClientAsync(FormService.getUri(server));
             const response = selectedForm == "novo"
                 ? await client.createSimpleCardIndexWithDatasetPersisteTypeAsync(params)
                 : await client.updateSimpleCardIndexWithDatasetAndGeneralInfoAsync(params)
@@ -319,7 +318,7 @@ export class FormService {
         }
     }
 
-    private static async getCreateFormParams(context: vscode.ExtensionContext, server: ServerDTO, formName: string): Promise<FormDTO|null> {
+    private static async getCreateFormParams(context: ExtensionContext, server: ServerDTO, formName: string): Promise<FormDTO|null> {
         const newFormName = await window.showInputBox({
             prompt: "Qual o nome do Formulário?",
             value: formName

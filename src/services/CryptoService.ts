@@ -22,11 +22,11 @@ export class CryptoService {
     }
 
     public static decrypt(encrypted: string): string {
-        const data = JSON.parse(Buffer.from(encrypted, "base64").toString("utf-8"));
+        const data = JSON.parse(Buffer.from(encrypted, "base64").toString("utf8"));
         const secretKey = scryptSync(env.machineId, Buffer.from(data.salt, "hex"), keyLength);
         const decipher = createDecipheriv(algorithm, secretKey, Buffer.from(data.iv, "hex"));
         const decrypted = decipher.update(Buffer.from(data.text, "hex"));
 
-        return Buffer.concat([decrypted, decipher.final()]).toString("utf-8");
+        return Buffer.concat([decrypted, decipher.final()]).toString("utf8");
     }
 }
