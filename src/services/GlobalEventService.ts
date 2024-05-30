@@ -197,6 +197,11 @@ export class GlobalEventService {
             return;
         }
 
+        // Validar senha antes de deletar
+        if (server.confirmExporting && !(await UtilsService.confirmPassword(server))) {
+            return;
+        }
+
         const url = UtilsService.getRestUrl(server, basePath, "deleteGlobalEvent");
 
         eventList.forEach(async event => {
