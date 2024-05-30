@@ -2,6 +2,28 @@
 
 Lista de atualizações da Extensão.
 
+## 1.27.0
+
+### Importante
+
+A partir desta versão a Extensão não mais atualizará automaticamente a criptografia das senhas salvas
+na configuração de servidores da versão 0.0.1 para a versão 1.0.0.
+
+Caso a extensão verifique que está utilizando a versão antiga da configuração de servidores será solicitado
+que redigite todas as senhas dos servidores salvos. Se houver alguma senha com erro simplesmente pulará para
+o próximo servidor.
+
+### Alterações
+
+- Remove a atualização automática das senhas dos servidores da versão 0.0.1 para a mais atual;
+- Atualiza todas as dependências da extensão;
+- Adiciona todos os Eventos Globais (todos que estão no plugin Fluig do Eclipse);
+- Adiciona Exportar Evento Global;
+- Adiciona Excluir Evento Global;
+- Adiciona Importar/Exportar Mecanismo de Atribuição Customizado;
+- Ao Criar/Exportar algum evento o menu de opções os exibe em ordem alfabética;
+- Otimiza o processo de criação de Widget;
+
 ## 1.26.0
 
 Atualiza a criptografia utilizada para salvar as senhas dos servidores, garantindo maior
@@ -79,7 +101,6 @@ Permite indicar o campo descritor ao exportar formulário.
 
 Ainda não permite selecionar um HTML principal para o formulário, sendo obrigatório que o nome do arquivo HTML principal seja igual ao nome
 do diretório do formulário.
-
 
 ## 1.20.1
 
