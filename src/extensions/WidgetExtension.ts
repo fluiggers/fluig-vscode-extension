@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
-import {UtilsService} from "../services/UtilsService";
-import {readFileSync} from "fs";
-import {TemplateService} from "../services/TemplateService";
+import { UtilsService } from "../services/UtilsService";
+import { readFileSync } from "fs";
+import { TemplateService } from "../services/TemplateService";
 
 export class WidgetExtension {
 
@@ -12,12 +12,11 @@ export class WidgetExtension {
         ));
     }
 
-
     /**
      * Create Widget
      */
     private static async createWidget() {
-        let widgetName: string = await vscode.window.showInputBox({
+        const widgetName: string = await vscode.window.showInputBox({
             prompt: "Qual o nome do Widget (sem espaços e sem caracteres especiais)?",
             placeHolder: "NomeWidget"
         }) || "";
@@ -25,14 +24,8 @@ export class WidgetExtension {
         if (!widgetName) {
             return;
         }
-        const properties = ["", "_en_US", "_es", "_pt_BR"];
+
         const widgetFileName = "view.ftl";
-        const widgetUri = vscode.Uri.joinPath(
-            UtilsService.getWorkspaceUri(),
-            "wcm",
-            "widget",
-            widgetName
-        );
 
         const widgetUriFile = vscode.Uri.joinPath(
             UtilsService.getWorkspaceUri(),
@@ -53,58 +46,49 @@ export class WidgetExtension {
 
         }
 
-        await vscode.workspace.fs.copy(
-            vscode.Uri.joinPath(TemplateService.templatesUri, 'widget'),
-            widgetUri,
-            {overwrite: false}
+        const propertiesLanguages = ["en_US", "es", "pt_BR"];
+
+        const widgetUri = vscode.Uri.joinPath(
+            UtilsService.getWorkspaceUri(),
+            "wcm",
+            "widget",
+            widgetName
         );
 
-        await vscode.workspace.fs.copy(
-            vscode.Uri.joinPath(widgetUri, '/src/main/resources/widgetname.properties'),
-            vscode.Uri.joinPath(widgetUri,"src","main", "resources",`${widgetName}${properties[0]}.properties`),
-            {overwrite: false}
-        );
-        await vscode.workspace.fs.copy(
-            vscode.Uri.joinPath(widgetUri, '/src/main/resources/widgetname.properties'),
-            vscode.Uri.joinPath(widgetUri,"src","main", "resources",`${widgetName}${properties[1]}.properties`),
-            {overwrite: false}
-        );
-        await vscode.workspace.fs.copy(
-            vscode.Uri.joinPath(widgetUri, '/src/main/resources/widgetname.properties'),
-            vscode.Uri.joinPath(widgetUri,"src","main", "resources",`${widgetName}${properties[2]}.properties`),
-            {overwrite: false}
-        );
-        await vscode.workspace.fs.rename(
-            vscode.Uri.joinPath(widgetUri, '/src/main/resources/widgetname.properties'),
-            vscode.Uri.joinPath(widgetUri,"src","main", "resources",`${widgetName}${properties[3]}.properties`),
-            {overwrite: false}
-        );
-        await vscode.workspace.fs.rename(
-            vscode.Uri.joinPath(widgetUri, '/src/main/webapp/resources/css/widgetname.css'),
-            vscode.Uri.joinPath(widgetUri, '/src/main/webapp/resources/css/', `${widgetName}.css`),
-            {overwrite: false}
-        );
-        await vscode.workspace.fs.rename(
-            vscode.Uri.joinPath(widgetUri, '/src/main/webapp/resources/js/widgetname.js'),
-            vscode.Uri.joinPath(widgetUri, '/src/main/webapp/resources/js/', `${widgetName}.js`),
-            {overwrite: false}
+        // Copia todo o template da Widget
+        await vscode.workspace.fs.copy(vscode.Uri.joinPath(TemplateService.templatesUri, 'widget'), widgetUri);
+
+        const baseResourcesUri = vscode.Uri.joinPath(widgetUri, "src", "main", "resources");
+        const baseWebAppUri = vscode.Uri.joinPath(widgetUri, "src", "main", "webapp");
+        const basePropertiesUri = vscode.Uri.joinPath(baseResourcesUri, "widgetname.properties");
+
+        const promises = propertiesLanguages.map(lang => vscode.workspace.fs.copy(
+            basePropertiesUri,
+            vscode.Uri.joinPath(baseResourcesUri, `${widgetName}_${lang}.properties`)
+        ));
+
+        promises.push(
+            vscode.workspace.fs.rename(
+                vscode.Uri.joinPath(baseWebAppUri, "resources", "css", "widgetname.css"),
+                vscode.Uri.joinPath(baseWebAppUri, "resources", "css", `${widgetName}.css`)
+            ),
+            vscode.workspace.fs.rename(
+                vscode.Uri.joinPath(baseWebAppUri, "resources", "js", "widgetname.js"),
+                vscode.Uri.joinPath(baseWebAppUri, "resources", "js", `${widgetName}.js`)
+            ),
+            vscode.workspace.fs.writeFile(
+                vscode.Uri.joinPath(widgetUri, '/src/main/webapp/WEB-INF/jboss-web.xml'),
+                Buffer.from(readFileSync(vscode.Uri.joinPath(baseWebAppUri, "WEB-INF", "jboss-web.xml").fsPath, 'utf8').replace(/widgetname/g, widgetName), 'utf8')
+            ),
+            vscode.workspace.fs.writeFile(
+                vscode.Uri.joinPath(widgetUri, '/src/main/resources/application.info'),
+                Buffer.from(readFileSync(vscode.Uri.joinPath(baseResourcesUri, "application.info").fsPath, 'utf8').replace(/widgetname/g, widgetName), 'utf8')
+            )
         );
 
-        const jbossweb = readFileSync(vscode.Uri.joinPath(TemplateService.templatesUri, 'widget/src/main/webapp/WEB-INF/jboss-web.xml').fsPath, 'utf8').replace(new RegExp('widgetname', 'g'), widgetName);
-        const bufferJbossweb = Buffer.from(jbossweb, 'utf8');
+        await Promise.all(promises);
 
-        await vscode.workspace.fs.writeFile(
-            vscode.Uri.joinPath(widgetUri, '/src/main/webapp/WEB-INF/jboss-web.xml'),
-            bufferJbossweb
-        );
-
-        const application = readFileSync(vscode.Uri.joinPath(TemplateService.templatesUri, 'widget/src/main/resources/application.info').fsPath, 'utf8').replace(new RegExp('widgetname', 'g'), widgetName);
-        const bufferApplication = Buffer.from(application, 'utf8');
-
-        await vscode.workspace.fs.writeFile(
-            vscode.Uri.joinPath(widgetUri, '/src/main/resources/application.info'),
-            bufferApplication
-        );
+        await vscode.workspace.fs.rename(basePropertiesUri, vscode.Uri.joinPath(baseResourcesUri, `${widgetName}.properties`));
 
         vscode.window.showTextDocument(widgetUriFile);
     }

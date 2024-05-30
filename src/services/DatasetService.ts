@@ -1,6 +1,4 @@
-import axios from "axios";
 import { ServerDTO } from "../models/ServerDTO";
-import * as https from 'https';
 import { ServerService } from "./ServerService";
 import { window, workspace, Uri } from "vscode";
 import { basename } from "path";
@@ -8,10 +6,16 @@ import { DatasetDTO } from "../models/DatasetDTO";
 import { DatasetStructureDTO } from "../models/DatasetStructureDTO";
 import { UtilsService } from "./UtilsService";
 import { readFileSync } from "fs";
-import * as soap from 'soap';
+import { createClientAsync } from 'soap';
+
+const basePath = "/ecm/api/rest/ecm/dataset/";
+
+const headers = {
+    "Accept": "application/json",
+    "Content-Type": "application/json",
+}
 
 export class DatasetService {
-
     /**
      * Retorna uma lista com todos os datasets do servidor
      */
@@ -24,7 +28,7 @@ export class DatasetService {
             password: server.password
         };
 
-        return soap.createClientAsync(uri)
+        return createClientAsync(uri)
             .then((client) => {
                 return client.findAllFormulariesDatasetsAsync(params);
             }).then((response) => {
@@ -43,21 +47,11 @@ export class DatasetService {
     /**
      * Retorna as informações e estrutura de um dataset específico
      */
-    public static async getDataset(server: ServerDTO, datasetId: string) {
-        const uri = UtilsService.getHost(server)
-            + "/ecm/api/rest/ecm/dataset/loadDataset"
-            + "?username=" +  encodeURIComponent(server.username)
-            + "&password=" +  encodeURIComponent(server.password)
-            + "&datasetId=" + encodeURIComponent(datasetId)
-        ;
-
-        const agent = new https.Agent({
-            rejectUnauthorized: false
-        });
-
-        return await axios.get(uri, {
-            httpsAgent: agent
-        });
+    public static async getDataset(server: ServerDTO, datasetId: string):Promise<any> {
+        return await fetch(
+            UtilsService.getRestUrl(server, basePath, "loadDataset", { "datasetId": datasetId }),
+            { headers }
+        ).then(r => r.json());
     }
 
     public static async getResultDataset(server: ServerDTO, datasetId: string, fields: string[], constraints: [], order: string[]) {
@@ -73,7 +67,7 @@ export class DatasetService {
             order: {item: order}
         };
 
-        const client = await soap.createClientAsync(uri, { handleNilAsNull: true, disableCache: true });
+        const client = await createClientAsync(uri, { handleNilAsNull: true, disableCache: true });
 
         const dataset = await client.getDatasetAsync(params).then((response: any) => response[0].dataset);
         const columns = Array.isArray(dataset.columns) ? dataset.columns : [dataset.columns];
@@ -113,39 +107,28 @@ export class DatasetService {
      * Exportar novo dataset
      */
     public static async createDataset(server: ServerDTO, dataset: DatasetStructureDTO) {
-        const uri = UtilsService.getHost(server)
-            + "/ecm/api/rest/ecm/dataset/createDataset"
-            + "?username=" + encodeURIComponent(server.username)
-            + "&password=" + encodeURIComponent(server.password)
-        ;
-
-        const agent = new https.Agent({
-            rejectUnauthorized: false
-        });
-
-        return await axios.post(uri, dataset, {
-            httpsAgent: agent
-        });
+        return await fetch(
+            UtilsService.getRestUrl(server, basePath, "createDataset"),
+            {
+                headers,
+                method: "POST",
+                body: JSON.stringify(dataset),
+            }
+        ).then(r => r.json());
     }
 
     /**
      * Exportar dataset existente
      */
     public static async updateDataset(server: ServerDTO, dataset: DatasetStructureDTO) {
-        const uri = UtilsService.getHost(server)
-            + "/ecm/api/rest/ecm/dataset/editDataset"
-            + "?username=" + encodeURIComponent(server.username)
-            + "&password=" + encodeURIComponent(server.password)
-            + "&confirmnewstructure=false"
-        ;
-
-        const agent = new https.Agent({
-            rejectUnauthorized: false
-        });
-
-        return await axios.post(uri, dataset, {
-            httpsAgent: agent
-        });
+        return await fetch(
+            UtilsService.getRestUrl(server, basePath, "editDataset", { "confirmnewstructure": "false" }),
+            {
+                headers,
+                method: "POST",
+                body: JSON.stringify(dataset),
+            }
+        ).then(r => r.json());
     }
 
     /**
@@ -195,15 +178,15 @@ export class DatasetService {
             return;
         }
 
-        const dataset = await DatasetService.getOptionSelected(server);
+        const dataset:any = await DatasetService.getOptionSelected(server);
 
         if (!dataset) {
             return;
         }
 
         DatasetService.saveFile(
-            dataset.data.datasetPK.datasetId,
-            dataset.data.datasetImpl
+            dataset.datasetPK.datasetId,
+            dataset.datasetImpl
         );
     }
 
@@ -226,8 +209,8 @@ export class DatasetService {
         datasets.map(async (item: any) => {
             const dataset = await item;
             DatasetService.saveFile(
-                dataset.data.datasetPK.datasetId,
-                dataset.data.datasetImpl
+                dataset.datasetPK.datasetId,
+                dataset.datasetImpl
             );
         });
     }
@@ -320,8 +303,7 @@ export class DatasetService {
         } else {
             datasetId = dataset.label;
 
-            const datasetOld = await DatasetService.getDataset(server, datasetId);
-            datasetStructure = datasetOld.data;
+            datasetStructure = await DatasetService.getDataset(server, datasetId);
 
             description = await window.showInputBox({
                 prompt: "Qual a descrição do dataset?",
@@ -351,10 +333,10 @@ export class DatasetService {
             result = await DatasetService.updateDataset(server, datasetStructure);
         }
 
-        if (result.data.content === 'OK') {
+        if (result.content === 'OK') {
             window.showInformationMessage("Dataset " + datasetId + " exportado com sucesso!");
         } else {
-            window.showInformationMessage("Falha ao exportar o dataset " + datasetId + "!");
+            window.showInformationMessage("Falha ao exportar o dataset " + datasetId + "!\n" + result.message.message);
         }
     }
 

@@ -2,7 +2,7 @@
     "name": "fluiggers-fluig-vscode-extension",
     "displayName": "Fluig - Extensão para Desenvolvimento",
     "description": "Extensão para agilizar o desenvolvimento para o TOTVS Fluig no VS Code",
-    "version": "1.26.0",
+    "version": "1.27.0",
     "publisher": "Fluiggers",
     "icon": "images/icon.png",
     "repository": {
@@ -29,7 +29,7 @@
         }
     ],
     "engines": {
-        "vscode": "^1.75.0"
+        "vscode": "^1.89.0"
     },
     "categories": [
         "Snippets",
@@ -70,8 +70,33 @@
                 "category": "Fluig"
             },
             {
+                "command": "fluiggers-fluig-vscode-extension.exportGlobalEvent",
+                "title": "Exportar Evento Global",
+                "category": "Fluig"
+            },
+            {
+                "command": "fluiggers-fluig-vscode-extension.deleteGlobalEvent",
+                "title": "Excluir Evento Global",
+                "category": "Fluig"
+            },
+            {
                 "command": "fluiggers-fluig-vscode-extension.newMechanism",
                 "title": "Novo Mecanismo Customizado",
+                "category": "Fluig"
+            },
+            {
+                "command": "fluiggers-fluig-vscode-extension.importManyMechanisms",
+                "title": "Importar Vários Mecanismos Customizados",
+                "category": "Fluig"
+            },
+            {
+                "command": "fluiggers-fluig-vscode-extension.importMechanism",
+                "title": "Importar Mecanismo Customizado",
+                "category": "Fluig"
+            },
+            {
+                "command": "fluiggers-fluig-vscode-extension.exportMechanism",
+                "title": "Exportar Mecanismo Customizado",
                 "category": "Fluig"
             },
             {
@@ -185,6 +210,14 @@
                     "when": "false"
                 },
                 {
+                    "command": "fluiggers-fluig-vscode-extension.exportGlobalEvent",
+                    "when": "false"
+                },
+                {
+                    "command": "fluiggers-fluig-vscode-extension.exportMechanism",
+                    "when": "false"
+                },
+                {
                     "command": "fluiggers-fluig-vscode-extension.exportForm",
                     "when": "false"
                 },
@@ -246,16 +279,21 @@
                     "group": "1_Fluig2Form@5"
                 },
                 {
-                    "command": "fluiggers-fluig-vscode-extension.newGlobalEvent",
+                    "command": "fluiggers-fluig-vscode-extension.exportGlobalEvent",
+                    "when": "resourcePath =~ /[\\/\\\\]events[\\/\\\\].+$/",
                     "group": "1_Fluig3GlobalEvent@1"
                 },
                 {
-                    "command": "fluiggers-fluig-vscode-extension.importManyGlobalEvent",
+                    "command": "fluiggers-fluig-vscode-extension.newGlobalEvent",
                     "group": "1_Fluig3GlobalEvent@2"
                 },
                 {
-                    "command": "fluiggers-fluig-vscode-extension.importGlobalEvent",
+                    "command": "fluiggers-fluig-vscode-extension.importManyGlobalEvent",
                     "group": "1_Fluig3GlobalEvent@3"
+                },
+                {
+                    "command": "fluiggers-fluig-vscode-extension.importGlobalEvent",
+                    "group": "1_Fluig3GlobalEvent@4"
                 },
                 {
                     "command": "fluiggers-fluig-vscode-extension.newWorkflowEvent",
@@ -263,8 +301,21 @@
                     "group": "1_Fluig4Workflow@1"
                 },
                 {
-                    "command": "fluiggers-fluig-vscode-extension.newMechanism",
+                    "command": "fluiggers-fluig-vscode-extension.exportMechanism",
+                    "when": "resourcePath =~ /[\\/\\\\]mechanisms[\\/\\\\].+$/",
                     "group": "1_Fluig4Workflow@2"
+                },
+                {
+                    "command": "fluiggers-fluig-vscode-extension.newMechanism",
+                    "group": "1_Fluig4Workflow@3"
+                },
+                {
+                    "command": "fluiggers-fluig-vscode-extension.importManyMechanisms",
+                    "group": "1_Fluig4Workflow@4"
+                },
+                {
+                    "command": "fluiggers-fluig-vscode-extension.importMechanism",
+                    "group": "1_Fluig4Workflow@5"
                 },
                 {
                     "command": "fluiggers-fluig-vscode-extension.newWidget",
@@ -324,6 +375,18 @@
                 "key": "ctrl+f9",
                 "mac": "cmd+f9",
                 "when": "editorTextFocus && resourcePath =~ /[\\/\\\\]datasets[\\/\\\\].+$/"
+            },
+            {
+                "command": "fluiggers-fluig-vscode-extension.exportMechanism",
+                "key": "ctrl+f9",
+                "mac": "cmd+f9",
+                "when": "editorTextFocus && resourcePath =~ /[\\/\\\\]mechanisms[\\/\\\\].+$/"
+            },
+            {
+                "command": "fluiggers-fluig-vscode-extension.exportGlobalEvent",
+                "key": "ctrl+f9",
+                "mac": "cmd+f9",
+                "when": "editorTextFocus && resourcePath =~ /[\\/\\\\]events[\\/\\\\].+$/"
             },
             {
                 "command": "fluiggers-fluig-vscode-extension.exportForm",
@@ -407,41 +470,39 @@
         "test": "node ./out/test/runTest.js"
     },
     "devDependencies": {
-        "@popperjs/core": "^2.11.6",
-        "@types/crypto-js": "^4.0.2",
-        "@types/glob": "^7.1.3",
-        "@types/mocha": "^8.0.4",
-        "@types/node": "^12.20.14",
-        "@types/vscode": "^1.56.0",
-        "@typescript-eslint/eslint-plugin": "^4.26.0",
-        "@typescript-eslint/parser": "^4.26.0",
-        "axios": "^0.27.0",
-        "bootstrap": "^5.2.2",
-        "crypto-js": "^4.1.1",
-        "datatables.net-bs5": "^1.12.1",
-        "datatables.net-buttons-bs5": "^2.2.3",
-        "datatables.net-fixedheader-bs5": "^3.2.4",
-        "datatables.net-plugins": "^1.11.5",
-        "datatables.net-scroller-bs5": "^2.0.7",
-        "eslint": "^7.28.0",
-        "glob": "^7.1.7",
-        "gulp": "^4.0.2",
+        "@popperjs/core": "^2.11.8",
+        "@types/glob": "^8.1.0",
+        "@types/mocha": "^10.0.6",
+        "@types/node": "^20.12.12",
+        "@types/vscode": "^1.89.0",
+        "@typescript-eslint/eslint-plugin": "^7.9.0",
+        "@typescript-eslint/parser": "^7.9.0",
+        "@vscode/test-electron": "^2.3.10",
+        "bootstrap": "^5.3.3",
+        "datatables.net-bs5": "^2.0.7",
+        "datatables.net-buttons-bs5": "^3.0.2",
+        "datatables.net-dt": "^2.0.7",
+        "datatables.net-fixedheader-bs5": "^4.0.1",
+        "datatables.net-plugins": "^2.0.7",
+        "datatables.net-scroller-bs5": "^2.4.2",
+        "eslint": "^8.57.0",
+        "glob": "^10.3.15",
+        "gulp": "^5.0.0",
         "gulp-clean-css": "^4.3.0",
-        "gulp-cli": "^2.3.0",
+        "gulp-cli": "^3.0.0",
         "gulp-concat": "^2.6.1",
         "gulp-footer": "^2.1.0",
         "gulp-uglify": "^3.0.2",
         "html5sortable": "^0.13.3",
-        "jquery": "^3.6.1",
+        "jquery": "^3.7.1",
         "jszip": "^3.10.1",
         "select2": "^4.1.0-rc.0",
         "select2-bootstrap-5-theme": "^1.3.0",
-        "soap": "^1.0.0",
-        "template-literal": "^1.0.3",
-        "ts-loader": "^8.3.0",
-        "typescript": "^4.3.2",
-        "vscode-test": "^1.5.0",
-        "webpack": "^5.38.1",
-        "webpack-cli": "^4.7.0"
+        "soap": "^1.0.3",
+        "template-literal": "^1.0.4",
+        "ts-loader": "^9.5.1",
+        "typescript": "^5.4.5",
+        "webpack": "^5.91.0",
+        "webpack-cli": "^5.1.4"
     }
 }

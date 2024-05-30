@@ -1,11 +1,12 @@
-import { QuickPickItem } from "vscode";
+import { existsSync, mkdirSync, writeFileSync, readFileSync } from 'fs';
+import { window, Uri, QuickPickItem } from "vscode";
+import { UtilsService } from "./UtilsService";
 import { ServerConfig } from "../models/ServerConfig";
 import { ServerDTO } from "../models/ServerDTO";
-import { UtilsService } from "./UtilsService";
-import { window, Uri } from "vscode";
 import { Server } from "../models/Server";
-import { CryptoService } from "./CryptoService";
-import * as fs from 'fs';
+import { UserService } from './UserService';
+
+const SERVER_CONFIG_VERSION = '1.0.0';
 
 export class ServerService {
     private static PATH = Uri.joinPath(UtilsService.getWorkspaceUri(), '.vscode').fsPath;
@@ -30,7 +31,7 @@ export class ServerService {
     }
 
     /**
-     * Remover um servidor
+     * Remove um servidor
      */
     public static delete(id: string) {
         const serverConfig = ServerService.getServerConfig();
@@ -132,7 +133,7 @@ export class ServerService {
      * Retorna o caminho do arquivo Server Config
      */
     public static getFileServerConfig(): string {
-        if (!fs.existsSync(ServerService.FILE_SERVER_CONFIG)) {
+        if (!existsSync(ServerService.FILE_SERVER_CONFIG)) {
             ServerService.createServerConfig();
         }
 
@@ -144,60 +145,87 @@ export class ServerService {
      */
     private static createServerConfig() {
         const serverConfig: ServerConfig = {
-            version: "1.0.0",
+            version: SERVER_CONFIG_VERSION,
             configurations: []
         };
 
-        if (!fs.existsSync(ServerService.PATH)) {
-            fs.mkdirSync(ServerService.PATH);
+        if (!existsSync(ServerService.PATH)) {
+            mkdirSync(ServerService.PATH);
         }
 
-        fs.writeFileSync(ServerService.FILE_SERVER_CONFIG, JSON.stringify(serverConfig, null, "\t"));
+        writeFileSync(ServerService.FILE_SERVER_CONFIG, JSON.stringify(serverConfig, null, "\t"));
     }
 
     /**
      * Criar / Alterar o arquivo de servidores
      */
     private static writeServerConfig(serverConfig: ServerConfig) {
-        fs.writeFileSync(ServerService.FILE_SERVER_CONFIG, JSON.stringify(serverConfig, null, "\t"));
+        writeFileSync(ServerService.FILE_SERVER_CONFIG, JSON.stringify(serverConfig, null, "\t"));
     }
 
     /**
      * Leitura do arquivo Server Config
      */
     public static getServerConfig(): ServerConfig {
-        if (!fs.existsSync(ServerService.FILE_SERVER_CONFIG)) {
+        if (!existsSync(ServerService.FILE_SERVER_CONFIG)) {
             ServerService.createServerConfig();
         }
 
-        const serverConfig = JSON.parse(fs.readFileSync(ServerService.FILE_SERVER_CONFIG).toString());
-
-        /**
-         * @todo Remover essa validação, e a lib crypto-js, após o período de adaptação para a nova criptogria
-         */
-        if (serverConfig.version === "0.0.1") {
-            return ServerService.updateServerConfig(serverConfig);
-        }
-
-        return serverConfig;
+        return JSON.parse(readFileSync(ServerService.FILE_SERVER_CONFIG).toString());
     }
 
-    /**
-     * @todo Remover essa função, e a lib crypto-js, após o período de adaptação para a nova criptogria
-     */
-    private static updateServerConfig(serverConfig: ServerConfig): ServerConfig {
-        serverConfig.version = "1.0.0";
+    public static async checkServerConfigVersion() {
+        let serverConfig = ServerService.getServerConfig();
 
-        serverConfig.configurations = serverConfig.configurations.map((oldServer: ServerDTO) => {
-            const server = new Server(oldServer);
-            server.password = CryptoService.decryptOld(oldServer.password);
-            return server;
-        });
+        if (serverConfig.version === SERVER_CONFIG_VERSION) {
+            return true;
+        }
 
+        if (!serverConfig.configurations.length) {
+            ServerService.createServerConfig();
+            return true;
+        }
+
+        const answer = await window.showWarningMessage(
+            "Arquivo de Configuração está Desatualizado.",
+            {
+                detail: "Para atualizar o arquivo você terá que digitar a senha de todos os servidores (aconselhável fazer backup antes).\n\nDeseja continuar?.",
+                modal: true,
+            },
+            "Sim"
+        );
+
+        if (answer !== "Sim") {
+            return false;
+        }
+
+        for (const serverDto of serverConfig.configurations) {
+            const server = new Server(serverDto);
+            server.password = (await window.showInputBox({
+                prompt: `Digite a senha do usuário ${server.username} no servidor ${server.name}`,
+                ignoreFocusOut: true,
+                password: true,
+                placeHolder: "Digite a senha",
+            })) || "";
+
+            try {
+                const response:any = await UserService.getUser(server);
+
+                if (!response.content) {
+                    window.showWarningMessage(`Erro ao salvar senha do servidor ${server.name}.`);
+                }
+
+                ServerService.update(server);
+            } catch (e) {
+                window.showErrorMessage(`Falha na conexão com o servidor ${server.name}. Erro retornado: ${e}`);
+            }
+        }
+
+        serverConfig = ServerService.getServerConfig();
+
+        serverConfig.version = SERVER_CONFIG_VERSION;
         ServerService.writeServerConfig(serverConfig);
 
-        window.showInformationMessage("Criptografia das senhas foi atualizada.");
-
-        return ServerService.getServerConfig();
+        return true;
     }
 }

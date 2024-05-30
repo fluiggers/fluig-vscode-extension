@@ -70,6 +70,10 @@ Após abrir a pasta do projeto Fluig as seguintes funcionalidades serão disponi
 - [Importar Formulário e Importar Vários Formulários](#importar-formulário)
 - [Exportar Formulário](#exportar-formulário)
 - [Importar Evento Global e Importar Vários Eventos Globais](#importar-evento-global)
+- [Exportar Evento Global](#exportar-evento-global)
+- [Excluir Evento Global](#excluir-evento-global)
+- [Importar Mecanismo de Atribuição Customizado](#importar-mecanismo-de-atribuição-customizado)
+- [Exportar Mecanismo de Atribuição Customizado](#exportar-mecanismo-de-atribuição-customizado)
 - [Snippets para HTML](#snippets-para-html)
 - [Snippets para JavaScript](#snippets-para-javascript)
 
@@ -127,19 +131,6 @@ O arquivo JavaScript contém a estrutura da função do evento selecionado.
 
 Você pode executar esse comando no __Command Palette__ ou com o menu de contexto no __File Explorer__.
 
-Eventos disponibilizados:
-
-- afterActivateUser
-- afterDeactivateUser
-- afterLogin
-- beforeActivateUser
-- beforeDeactivateUser
-- beforeLogin
-- displayCentralTasks
-- onLoginError
-- onLogout
-- onNotify
-
 ## Novo Evento de Formulário
 
 Esse comando cria um arquivo JavaScript, após selecionar o evento, no diretório `events` do
@@ -150,17 +141,6 @@ ou qualquer arquivo / diretório que esteja dentro de um formulário. També é 
 atalho __CTRL + F12__ (CMD + F12 no Mac) enquanto estiver editando algum arquivo do formulário.
 
 O arquivo JavaScript contém a estrutura da função do evento selecionado.
-
-Eventos disponibilizados:
-
-- afterProcessing
-- afterSaveNew
-- beforeProcessing
-- displayFields
-- enableFields
-- inputFields
-- setEnable
-- validateForm
 
 ## Novo Evento de Processo
 
@@ -177,30 +157,6 @@ contém a estrutura da função do evento selecionado.
 
 É possível criar uma função compartilhada para o processo selecionando a opção __Nova Função__ no
 menu de eventos. Quando o fizer será solicitado que informe o nome da função.
-
-Eventos disponibilizados:
-
-- afterCancelProcess
-- afterProcessCreate
-- afterProcessFinish
-- afterReleaseProcessVersion
-- afterReleaseVersion
-- afterStateEntry
-- afterStateLeave
-- afterTaskComplete
-- afterTaskCreate
-- afterTaskSave
-- beforeCancelProcess
-- beforeSendData
-- beforeStateEntry
-- beforeStateLeave
-- beforeTaskComplete
-- beforeTaskCreate
-- beforeTaskSave
-- calculateAgreement
-- checkComplementsPermission
-- subProcessCreated
-- validateAvailableStates
 
 ## Novo Mecanismo Customizado
 
@@ -270,6 +226,40 @@ importação (`Fluig: Importar Evento Global` ou `Fluig: Importar Vários Evento
 Após selecionar o servidor é exibido a lista de Eventos Globais do servidor para selecionar qual/quais serão
 importados.
 
+## Exportar Evento Global
+
+Para exportar um Evento Global clique com o botão direito do mouse sobre o Evento e selecione a opção `Exportar Evento Global`
+ou, enquanto edita o arquivo de evento, utilize o atalho __CTRL + F9__ (CMD + F9 no Mac).
+
+Após selecionar o servidor o evento será exportado automaticamente.
+
+## Excluir Evento Global
+
+Para excluir um Evento Global deve-se usar o __Command Pallete__ (pressionando F1) e então selecionar o comando de
+exclusão (`Fluig: Excluir Evento Global`).
+
+Selecione os eventos que serão excluídos.
+
+### CUIDADO
+
+Não é possível desfazer esa ação. Então tenha em mente que é recomendado ter um backup dos eventos no seu projeto.
+
+## Importar Mecanismo de Atribuição Customizado
+
+Para importar Mecanismo de Atribuição Customizado é necessário clicar com o botão direito do mouse em qualquer lugar do
+__File Explorer__ ou usar o __Command Pallete__ (pressionando F1) e então selecionar o comando de importação
+(`Fluig: Importar Mecanismo Customizado` ou `Fluig: Importar Vários Mecanismos Customizados`).
+
+Após selecionar o servidor é exibido a lista de Mecanismos Customizados do servidor para selecionar qual/quais serão
+importados.
+
+## Exportar Mecanismo de Atribuição Customizado
+
+Para exportar um Mecanismo de Atribuição Customizado clique com o botão direito do mouse sobre o mecanismo e selecione a
+opção `Exportar Mecanismo Customizado` ou, enquanto edita o arquivo do mecanismo, utilize o atalho __CTRL + F9__ (CMD + F9 no Mac).
+
+Após selecionar o servidor será solicitado que informe um código, nome e descrição ao mecanismo customizado.
+
 ## Snippets para HTML
 
 Snippets para criar estruturas HTML seguindo o __Fluig Style Guide__.
@@ -318,12 +308,6 @@ ser utilizado em qual dos dois ambientes.
 - __fluig-dataset-async__: Chamar Dataset de modo Assíncrono
 - __fluig-modal__: Criar modal do Fluig
 - __fluig-widget__: Criar o esqueleto de uma Widget
-
-## Todo
-
-- Criar comando Novo Layout;
-- Adicionar todos os templates de Eventos Globais;
-- Adicionar mais Snippets;
 
 ## Colaboração
 

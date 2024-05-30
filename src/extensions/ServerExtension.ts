@@ -1,9 +1,14 @@
 import * as vscode from 'vscode';
 import {DatasetItem, ServerItem, ServerItemProvider} from "../providers/ServerItemProvider";
+import { ServerService } from '../services/ServerService';
 
 export class ServerExtension {
 
-    public static activate(context: vscode.ExtensionContext): void {
+    public static async activate(context: vscode.ExtensionContext): Promise<void> {
+        if (!(await ServerService.checkServerConfigVersion())) {
+            throw "Erro na versão do arquivo de configuração.";
+        }
+
         const serverItemProvider = new ServerItemProvider(context);
         vscode.window.registerTreeDataProvider("fluiggers-fluig-vscode-extension.servers", serverItemProvider);
 

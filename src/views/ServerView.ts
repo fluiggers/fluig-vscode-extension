@@ -82,13 +82,13 @@ export class ServerView {
         server.confirmExporting = obj.confirmExporting;
         server.companyId = 0;
 
-        UserService.getUser(server).then((response) => {
-            if (!response.data.content) {
-                throw response.data?.message?.message;
+        UserService.getUser(server).then((response:any) => {
+            if (!response.content) {
+                throw response.message?.message;
             }
 
-            server.companyId = response.data.content.tenantId;
-            server.userCode = response.data.content.userCode;
+            server.companyId = response.content.tenantId;
+            server.userCode = response.content.userCode;
             ServerService.createOrUpdate(server);
 
             if (this.currentPanel) {

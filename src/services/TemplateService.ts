@@ -1,13 +1,13 @@
-import * as vscode from 'vscode';
-import { glob } from "glob";
+import { Uri } from 'vscode';
+import { globSync } from "glob";
 import { basename } from "path";
 
 export class TemplateService {
 
-    public static templatesUri: vscode.Uri;
-    public static formEventsUri: vscode.Uri;
-    public static workflowEventsUri: vscode.Uri;
-    public static globalEventsUri: vscode.Uri;
+    public static templatesUri: Uri;
+    public static formEventsUri: Uri;
+    public static workflowEventsUri: Uri;
+    public static globalEventsUri: Uri;
 
     public static formEventsNames: string[];
     public static workflowEventsNames: string[];
@@ -19,9 +19,11 @@ export class TemplateService {
      * @param templatesUri Diretório onde estão os templates
      * @returns Nome dos arquivos sem a extensão
      */
-    static getTemplatesNameFromPath(templatesUri: vscode.Uri): string[] {
-        return glob.sync(vscode.Uri.joinPath(templatesUri, '*.txt').fsPath)
-            .map(filename => basename(filename, '.txt'));
+    static getTemplatesNameFromPath(templatesUri: Uri): string[] {
+        return globSync(Uri.joinPath(templatesUri, '*.txt').path)
+            .map(filename => basename(filename, ".txt"))
+            .sort((a, b) => a.localeCompare(b))
+        ;
     }
 
     /**
