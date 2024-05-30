@@ -7,6 +7,12 @@ const fs = require('fs');
 
 const destFolder = 'dist';
 
+const imagesExtensions = [".jpg", ".jpeg", ".png", ".svg"];
+
+const gulpSrcOptions = {
+    encoding: file => imagesExtensions.includes(file.extname) ? false : "utf8"
+}
+
 function clean(cb) {
     try {
         fs.rmSync(destFolder, { recursive: true });
@@ -129,7 +135,9 @@ function buildResourcesHtml(cb) {
 function buildResourcesImages(cb) {
     src(
         'resources/images/**/*.{jpg,jpeg,png,svg}',
-        { encoding: false }
+        {
+            encoding: false
+        }
     )
     .pipe(dest('dist/images'));
 
@@ -137,7 +145,7 @@ function buildResourcesImages(cb) {
 }
 
 function buildTemplates(cb) {
-    src('templates/**')
+    src('templates/**', gulpSrcOptions)
     .pipe(dest('dist/templates'));
 
     cb();
