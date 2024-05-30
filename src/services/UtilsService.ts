@@ -24,6 +24,30 @@ export class UtilsService {
     }
 
     /**
+     * Pega a URL para um serviço REST já com usuário e senha do servidor
+     *
+     * @param server Servidor selecionado
+     * @param basePath Caminho base do recurso REST (ex: /ecm/api/rest/ecm/dataset/)
+     * @param resource Recurso solicitado (ex: loadDataset)
+     * @param params Objeto com parâmetros adicionais para inserir na Url
+     */
+    public static getRestUrl(server: ServerDTO, basePath: string, resource: string, params?: {[s: string]: string}): URL {
+        const url = new URL(`${UtilsService.getHost(server)}${basePath}${resource}`);
+        url.searchParams.append("username", server.username);
+        url.searchParams.append("password", server.password);
+
+        if (!params) {
+            return url;
+        }
+
+        for (const [key, value] of Object.entries(params)) {
+            url.searchParams.append(key, value);
+        }
+
+        return url;
+    }
+
+    /**
      * Confirma a senha do servidor para exportar artefatos
      */
     public static async confirmPassword(server: ServerDTO): Promise<boolean> {
