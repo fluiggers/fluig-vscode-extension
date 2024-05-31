@@ -49,7 +49,7 @@ export class ServerView {
     private createWebViewPanel() {
         return vscode.window.createWebviewPanel(
             "fluig-vscode-extension.addServer",
-            this.serverData != undefined ? "Editar Servidor" : "Adicionar Servidor",
+            this.serverData !== undefined ? "Editar Servidor" : "Adicionar Servidor",
             vscode.ViewColumn.One,
             {
                 enableScripts: true,

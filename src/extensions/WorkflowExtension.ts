@@ -63,7 +63,7 @@ export class WorkflowExtension {
 
         let isNewFunction = false;
 
-        if (eventName == newFunctionOption) {
+        if (eventName === newFunctionOption) {
             eventName = await vscode.window.showInputBox({
                 prompt: "Qual o nome da Nova Função (sem espaços e sem caracteres especiais)?",
                 placeHolder: "nomeFuncao"

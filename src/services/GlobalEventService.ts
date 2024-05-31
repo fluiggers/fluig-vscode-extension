@@ -8,6 +8,10 @@ import { readFileSync } from "fs";
 
 const basePath = "/ecm/api/rest/ecm/globalevent/";
 
+const headers = new Headers();
+headers.append("Accept", "application/json");
+headers.append("Content-Type", "application/json");
+
 export class GlobalEventService {
     /**
      * Retorna uma lista com todos os eventos globais
@@ -16,7 +20,7 @@ export class GlobalEventService {
         try {
             const response:any = await fetch(
                 UtilsService.getRestUrl(server, basePath, "getEventList"),
-                { headers: { "Accept": "application/json" } }
+                { headers }
             ).then(r => r.json());
 
             if (response.message) {
@@ -66,7 +70,7 @@ export class GlobalEventService {
             return;
         }
 
-        return eventList.find(event => {return event.globalEventPK.eventId === result.label});
+        return eventList.find(event => event.globalEventPK.eventId === result.label);
     }
 
     /**
@@ -209,7 +213,7 @@ export class GlobalEventService {
 
             const result:any = await fetch(
                 url,
-                { method: "DELETE",  headers: { "Accept": "application/json" } }
+                { method: "DELETE",  headers }
             ).then(r => r.json());
 
             if (result.content === "OK") {
