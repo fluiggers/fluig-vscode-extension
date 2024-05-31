@@ -24,7 +24,7 @@ export class LibraryExtension {
         ])
         .then(function ([jsConfig, fluigDeclarations]) {
             if (!jsConfig.ok || !jsConfig.body || !fluigDeclarations.ok || !fluigDeclarations.body) {
-                throw "Error";
+                throw new Error("Erro: Os arquivos da biblioteca de tipos não foram encontrados.");
             }
 
             const jsConfigWriter = createWriteStream(Uri.joinPath(workspaceUri, "jsconfig.json").fsPath);
@@ -33,7 +33,7 @@ export class LibraryExtension {
             const declarationsWriter = createWriteStream(Uri.joinPath(workspaceUri, "fluig.d.ts").fsPath);
             Readable.fromWeb(fluigDeclarations.body).pipe(declarationsWriter);
 
-            window.showInformationMessage("A biblioteca de Declarações de Tipos foi instalada.")
+            window.showInformationMessage("A biblioteca de Declarações de Tipos foi instalada.");
         })
         .catch(() => window.showErrorMessage("Erro ao baixar biblioteca do GitHub. Verifique sua conexão com a Internet"));
     }

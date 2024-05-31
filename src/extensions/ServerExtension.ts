@@ -6,7 +6,7 @@ export class ServerExtension {
 
     public static async activate(context: vscode.ExtensionContext): Promise<void> {
         if (!(await ServerService.checkServerConfigVersion())) {
-            throw "Erro na versão do arquivo de configuração.";
+            throw new Error("Erro na versão do arquivo de configuração.");
         }
 
         const serverItemProvider = new ServerItemProvider(context);

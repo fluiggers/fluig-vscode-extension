@@ -83,12 +83,12 @@ export class ServerService {
 
     public static findByName(name: string): ServerDTO|undefined {
         const servers = ServerService.getServerConfig();
-        return servers.configurations.find(server => server.name == name);
+        return servers.configurations.find(server => server.name === name);
     }
 
     public static findById(id: string): ServerDTO|undefined {
         const servers = ServerService.getServerConfig();
-        return servers.configurations.find(server => server.id == id);
+        return servers.configurations.find(server => server.id === id);
     }
 
     public static async getSelect() {

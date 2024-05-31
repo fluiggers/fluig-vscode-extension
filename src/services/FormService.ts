@@ -269,12 +269,12 @@ export class FormService {
             return;
         }
 
-        const params = selectedForm == "novo"
+        const params = selectedForm === "novo"
             ? await FormService.getCreateFormParams(context, server, formName)
             : await FormService.getUpdateFormParams(server, selectedForm)
         ;
 
-        if (params == null) {
+        if (params === null) {
             return;
         }
 
@@ -302,7 +302,7 @@ export class FormService {
 
         try {
             const client = await createClientAsync(FormService.getUri(server));
-            const response = selectedForm == "novo"
+            const response = selectedForm === "novo"
                 ? await client.createSimpleCardIndexWithDatasetPersisteTypeAsync(params)
                 : await client.updateSimpleCardIndexWithDatasetAndGeneralInfoAsync(params)
             ;
@@ -453,7 +453,7 @@ export class FormService {
         let selected = null;
 
         for (let form of forms) {
-            if (formNameOrId == form.documentId || formNameOrId === form.documentDescription) {
+            if (formNameOrId === form.documentId || formNameOrId === form.documentDescription) {
                 selected = {
                     label: form.documentId + ' - ' + form.documentDescription,
                     detail: form.datasetName

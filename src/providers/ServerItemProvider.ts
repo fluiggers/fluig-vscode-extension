@@ -79,10 +79,10 @@ export class ServerItemProvider implements vscode.TreeDataProvider<ServerItem> {
     public delete(serverItem: ServerItem): void {
         vscode.window.showInformationMessage(`Deseja excluir o servidor ${serverItem.server.name}?`, "Sim", "Não")
             .then(selection => {
-                if (selection == "Sim") {
+                if (selection === "Sim") {
                     const index = this.serverItems.indexOf(serverItem);
 
-                    if (index < 0 || serverItem.server.id == undefined) {
+                    if (index < 0 || serverItem?.server?.id === undefined) {
                         return;
                     }
 

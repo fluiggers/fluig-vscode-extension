@@ -11,7 +11,7 @@ export class UtilsService {
      */
     public static getWorkspaceUri(): vscode.Uri {
         if (!vscode.workspace.workspaceFolders) {
-            throw "É necessário estar em Workspace / Diretório.";
+            throw new Error("É necessário estar em Workspace / Diretório.");
         }
         return vscode.workspace.workspaceFolders[0].uri;
     }
