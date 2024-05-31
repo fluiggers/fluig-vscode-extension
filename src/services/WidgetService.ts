@@ -144,17 +144,12 @@ export class WidgetService {
             mimeType: 'application/java-archive',
         })
         .then(async function (content) {
-            const widgetFileUri = Uri.joinPath(widgetUri, "target", `${widgetName}.war`);
-            await workspace.fs.writeFile(widgetFileUri, content);
-
             const url = `${UtilsService.getHost(server)}/portal/api/rest/wcmservice/rest/product/uploadfile/${server.username}/${Buffer.from(server.password).toString("base64")}`;
-
-            const fileContent = await workspace.fs.readFile(widgetFileUri);
 
             const formData = new FormData();
             formData.append("fileName", `${widgetName}.war`);
             formData.append("fileDescription", "WCM Eclipse Plugin Deploy Artifact");
-            formData.append("attachment", new Blob([fileContent]), `${widgetName}.war`);
+            formData.append("attachment", new Blob([content]), `${widgetName}.war`);
 
             try {
                 const response:any = await fetch(
@@ -169,7 +164,7 @@ export class WidgetService {
                 if (response.message) {
                     window.showErrorMessage(response.message.message);
                 } else {
-                    window.showInformationMessage("Widget enviada com sucesso. Você será notificado assim que a instalação/atualização for concluída.")
+                    window.showInformationMessage("Widget enviada com sucesso. Você será notificado assim que a instalação/atualização for concluída.");
                 }
             } catch (error) {
                 window.showErrorMessage("Erro: " + error);
