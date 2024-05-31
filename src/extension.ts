@@ -10,7 +10,7 @@ import { ServerExtension } from "./extensions/ServerExtension";
 
 export function activate(context: ExtensionContext) {
     if (!workspace.workspaceFolders) {
-        throw "É necessário estar em Workspace / Diretório.";
+        throw new Error("É necessário estar em Workspace / Diretório.");
     }
 
     TemplateExtension.activate(context);

@@ -2,6 +2,10 @@
 
 Lista de atualizações da Extensão.
 
+## 1.28.0
+
+Adiciona o comando Exportar Widget.
+
 ## 1.27.0
 
 ### Importante

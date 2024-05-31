@@ -10,10 +10,9 @@ import { createClientAsync } from 'soap';
 
 const basePath = "/ecm/api/rest/ecm/dataset/";
 
-const headers = {
-    "Accept": "application/json",
-    "Content-Type": "application/json",
-}
+const headers = new Headers();
+headers.append("Accept", "application/json");
+headers.append("Content-Type", "application/json");
 
 export class DatasetService {
     /**
@@ -85,7 +84,7 @@ export class DatasetService {
             }
 
             return valueObj;
-        }
+        };
 
         const retValues = dataset.values;
         let values = [];
@@ -100,7 +99,7 @@ export class DatasetService {
         return {
             columns,
             values
-        }
+        };
     }
 
     /**

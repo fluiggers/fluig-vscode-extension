@@ -8,10 +8,9 @@ import { readFileSync } from 'fs';
 
 const basePath = "/ecm/api/rest/ecm/mechanism/";
 
-const headers = {
-    "Accept": "application/json",
-    "Content-Type": "application/json",
-};
+const headers = new Headers();
+headers.append("Accept", "application/json");
+headers.append("Content-Type", "application/json");
 
 export class AttributionMechanismService {
     private static async list(server: ServerDTO): Promise<AttributionMechanismDTO[]> {
@@ -48,7 +47,7 @@ export class AttributionMechanismService {
                 message: {
                     message: "Erro: " + error
                 }
-            }
+            };
         }
     }
 
@@ -67,7 +66,7 @@ export class AttributionMechanismService {
                 message: {
                     message: "Erro: " + error
                 }
-            }
+            };
         }
     }
 
@@ -87,7 +86,7 @@ export class AttributionMechanismService {
                 message: {
                     message: "Erro: " + error
                 }
-            }
+            };
         }
     }
 

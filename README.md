@@ -59,21 +59,22 @@ Após abrir a pasta do projeto Fluig as seguintes funcionalidades serão disponi
 - [Gerenciar Servidores](#gerenciar-servidores)
 - [Consultar Dataset](#consultar-dataset)
 - [Novo Dataset](#novo-dataset)
-- [Novo Formulário](#novo-formulário)
-- [Novo Evento Global](#novo-evento-global)
-- [Novo Evento de Formulário](#novo-evento-de-formulário)
-- [Novo Evento de Processo](#novo-evento-de-processo)
-- [Novo Mecanismo Customizado](#novo-mecanismo-customizado)
-- [Novo Widget](#novo-widget)
 - [Importar Dataset e Importar Vários Datasets](#importar-dataset)
 - [Exportar Dataset](#exportar-dataset)
+- [Novo Formulário](#novo-formulário)
+- [Novo Evento de Formulário](#novo-evento-de-formulário)
 - [Importar Formulário e Importar Vários Formulários](#importar-formulário)
 - [Exportar Formulário](#exportar-formulário)
+- [Novo Evento de Processo](#novo-evento-de-processo)
+- [Novo Evento Global](#novo-evento-global)
 - [Importar Evento Global e Importar Vários Eventos Globais](#importar-evento-global)
 - [Exportar Evento Global](#exportar-evento-global)
 - [Excluir Evento Global](#excluir-evento-global)
+- [Novo Mecanismo Customizado](#novo-mecanismo-customizado)
 - [Importar Mecanismo de Atribuição Customizado](#importar-mecanismo-de-atribuição-customizado)
 - [Exportar Mecanismo de Atribuição Customizado](#exportar-mecanismo-de-atribuição-customizado)
+- [Novo Widget](#novo-widget)
+- [Exportar Widget](#exportar-widget)
 - [Snippets para HTML](#snippets-para-html)
 - [Snippets para JavaScript](#snippets-para-javascript)
 
@@ -112,69 +113,6 @@ O arquivo vem com as quatro funções básicas de datasets que o Fluig disponibi
 Você pode executar esse comando no __Command Palette__, no menu de contexto no __File Explorer__ ou pelo
 atalho __CTRL + F10__ (CMD + F10 no Mac).
 
-## Novo Formulário
-
-Esse comando cria, após preencher o nome, um diretório contendo um arquivo HTML de formulário.
-Esse diretório é criado dentro do diretório `forms` do seu projeto Fluig.
-
-O arquivo HTML vem com o esqueleto básico de um formulário Fluig utilizando o __Fluig Style Guide__.
-
-Você pode executar esse comando no __Command Palette__, no menu de contexto no __File Explorer__ ou pelo
-atalho __CTRL + F11__ (CMD + F11 no Mac).
-
-## Novo Evento Global
-
-Esse comando cria um arquivo JavaScript, após selecionar o evento, no diretório `events` do seu
-projeto Fluig.
-
-O arquivo JavaScript contém a estrutura da função do evento selecionado.
-
-Você pode executar esse comando no __Command Palette__ ou com o menu de contexto no __File Explorer__.
-
-## Novo Evento de Formulário
-
-Esse comando cria um arquivo JavaScript, após selecionar o evento, no diretório `events` do
-formulário selecionado.
-
-Esse comando é exibido no menu de contexto no __File Explorer__ ao selecionar um __Formulário__
-ou qualquer arquivo / diretório que esteja dentro de um formulário. També é possível utilizar com o
-atalho __CTRL + F12__ (CMD + F12 no Mac) enquanto estiver editando algum arquivo do formulário.
-
-O arquivo JavaScript contém a estrutura da função do evento selecionado.
-
-## Novo Evento de Processo
-
-Esse comando cria um arquivo JavaScript, após selecionar o evento, no diretório `workflow/scripts`
-do seu projeto Fluig.
-
-Esse comando é exibido no menu de contexto no __File Explorer__ ao selecionar um __Diagrama__,
-que são arquivos com a extensão __.process__ e estão no diretório `workflow/diagrams`, ou ao selecionar um evento de
-processo, que são arquivos .js que estão em `workflow/scripts`. Também é possível acionar o comando com o atalho
-__CTRL + F12__ (CMD + F12 no Mac) enquanto estiver editando um evento de processo.
-
-O arquivo JavaScript será nomeado seguindo a regra do Fluig (nome_do_diagrama.nome_do_evento.js) e
-contém a estrutura da função do evento selecionado.
-
-É possível criar uma função compartilhada para o processo selecionando a opção __Nova Função__ no
-menu de eventos. Quando o fizer será solicitado que informe o nome da função.
-
-## Novo Mecanismo Customizado
-
-Esse comando cria um arquivo JavaScript, após você preencher o nome do Mecanismo, no diretório
-`mechanisms` do seu projeto Fluig.
-
-O arquivo vem com a função padrão que retorna os usuários que podem ser selecionados pelo
-mecanismo de atribuição.
-
-Você pode executar esse comando no __Command Palette__ e no menu de contexto no __File Explorer__.
-
-## Novo Widget
-
-Esse comando cria uma estrutura básica de widget, após você preencher o nome do Widget, no
-diretório `wcm/widget`.
-
-Você pode executar esse comando no __Command Palette__ e no menu de contexto no __File Explorer__.
-
 ## Importar Dataset
 
 Para importar Dataset (ou vários) é necessário clicar com o botão direito do mouse em qualquer
@@ -191,6 +129,27 @@ enquanto editando o dataset, utilize o atalho __CTRL + F9__ (CMD + F9 no Mac).
 
 Após selecionar o servidor você poderá escolher um dos datasets listados para efetuar uma edição ou
 selecionar a opção __Novo Dataset__ para criar o Dataset no servidor.
+
+## Novo Formulário
+
+Esse comando cria, após preencher o nome, um diretório contendo um arquivo HTML de formulário.
+Esse diretório é criado dentro do diretório `forms` do seu projeto Fluig.
+
+O arquivo HTML vem com o esqueleto básico de um formulário Fluig utilizando o __Fluig Style Guide__.
+
+Você pode executar esse comando no __Command Palette__, no menu de contexto no __File Explorer__ ou pelo
+atalho __CTRL + F11__ (CMD + F11 no Mac).
+
+## Novo Evento de Formulário
+
+Esse comando cria um arquivo JavaScript, após selecionar o evento, no diretório `events` do
+formulário selecionado.
+
+Esse comando é exibido no menu de contexto no __File Explorer__ ao selecionar um __Formulário__
+ou qualquer arquivo / diretório que esteja dentro de um formulário. També é possível utilizar com o
+atalho __CTRL + F12__ (CMD + F12 no Mac) enquanto estiver editando algum arquivo do formulário.
+
+O arquivo JavaScript contém a estrutura da função do evento selecionado.
 
 ## Importar Formulário
 
@@ -216,6 +175,31 @@ Ao editar um formulário você pode indicar se deve ou não atualizar a versão.
 
 É obrigatório que o nome do arquivo HTML seja igual ao nome do diretório em que está armazenado (o nome do formulário no servidor
 é indiferente), pois é isso que determina qual é o arquivo principal do formulário.
+
+## Novo Evento de Processo
+
+Esse comando cria um arquivo JavaScript, após selecionar o evento, no diretório `workflow/scripts`
+do seu projeto Fluig.
+
+Esse comando é exibido no menu de contexto no __File Explorer__ ao selecionar um __Diagrama__,
+que são arquivos com a extensão __.process__ e estão no diretório `workflow/diagrams`, ou ao selecionar um evento de
+processo, que são arquivos .js que estão em `workflow/scripts`. Também é possível acionar o comando com o atalho
+__CTRL + F12__ (CMD + F12 no Mac) enquanto estiver editando um evento de processo.
+
+O arquivo JavaScript será nomeado seguindo a regra do Fluig (nome_do_diagrama.nome_do_evento.js) e
+contém a estrutura da função do evento selecionado.
+
+É possível criar uma função compartilhada para o processo selecionando a opção __Nova Função__ no
+menu de eventos. Quando o fizer será solicitado que informe o nome da função.
+
+## Novo Evento Global
+
+Esse comando cria um arquivo JavaScript, após selecionar o evento, no diretório `events` do seu
+projeto Fluig.
+
+O arquivo JavaScript contém a estrutura da função do evento selecionado.
+
+Você pode executar esse comando no __Command Palette__ ou com o menu de contexto no __File Explorer__.
 
 ## Importar Evento Global
 
@@ -244,6 +228,16 @@ Selecione os eventos que serão excluídos.
 
 Não é possível desfazer esa ação. Então tenha em mente que é recomendado ter um backup dos eventos no seu projeto.
 
+## Novo Mecanismo Customizado
+
+Esse comando cria um arquivo JavaScript, após você preencher o nome do Mecanismo, no diretório
+`mechanisms` do seu projeto Fluig.
+
+O arquivo vem com a função padrão que retorna os usuários que podem ser selecionados pelo
+mecanismo de atribuição.
+
+Você pode executar esse comando no __Command Palette__ e no menu de contexto no __File Explorer__.
+
 ## Importar Mecanismo de Atribuição Customizado
 
 Para importar Mecanismo de Atribuição Customizado é necessário clicar com o botão direito do mouse em qualquer lugar do
@@ -259,6 +253,20 @@ Para exportar um Mecanismo de Atribuição Customizado clique com o botão direi
 opção `Exportar Mecanismo Customizado` ou, enquanto edita o arquivo do mecanismo, utilize o atalho __CTRL + F9__ (CMD + F9 no Mac).
 
 Após selecionar o servidor será solicitado que informe um código, nome e descrição ao mecanismo customizado.
+
+## Novo Widget
+
+Esse comando cria uma estrutura básica de widget, após você preencher o nome do Widget, no
+diretório `wcm/widget`.
+
+Você pode executar esse comando no __Command Palette__ e no menu de contexto no __File Explorer__.
+
+## Exportar Widget
+
+Para exportar Widget clique com o botão direito do mouse sobre a Widget, ou qualquer arquivo da Widget,
+e selecione `Exportar Widget` ou, enquanto editando a Widget, utilize o atalho __CTRL + F9__ (CMD + F9 no Mac).
+
+Após selecionar o servidor o Widget será exportado automaticamente.
 
 ## Snippets para HTML
 
