@@ -2,6 +2,10 @@
 
 Lista de atualizações da Extensão.
 
+## 1.28.1
+
+Corrige tipo de mensagem ao informar erro de exportação de dataset (agora é mensagem de erro ao invés de informação).
+
 ## 1.28.0
 
 Adiciona o comando Exportar Widget.
