@@ -26,7 +26,7 @@ export class AttributionMechanismService {
 
             return response;
         } catch (error) {
-            window.showErrorMessage("Erro: " + error);
+            window.showErrorMessage(`Erro: ${error}`);
         }
 
         return [];
@@ -284,9 +284,9 @@ export class AttributionMechanismService {
         }
 
         if (result.content === 'OK') {
-            window.showInformationMessage("Mecanismo Customizado " + mechanismId + " exportado com sucesso!");
+            window.showInformationMessage(`Mecanismo Customizado ${mechanismId} exportado com sucesso!`);
         } else {
-            window.showErrorMessage("Falha ao exportar o Mecanismo Customizado " + mechanismId + "!\n\n" + result.message.message);
+            window.showErrorMessage(`Falha ao exportar o Mecanismo Customizado ${mechanismId}!\n${result.message.message}`);
         }
     }
 
@@ -302,6 +302,6 @@ export class AttributionMechanismService {
         );
 
         window.showTextDocument(fileUri);
-        window.showInformationMessage("Mecanismo de Atribuição " + name + " importado com sucesso!");
+        window.showInformationMessage(`Mecanismo de Atribuição ${name} importado com sucesso!`);
     }
 }

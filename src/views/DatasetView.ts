@@ -103,7 +103,7 @@ export class DatasetView {
                 message: message,
             });
 
-            vscode.window.showErrorMessage(`Erro ao carregar os datasets do servidor ${this.server.name}. Erro retornado: ${message}`);
+            vscode.window.showErrorMessage(`Erro ao carregar os datasets do servidor ${this.server.name}.\nErro retornado: ${message}`);
         }
     }
 
@@ -134,7 +134,7 @@ export class DatasetView {
                 message: message,
             });
 
-            vscode.window.showErrorMessage(`Erro ao consultar o Dataset ${queryInformation.datasetId}. Erro retornado: ${message}`);
+            vscode.window.showErrorMessage(`Erro ao consultar o Dataset ${queryInformation.datasetId}.\nErro retornado: ${message}`);
         }
     }
 }
