@@ -335,7 +335,7 @@ export class DatasetService {
         if (result.content === 'OK') {
             window.showInformationMessage("Dataset " + datasetId + " exportado com sucesso!");
         } else {
-            window.showInformationMessage("Falha ao exportar o dataset " + datasetId + "!\n" + result.message.message);
+			window.showErrorMessage(`Falha ao exportar o dataset ${datasetId}!\n${result.message.message}`);
         }
     }
 
