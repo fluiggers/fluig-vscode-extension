@@ -333,7 +333,7 @@ export class DatasetService {
         }
 
         if (result.content === 'OK') {
-            window.showInformationMessage("Dataset " + datasetId + " exportado com sucesso!");
+            window.showInformationMessage(`Dataset ${datasetId} exportado com sucesso!`);
         } else {
 			window.showErrorMessage(`Falha ao exportar o dataset ${datasetId}!\n${result.message.message}`);
         }
@@ -351,6 +351,6 @@ export class DatasetService {
         );
 
         window.showTextDocument(datasetUri);
-        window.showInformationMessage("Dataset " + name + " importado com sucesso!");
+        window.showInformationMessage(`Dataset ${name} importado com sucesso!`);
     }
 }

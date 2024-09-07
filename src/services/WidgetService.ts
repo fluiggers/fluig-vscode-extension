@@ -167,9 +167,9 @@ export class WidgetService {
                     window.showInformationMessage("Widget enviada com sucesso. Você será notificado assim que a instalação/atualização for concluída.");
                 }
             } catch (error) {
-                window.showErrorMessage("Erro: " + error);
+                window.showErrorMessage(`Erro: ${error}`);
             }
         })
-        .catch(e => window.showErrorMessage("Erro: " + e));
+        .catch(e => window.showErrorMessage(`Erro: ${e}`));
     }
 }

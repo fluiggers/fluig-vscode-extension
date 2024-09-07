@@ -30,7 +30,7 @@ export class GlobalEventService {
 
             return response;
         } catch (error) {
-            window.showErrorMessage("Erro: " + error);
+            window.showErrorMessage(`Erro: ${error}`);
         }
 
         return [];
@@ -52,7 +52,7 @@ export class GlobalEventService {
                 requestOptions
             ).then(r => r.json());
         } catch (error) {
-            window.showErrorMessage("Erro: " + error);
+            window.showErrorMessage(`Erro: ${error}`);
         }
     }
 
@@ -182,9 +182,9 @@ export class GlobalEventService {
         result = await GlobalEventService.saveEventList(server, globalEvents);
 
         if (result.content === 'OK') {
-            window.showInformationMessage("Evento Global " + globalEventId + " exportado com sucesso!");
+            window.showInformationMessage(`Evento Global ${globalEventId} exportado com sucesso!`);
         } else {
-            window.showErrorMessage("Falha ao exportar o Evento Global " + globalEventId + "!" + result?.message?.message);
+            window.showErrorMessage(`Falha ao exportar o Evento Global ${globalEventId}!\n${result?.message?.message}`);
         }
     }
 
@@ -217,9 +217,9 @@ export class GlobalEventService {
             ).then(r => r.json());
 
             if (result.content === "OK") {
-                window.showInformationMessage("Evento Global " + event.globalEventPK.eventId + " removido com sucesso!");
+                window.showInformationMessage(`Evento Global ${event.globalEventPK.eventId} removido com sucesso!`);
             } else {
-                window.showErrorMessage("Erro ao remover Evento Global " + event.globalEventPK.eventId + "! " + result.message.message);
+                window.showErrorMessage(`Erro ao remover Evento Global ${event.globalEventPK.eventId}!\n${result.message.message}`);
             }
         });
     }
@@ -235,6 +235,6 @@ export class GlobalEventService {
             Buffer.from(content, "utf-8")
         );
 
-        window.showInformationMessage("Evento global " + name + " importado com sucesso!");
+        window.showInformationMessage(`Evento global ${name} importado com sucesso!`);
     }
 }

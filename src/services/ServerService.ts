@@ -217,7 +217,7 @@ export class ServerService {
 
                 ServerService.update(server);
             } catch (e) {
-                window.showErrorMessage(`Falha na conexão com o servidor ${server.name}. Erro retornado: ${e}`);
+                window.showErrorMessage(`Falha na conexão com o servidor ${server.name}.\nErro retornado: ${e}`);
             }
         }
 
