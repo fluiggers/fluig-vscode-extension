@@ -33,8 +33,6 @@ export class UtilsService {
      */
     public static getRestUrl(server: ServerDTO, basePath: string, resource: string, params?: {[s: string]: string}): URL {
         const url = new URL(`${UtilsService.getHost(server)}${basePath}${resource}`);
-        url.searchParams.append("username", server.username);
-        url.searchParams.append("password", server.password);
 
         if (!params) {
             return url;

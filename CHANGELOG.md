@@ -2,6 +2,10 @@
 
 Lista de atualizações da Extensão.
 
+## 1.29.0
+
+Criado um novo serviço para Login, evitando de passar a senha pela URL.
+
 ## 1.28.1
 
 Corrige tipo de mensagem ao informar erro de exportação de dataset (agora é mensagem de erro ao invés de informação).

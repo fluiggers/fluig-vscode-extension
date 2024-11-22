@@ -6,6 +6,7 @@ import * as JSZip from 'jszip';
 import { UtilsService } from "../services/UtilsService";
 import { TemplateService } from "../services/TemplateService";
 import { ServerService } from "./ServerService";
+import {LoginService} from "./LoginService";
 
 export class WidgetService {
     /**
@@ -144,7 +145,7 @@ export class WidgetService {
             mimeType: 'application/java-archive',
         })
         .then(async function (content) {
-            const url = `${UtilsService.getHost(server)}/portal/api/rest/wcmservice/rest/product/uploadfile/${server.username}/${Buffer.from(server.password).toString("base64")}`;
+            const url = `${UtilsService.getHost(server)}/portal/api/rest/wcmservice/rest/product/uploadfile`;
 
             const formData = new FormData();
             formData.append("fileName", `${widgetName}.war`);
@@ -156,7 +157,10 @@ export class WidgetService {
                     url,
                     {
                         method: "POST",
-                        headers: { "Accept": "application/json" },
+                        headers: {
+                            "Accept": "application/json",
+                            'Cookie': await LoginService.loginAndGetCookies(server)
+                        },
                         body: formData,
                     }
                 ).then(r => r.json());
