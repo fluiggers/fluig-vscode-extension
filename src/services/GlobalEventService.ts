@@ -5,6 +5,7 @@ import { window, workspace, Uri } from "vscode";
 import { ServerService } from "./ServerService";
 import { basename } from "path";
 import { readFileSync } from "fs";
+import {LoginService} from "./LoginService";
 
 const basePath = "/ecm/api/rest/ecm/globalevent/";
 
@@ -18,6 +19,7 @@ export class GlobalEventService {
      */
     private static async getEventList(server: ServerDTO): Promise<GlobalEventDTO[]> {
         try {
+            headers.append('Cookie', await LoginService.loginAndGetCookies(server));
             const response:any = await fetch(
                 UtilsService.getRestUrl(server, basePath, "getEventList"),
                 { headers }
@@ -42,6 +44,7 @@ export class GlobalEventService {
             headers: {
                 "Accept": "application/json",
                 "Content-Type": "application/x-www-form-urlencoded",
+                'Cookie': await LoginService.loginAndGetCookies(server)
             },
             body: JSON.stringify(globalEvents),
         };
@@ -211,6 +214,7 @@ export class GlobalEventService {
         eventList.forEach(async event => {
             url.searchParams.set("eventName", event.globalEventPK.eventId);
 
+            headers.append('Cookie', await LoginService.loginAndGetCookies(server));
             const result:any = await fetch(
                 url,
                 { method: "DELETE",  headers }

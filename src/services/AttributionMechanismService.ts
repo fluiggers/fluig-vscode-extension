@@ -5,6 +5,7 @@ import { ServerDTO } from '../models/ServerDTO';
 import { AttributionMechanismDTO } from '../models/AttributionMechanismDTO';
 import { ServerService } from './ServerService';
 import { readFileSync } from 'fs';
+import {LoginService} from "./LoginService";
 
 const basePath = "/ecm/api/rest/ecm/mechanism/";
 
@@ -17,6 +18,7 @@ export class AttributionMechanismService {
         const url = UtilsService.getRestUrl(server, basePath, "getCustomAttributionMechanismList");
 
         try {
+            headers.append('Cookie', await LoginService.loginAndGetCookies(server));
             const response:any = await fetch(url, { headers }).then(r => r.json());
 
             if (response.message) {
@@ -34,6 +36,7 @@ export class AttributionMechanismService {
 
     private static async create(server: ServerDTO, mechanism: AttributionMechanismDTO) {
         try {
+            headers.append('Cookie', await LoginService.loginAndGetCookies(server));
             return await fetch(
                 UtilsService.getRestUrl(server, basePath, "createAttributionMechanism"),
                 {
@@ -53,6 +56,7 @@ export class AttributionMechanismService {
 
     private static async update(server: ServerDTO, mechanism: AttributionMechanismDTO) {
         try {
+            headers.append('Cookie', await LoginService.loginAndGetCookies(server));
             return await fetch(
                 UtilsService.getRestUrl(server, basePath, "updateAttributionMechanism"),
                 {
@@ -74,6 +78,7 @@ export class AttributionMechanismService {
         const url = UtilsService.getRestUrl(server, basePath, "deleteAttributionMechanism", { "mechanismId": mechanismId });
 
         try {
+            headers.append('Cookie', await LoginService.loginAndGetCookies(server));
             return await fetch(
                 url,
                 {

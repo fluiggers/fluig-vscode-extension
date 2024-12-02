@@ -7,6 +7,7 @@ import { DatasetStructureDTO } from "../models/DatasetStructureDTO";
 import { UtilsService } from "./UtilsService";
 import { readFileSync } from "fs";
 import { createClientAsync } from 'soap';
+import {LoginService} from "./LoginService";
 
 const basePath = "/ecm/api/rest/ecm/dataset/";
 
@@ -47,6 +48,7 @@ export class DatasetService {
      * Retorna as informações e estrutura de um dataset específico
      */
     public static async getDataset(server: ServerDTO, datasetId: string):Promise<any> {
+        headers.append('Cookie', await LoginService.loginAndGetCookies(server));
         return await fetch(
             UtilsService.getRestUrl(server, basePath, "loadDataset", { "datasetId": datasetId }),
             { headers }
@@ -106,6 +108,7 @@ export class DatasetService {
      * Exportar novo dataset
      */
     public static async createDataset(server: ServerDTO, dataset: DatasetStructureDTO) {
+        headers.append('Cookie', await LoginService.loginAndGetCookies(server));
         return await fetch(
             UtilsService.getRestUrl(server, basePath, "createDataset"),
             {
@@ -120,6 +123,7 @@ export class DatasetService {
      * Exportar dataset existente
      */
     public static async updateDataset(server: ServerDTO, dataset: DatasetStructureDTO) {
+        headers.append('Cookie', await LoginService.loginAndGetCookies(server));
         return await fetch(
             UtilsService.getRestUrl(server, basePath, "editDataset", { "confirmnewstructure": "false" }),
             {
