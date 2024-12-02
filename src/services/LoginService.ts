@@ -2,7 +2,7 @@ import { ServerDTO } from '../models/ServerDTO';
 import { UtilsService } from './UtilsService';
 
 export class LoginService {
-   
+
     private static cachedCookies : any = {};
 
     public static async loginAndGetCookies(server: ServerDTO) : Promise<string> {
@@ -42,7 +42,7 @@ export class LoginService {
         const pingUrl = `${UtilsService.getHost(server)}/portal/p/api/servlet/ping`;
 
         const response = await fetch(pingUrl, {
-            method: 'POST', 
+            method: 'POST',
             headers: {
                 'Cookie': cookiesCached
             }

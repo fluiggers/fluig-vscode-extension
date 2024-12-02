@@ -11,9 +11,10 @@ import {LoginService} from "./LoginService";
 
 const basePath = "/ecm/api/rest/ecm/dataset/";
 
-const headers = new Headers();
-headers.append("Accept", "application/json");
-headers.append("Content-Type", "application/json");
+const headers = new Headers({
+    "Accept": "application/json",
+    "Content-Type": "application/json",
+});
 
 export class DatasetService {
     /**
@@ -48,7 +49,7 @@ export class DatasetService {
      * Retorna as informações e estrutura de um dataset específico
      */
     public static async getDataset(server: ServerDTO, datasetId: string):Promise<any> {
-        headers.append('Cookie', await LoginService.loginAndGetCookies(server));
+        headers.set('Cookie', await LoginService.loginAndGetCookies(server));
         return await fetch(
             UtilsService.getRestUrl(server, basePath, "loadDataset", { "datasetId": datasetId }),
             { headers }
@@ -108,7 +109,7 @@ export class DatasetService {
      * Exportar novo dataset
      */
     public static async createDataset(server: ServerDTO, dataset: DatasetStructureDTO) {
-        headers.append('Cookie', await LoginService.loginAndGetCookies(server));
+        headers.set('Cookie', await LoginService.loginAndGetCookies(server));
         return await fetch(
             UtilsService.getRestUrl(server, basePath, "createDataset"),
             {
@@ -123,7 +124,7 @@ export class DatasetService {
      * Exportar dataset existente
      */
     public static async updateDataset(server: ServerDTO, dataset: DatasetStructureDTO) {
-        headers.append('Cookie', await LoginService.loginAndGetCookies(server));
+        headers.set('Cookie', await LoginService.loginAndGetCookies(server));
         return await fetch(
             UtilsService.getRestUrl(server, basePath, "editDataset", { "confirmnewstructure": "false" }),
             {

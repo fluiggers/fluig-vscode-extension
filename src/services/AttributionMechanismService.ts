@@ -9,16 +9,17 @@ import {LoginService} from "./LoginService";
 
 const basePath = "/ecm/api/rest/ecm/mechanism/";
 
-const headers = new Headers();
-headers.append("Accept", "application/json");
-headers.append("Content-Type", "application/json");
+const headers = new Headers({
+    "Accept": "application/json",
+    "Content-Type": "application/json",
+});
 
 export class AttributionMechanismService {
     private static async list(server: ServerDTO): Promise<AttributionMechanismDTO[]> {
         const url = UtilsService.getRestUrl(server, basePath, "getCustomAttributionMechanismList");
 
         try {
-            headers.append('Cookie', await LoginService.loginAndGetCookies(server));
+            headers.set('Cookie', await LoginService.loginAndGetCookies(server));
             const response:any = await fetch(url, { headers }).then(r => r.json());
 
             if (response.message) {
@@ -36,7 +37,7 @@ export class AttributionMechanismService {
 
     private static async create(server: ServerDTO, mechanism: AttributionMechanismDTO) {
         try {
-            headers.append('Cookie', await LoginService.loginAndGetCookies(server));
+            headers.set('Cookie', await LoginService.loginAndGetCookies(server));
             return await fetch(
                 UtilsService.getRestUrl(server, basePath, "createAttributionMechanism"),
                 {
@@ -56,7 +57,7 @@ export class AttributionMechanismService {
 
     private static async update(server: ServerDTO, mechanism: AttributionMechanismDTO) {
         try {
-            headers.append('Cookie', await LoginService.loginAndGetCookies(server));
+            headers.set('Cookie', await LoginService.loginAndGetCookies(server));
             return await fetch(
                 UtilsService.getRestUrl(server, basePath, "updateAttributionMechanism"),
                 {
@@ -78,7 +79,7 @@ export class AttributionMechanismService {
         const url = UtilsService.getRestUrl(server, basePath, "deleteAttributionMechanism", { "mechanismId": mechanismId });
 
         try {
-            headers.append('Cookie', await LoginService.loginAndGetCookies(server));
+            headers.set('Cookie', await LoginService.loginAndGetCookies(server));
             return await fetch(
                 url,
                 {
