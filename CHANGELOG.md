@@ -2,9 +2,20 @@
 
 Lista de atualizações da Extensão.
 
-## 1.29.0
+## 2.0.0
 
-Criado um novo serviço para Login, evitando de passar a senha pela URL.
+**IMPORTANTE**: A partir desta versão a Extensão perde suporte à versão 1.8.1 do Fluig.
+
+A partir do Fluig 1.8.2 as APIs REST perderam, por padrão, a possibilidade de enviar a autenticação
+como parâmetro da URL, sendo obrigatório enviar um Cookie de autenticação no cabeçalho da requisição.
+
+Este comportamento não é suportado por todos os endpoints do Fluig 1.8.1, por isso não indicamos usar
+essa extensão em versões anteriores do Fluig 1.8.2.
+
+Para continuar utilizando com o Fluig 1.8.1 instale a Extensão anterior à versão 2.0.0 e desabilite a
+atualização automática.
+
+- Criado um novo serviço para Login, evitando passar a senha pela URL.
 
 ## 1.28.1
 
