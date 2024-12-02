@@ -9,9 +9,11 @@ import {LoginService} from "./LoginService";
 
 const basePath = "/ecm/api/rest/ecm/globalevent/";
 
-const headers = new Headers();
-headers.append("Accept", "application/json");
-headers.append("Content-Type", "application/json");
+const headers = new Headers({
+    "Accept": "application/json",
+    "Content-Type": "application/json",
+
+});
 
 export class GlobalEventService {
     /**
@@ -19,7 +21,7 @@ export class GlobalEventService {
      */
     private static async getEventList(server: ServerDTO): Promise<GlobalEventDTO[]> {
         try {
-            headers.append('Cookie', await LoginService.loginAndGetCookies(server));
+            headers.set('Cookie', await LoginService.loginAndGetCookies(server));
             const response:any = await fetch(
                 UtilsService.getRestUrl(server, basePath, "getEventList"),
                 { headers }
@@ -214,7 +216,7 @@ export class GlobalEventService {
         eventList.forEach(async event => {
             url.searchParams.set("eventName", event.globalEventPK.eventId);
 
-            headers.append('Cookie', await LoginService.loginAndGetCookies(server));
+            headers.set('Cookie', await LoginService.loginAndGetCookies(server));
             const result:any = await fetch(
                 url,
                 { method: "DELETE",  headers }
