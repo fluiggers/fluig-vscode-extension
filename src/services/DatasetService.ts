@@ -389,7 +389,7 @@ export class DatasetService {
                 const content = Buffer.from(fileContent).toString('utf8');
                 const datasetId = file.label;
 
-                // Check if dataset already exists
+                // Verifica se o dataset já existe no servidor
                 const existingDatasets = await DatasetService.getDatasetsCustom(server);
                 const existingDataset = existingDatasets.find(ds => ds.datasetId === datasetId);
 

@@ -259,20 +259,20 @@
                 },
                 {
                     "command": "fluiggers-fluig-vscode-extension.importManyDataset",
-                    "group": "1_Fluig1Dataset@2"
+                    "group": "1_Fluig1Dataset@3"
                 },
                 {
                     "command": "fluiggers-fluig-vscode-extension.importDataset",
-                    "group": "1_Fluig1Dataset@3"
+                    "group": "1_Fluig1Dataset@4"
                 },
                 {
                     "command": "fluiggers-fluig-vscode-extension.exportDataset",
                     "when": "resourcePath =~ /[\\/\\\\]datasets[\\/\\\\].+$/",
-                    "group": "1_Fluig1Dataset@4"
+                    "group": "1_Fluig1Dataset@5"
                 },
                 {
                     "command": "fluiggers-fluig-vscode-extension.searchDataset",
-                    "group": "1_Fluig1Dataset@5"
+                    "group": "1_Fluig1Dataset@6"
                 },
                 {
                     "command": "fluiggers-fluig-vscode-extension.newForm",
