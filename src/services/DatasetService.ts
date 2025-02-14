@@ -1,6 +1,6 @@
 import { ServerDTO } from "../models/ServerDTO";
 import { ServerService } from "./ServerService";
-import { window, workspace, Uri } from "vscode";
+import { window, workspace, Uri, FileType } from "vscode";
 import { basename } from "path";
 import { DatasetDTO } from "../models/DatasetDTO";
 import { DatasetStructureDTO } from "../models/DatasetStructureDTO";
@@ -341,6 +341,111 @@ export class DatasetService {
             window.showInformationMessage(`Dataset ${datasetId} exportado com sucesso!`);
         } else {
 			window.showErrorMessage(`Falha ao exportar o dataset ${datasetId}!\n${result.message.message}`);
+        }
+    }
+
+    /**
+     * Exportar vários datasets para o servidor
+     */
+    public static async exportMany() {
+        const server = await ServerService.getSelect();
+
+        if (!server) {
+            return;
+        }
+
+        // Busca todos os arquivos de dataset no workspace
+        const workspaceUri = UtilsService.getWorkspaceUri();
+        const datasetsUri = Uri.joinPath(workspaceUri, "datasets");
+        const files = await workspace.fs.readDirectory(datasetsUri);
+        const datasetFiles = files
+            .filter(([name, type]) => type === FileType.File && name.endsWith('.js'))
+            .map(([name]) => ({ label: basename(name, '.js'), uri: Uri.joinPath(datasetsUri, name) }));
+
+        if (datasetFiles.length === 0) {
+            window.showWarningMessage("Nenhum arquivo de dataset encontrado no workspace!");
+            return;
+        }
+
+        // Mostra a lista de arquivos de dataset para o usuário selecionar
+        const selectedFiles = await window.showQuickPick(datasetFiles, {
+            placeHolder: "Selecione os datasets para exportar",
+            canPickMany: true
+        });
+
+        if (!selectedFiles || selectedFiles.length === 0) {
+            return;
+        }
+
+        // Validar senha antes de exportar
+        if (server.confirmExporting && !(await UtilsService.confirmPassword(server))) {
+            return;
+        }
+
+        // Exporta cada dataset selecionado
+        const results = await Promise.all(selectedFiles.map(async (file) => {
+            try {
+                const fileContent = await workspace.fs.readFile(file.uri);
+                const content = Buffer.from(fileContent).toString('utf8');
+                const datasetId = file.label;
+
+                // Check if dataset already exists
+                const existingDatasets = await DatasetService.getDatasetsCustom(server);
+                const existingDataset = existingDatasets.find(ds => ds.datasetId === datasetId);
+
+                const datasetStructure: DatasetStructureDTO = {
+                    datasetPK: {
+                        companyId: server.companyId,
+                        datasetId: datasetId,
+                    },
+                    datasetDescription: datasetId,
+                    datasetImpl: content,
+                    datasetBuilder: 'com.datasul.technology.webdesk.dataset.CustomizedDatasetBuilder',
+                    serverOffline: false,
+                    mobileCache: false,
+                    lastReset: 0,
+                    lastRemoteSync: 0,
+                    type: 'CUSTOM',
+                    mobileOffline: false,
+                    updateIntervalTimestamp: 0
+                };
+
+                let result: any;
+                if (existingDataset) {
+                    // Atualiza o dataset existente
+                    result = await DatasetService.updateDataset(server, datasetStructure);
+                } else {
+                    // Cria um novo dataset
+                    result = await DatasetService.createDataset(server, datasetStructure);
+                }
+
+                return {
+                    datasetId,
+                    success: result.content === 'OK',
+                    message: result.message?.message || ''
+                };
+            } catch (error: any) {
+                return {
+                    datasetId: file.label,
+                    success: false,
+                    message: error.message || 'Erro desconhecido'
+                };
+            }
+        }));
+
+        const successful = results.filter(r => r.success);
+        const failed = results.filter(r => !r.success);
+
+        if (successful.length > 0) {
+            window.showInformationMessage(
+                `${successful.length} dataset(s) exportado(s) com sucesso: ${successful.map(r => r.datasetId).join(', ')}`
+            );
+        }
+
+        if (failed.length > 0) {
+            window.showErrorMessage(
+                `Falha ao exportar ${failed.length} dataset(s):\n${failed.map(r => `${r.datasetId}: ${r.message}`).join('\n')}`
+            );
         }
     }
 

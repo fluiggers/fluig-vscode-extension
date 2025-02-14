@@ -26,6 +26,10 @@ export class DatasetExtension {
             DatasetExtension.exportDataset
         ));
         context.subscriptions.push(vscode.commands.registerCommand(
+            "fluiggers-fluig-vscode-extension.exportManyDataset",
+            DatasetService.exportMany
+        ));
+        context.subscriptions.push(vscode.commands.registerCommand(
             "fluiggers-fluig-vscode-extension.searchDataset",
             DatasetExtension.searchDataset(context)
         ));
