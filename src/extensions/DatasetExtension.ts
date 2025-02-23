@@ -33,6 +33,10 @@ export class DatasetExtension {
             "fluiggers-fluig-vscode-extension.searchDataset",
             DatasetExtension.searchDataset(context)
         ));
+        context.subscriptions.push(vscode.commands.registerCommand(
+            "fluiggers-fluig-vscode-extension.exportDatasetFolder",
+            DatasetExtension.exportDatasetFolder
+        ));
     }
 
     /**
@@ -93,5 +97,27 @@ export class DatasetExtension {
             }
             new DatasetView(context, server).show();
         };
+    }
+
+    /**
+     * Exporta todos os datasets de uma pasta selecionada
+     */
+    private static exportDatasetFolder(folderUri: vscode.Uri) {
+        // Se não foi selecionada uma pasta, mostra mensagem de erro
+        if (!folderUri) {
+            vscode.window.showErrorMessage("Selecione uma pasta de datasets para exportar");
+            return;
+        }
+
+        // Verifica se a pasta está dentro do diretório datasets
+        const workspaceUri = UtilsService.getWorkspaceUri();
+        const datasetsUri = vscode.Uri.joinPath(workspaceUri, "datasets");
+
+        if (!folderUri.path.startsWith(datasetsUri.path)) {
+            vscode.window.showErrorMessage("A pasta selecionada deve estar dentro do diretório 'datasets'");
+            return;
+        }
+
+        DatasetService.exportFromFolder(folderUri);
     }
 }

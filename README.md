@@ -130,6 +130,10 @@ enquanto editando o dataset, utilize o atalho __CTRL + F9__ (CMD + F9 no Mac).
 Após selecionar o servidor você poderá escolher um dos datasets listados para efetuar uma edição ou
 selecionar a opção __Novo Dataset__ para criar o Dataset no servidor.
 
+Também é possível exportar múltiplos datasets de uma só vez clicando com o botão direito em uma pasta dentro do diretório `datasets`.
+A extensão irá procurar recursivamente por todos os datasets dentro da pasta selecionada e suas subpastas, permitindo que você
+exporte todos eles de uma vez para o servidor selecionado.
+
 ## Novo Formulário
 
 Esse comando cria, após preencher o nome, um diretório contendo um arquivo HTML de formulário.
