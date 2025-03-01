@@ -151,11 +151,6 @@
                 "category": "Fluig"
             },
             {
-                "command": "fluiggers-fluig-vscode-extension.exportManyDataset",
-                "title": "Exportar Vários Datasets",
-                "category": "Fluig"
-            },
-            {
                 "command": "fluiggers-fluig-vscode-extension.exportDatasetFolder",
                 "title": "Exportar Datasets da Pasta",
                 "category": "Fluig"
@@ -268,25 +263,21 @@
                     "group": "1_Fluig1Dataset@2"
                 },
                 {
-                    "command": "fluiggers-fluig-vscode-extension.exportManyDataset",
+                    "command": "fluiggers-fluig-vscode-extension.exportDatasetFolder",
+                    "when": "explorerResourceIsFolder && resourcePath =~ /.*[\\/\\\\]datasets[\\/\\\\]?.*/",
                     "group": "1_Fluig1Dataset@3"
                 },
                 {
-                    "command": "fluiggers-fluig-vscode-extension.exportDatasetFolder",
-                    "when": "explorerResourceIsFolder && resourcePath =~ /.*[\\/\\\\]datasets[\\/\\\\].*/",
+                    "command": "fluiggers-fluig-vscode-extension.importDataset",
                     "group": "1_Fluig1Dataset@4"
                 },
                 {
-                    "command": "fluiggers-fluig-vscode-extension.importDataset",
+                    "command": "fluiggers-fluig-vscode-extension.importManyDataset",
                     "group": "1_Fluig1Dataset@5"
                 },
                 {
-                    "command": "fluiggers-fluig-vscode-extension.importManyDataset",
-                    "group": "1_Fluig1Dataset@6"
-                },
-                {
                     "command": "fluiggers-fluig-vscode-extension.searchDataset",
-                    "group": "1_Fluig1Dataset@7"
+                    "group": "1_Fluig1Dataset@6"
                 },
                 {
                     "command": "fluiggers-fluig-vscode-extension.newForm",

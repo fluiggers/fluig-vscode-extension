@@ -26,10 +26,6 @@ export class DatasetExtension {
             DatasetExtension.exportDataset
         ));
         context.subscriptions.push(vscode.commands.registerCommand(
-            "fluiggers-fluig-vscode-extension.exportManyDataset",
-            DatasetService.exportMany
-        ));
-        context.subscriptions.push(vscode.commands.registerCommand(
             "fluiggers-fluig-vscode-extension.searchDataset",
             DatasetExtension.searchDataset(context)
         ));
@@ -101,23 +97,12 @@ export class DatasetExtension {
 
     /**
      * Exporta todos os datasets de uma pasta selecionada
+     * 
+     * Se não tiver pasta selecionada entende-se que é pra exportar todos os
+     * datasets do workspace.
      */
     private static exportDatasetFolder(folderUri: vscode.Uri) {
-        // Se não foi selecionada uma pasta, mostra mensagem de erro
-        if (!folderUri) {
-            vscode.window.showErrorMessage("Selecione uma pasta de datasets para exportar");
-            return;
-        }
-
-        // Verifica se a pasta está dentro do diretório datasets
-        const workspaceUri = UtilsService.getWorkspaceUri();
-        const datasetsUri = vscode.Uri.joinPath(workspaceUri, "datasets");
-
-        if (!folderUri.path.startsWith(datasetsUri.path)) {
-            vscode.window.showErrorMessage("A pasta selecionada deve estar dentro do diretório 'datasets'");
-            return;
-        }
-
-        DatasetService.exportFromFolder(folderUri);
+        const datasetsUri = folderUri ? folderUri : vscode.Uri.joinPath(UtilsService.getWorkspaceUri(), "datasets");
+        DatasetService.exportFromFolder(datasetsUri);
     }
 }
