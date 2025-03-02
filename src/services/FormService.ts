@@ -1,4 +1,4 @@
-import { ExtensionContext, Uri, window, workspace } from "vscode";
+import { ExtensionContext, Uri, window, workspace, ProgressLocation } from "vscode";
 import { ServerDTO } from "../models/ServerDTO";
 import { createClientAsync } from 'soap';
 import { ServerService } from "./ServerService";
@@ -211,40 +211,58 @@ export class FormService {
 
         const forms = await FormService.getOptionsSelected(server);
 
-        if (!forms) {
+        if (!forms || !forms.length) {
             return;
         }
 
         const workspaceFolderUri = UtilsService.getWorkspaceUri();
 
-        forms.map(async form => {
-            if (!form) {
-                return;
+        const results = await window.withProgress(
+            {
+                location: ProgressLocation.Notification,
+                title: "Importando Formulários.",
+                cancellable: false
+            },
+            progress => {
+                const increment = 100 / forms.length;
+                let current = 0;
+
+                progress.report({ increment: 0 });
+
+                return Promise.all(forms.map(async form => {
+                    if (!form) {
+                        return;
+                    }
+
+                    let folderUri = Uri.joinPath(workspaceFolderUri, 'forms', form.documentDescription);
+
+                    const fileNames = await FormService.getFileNames(server, form.documentId);
+
+                    for (let fileName of fileNames) {
+                        const base64 = await FormService.getFileBase64(server, form.documentId, form.version, fileName);
+
+                        if (base64) {
+                            const fileContent = Buffer.from(base64, 'base64').toString('utf-8');
+                            workspace.fs.writeFile(Uri.joinPath(folderUri, fileName), Buffer.from(fileContent, "utf-8"));
+                        }
+                    }
+
+                    folderUri = Uri.joinPath(folderUri, "events");
+
+                    const events = await FormService.getCustomizationEvents(server, form.documentId);
+
+                    for (let item of events) {
+                        workspace.fs.writeFile(Uri.joinPath(folderUri, item.eventId + ".js"), Buffer.from(item.eventDescription, "utf-8"));
+                    }
+
+                    current += increment;
+                    progress.report({ increment: current });
+                    return true;
+                }));
             }
+        );
 
-            let folderUri = Uri.joinPath(workspaceFolderUri, 'forms', form.documentDescription);
-
-            const fileNames = await FormService.getFileNames(server, form.documentId);
-
-            for (let fileName of fileNames) {
-                const base64 = await FormService.getFileBase64(server, form.documentId, form.version, fileName);
-
-                if (base64) {
-                    const fileContent = Buffer.from(base64, 'base64').toString('utf-8');
-                    workspace.fs.writeFile(Uri.joinPath(folderUri, fileName), Buffer.from(fileContent, "utf-8"));
-                }
-            }
-
-            folderUri = Uri.joinPath(folderUri, "events");
-
-            const events = await FormService.getCustomizationEvents(server, form.documentId);
-
-            for (let item of events) {
-                workspace.fs.writeFile(Uri.joinPath(folderUri, item.eventId + ".js"), Buffer.from(item.eventDescription, "utf-8"));
-            }
-        });
-
-        window.showInformationMessage("Os formulários foram importados!");
+        window.showInformationMessage(`${results.length} formulários foram importados.`);
     }
 
     public static async export(context: ExtensionContext, fileUri: Uri) {
