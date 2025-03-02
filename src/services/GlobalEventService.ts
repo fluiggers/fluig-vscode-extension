@@ -1,7 +1,7 @@
 import { ServerDTO } from "../models/ServerDTO";
 import { UtilsService } from "./UtilsService";
 import { GlobalEventDTO } from "../models/GlobalEventDTO";
-import { window, workspace, Uri } from "vscode";
+import { window, workspace, Uri, ProgressLocation } from "vscode";
 import { ServerService } from "./ServerService";
 import { basename } from "path";
 import { readFileSync } from "fs";
@@ -139,16 +139,36 @@ export class GlobalEventService {
 
         const eventList = await GlobalEventService.getOptionsSelected(server);
 
-        if (!eventList) {
+        if (!eventList || !eventList.length) {
             return;
         }
 
-        eventList.map(async event => {
-            GlobalEventService.saveFile(
-                event.globalEventPK.eventId,
-                event.eventDescription
-            );
-        });
+        const results = await window.withProgress(
+            {
+                location: ProgressLocation.Notification,
+                title: "Importando Eventos Globais.",
+                cancellable: false
+            },
+            progress => {
+                const increment = 100 / eventList.length;
+                let current = 0;
+
+                progress.report({ increment: 0 });
+
+                return Promise.all(eventList.map(async event => {
+                    GlobalEventService.saveFile(
+                        event.globalEventPK.eventId,
+                        event.eventDescription,
+                        false
+                    );
+                    current += increment;
+                    progress.report({ increment: current });
+                    return true;
+                }));
+            }
+        );
+
+        window.showInformationMessage(`${results.length} Eventos Globais foram importados.`);
     }
 
     public static async export(fileUri: Uri) {
@@ -233,7 +253,7 @@ export class GlobalEventService {
     /**
      * Criar arquivo de evento global
      */
-     public static async saveFile(name: string, content: string) {
+     public static async saveFile(name: string, content: string, openFile: boolean = true) {
         const uri = Uri.joinPath(UtilsService.getWorkspaceUri(), "events", name + ".js");
 
         await workspace.fs.writeFile(
@@ -241,6 +261,9 @@ export class GlobalEventService {
             Buffer.from(content, "utf-8")
         );
 
-        window.showInformationMessage(`Evento global ${name} importado com sucesso!`);
+        if (openFile) {
+            window.showTextDocument(uri);
+            window.showInformationMessage(`Evento global ${name} importado com sucesso!`);
+        }
     }
 }

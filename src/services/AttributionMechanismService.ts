@@ -1,10 +1,10 @@
-import { Uri, window, workspace } from 'vscode';
+import { Uri, window, workspace, ProgressLocation } from 'vscode';
 import { basename } from "path";
 import { UtilsService } from './UtilsService';
 import { ServerDTO } from '../models/ServerDTO';
 import { AttributionMechanismDTO } from '../models/AttributionMechanismDTO';
 import { ServerService } from './ServerService';
-import { readFileSync } from 'fs';
+import { open, readFileSync } from 'fs';
 import {LoginService} from "./LoginService";
 
 const basePath = "/ecm/api/rest/ecm/mechanism/";
@@ -164,13 +164,36 @@ export class AttributionMechanismService {
 
         const mechanisms = await AttributionMechanismService.getOptionsSelected(server);
 
-        if (!mechanisms.length) {
+        if (!mechanisms || !mechanisms.length) {
             return;
         }
 
-        mechanisms.forEach(
-            mechanism => AttributionMechanismService.saveFile(mechanism.attributionMecanismPK.attributionMecanismId, mechanism.attributionMecanismDescription)
+        const results = await window.withProgress(
+            {
+                location: ProgressLocation.Notification,
+                title: "Importando Eventos Globais.",
+                cancellable: false
+            },
+            progress => {
+                const increment = 100 / mechanisms.length;
+                let current = 0;
+
+                progress.report({ increment: 0 });
+
+                return Promise.all(mechanisms.map(async mechanism => {
+                    AttributionMechanismService.saveFile(
+                        mechanism.attributionMecanismPK.attributionMecanismId,
+                        mechanism.attributionMecanismDescription,
+                        false
+                    );
+                    current += increment;
+                    progress.report({ increment: current });
+                    return true;
+                }));
+            }
         );
+
+        window.showInformationMessage(`${results.length} Mecanismos Customizados foram importados.`);
     }
 
     /**
@@ -299,7 +322,7 @@ export class AttributionMechanismService {
     /**
      * Cria o arquivo de Mecanismo de Atribuição
      */
-    private static async saveFile(name: string, content: string) {
+    private static async saveFile(name: string, content: string, openFile: boolean = true) {
         const fileUri = Uri.joinPath(UtilsService.getWorkspaceUri(), "mechanisms", name + ".js");
 
         await workspace.fs.writeFile(
@@ -307,7 +330,9 @@ export class AttributionMechanismService {
             Buffer.from(content, "utf-8")
         );
 
-        window.showTextDocument(fileUri);
-        window.showInformationMessage(`Mecanismo de Atribuição ${name} importado com sucesso!`);
+        if (openFile) {
+            window.showTextDocument(fileUri);
+            window.showInformationMessage(`Mecanismo de Atribuição ${name} importado com sucesso!`);
+        }
     }
 }

@@ -1,6 +1,6 @@
 import { ServerDTO } from "../models/ServerDTO";
 import { ServerService } from "./ServerService";
-import { window, workspace, Uri, FileType, ProgressLocation } from "vscode";
+import { window, workspace, Uri, ProgressLocation } from "vscode";
 import { basename } from "path";
 import { DatasetDTO } from "../models/DatasetDTO";
 import { DatasetStructureDTO } from "../models/DatasetStructureDTO";
@@ -207,17 +207,38 @@ export class DatasetService {
 
         const datasets = await DatasetService.getOptionsSelected(server);
 
-        if (!datasets) {
+        if (!datasets || !datasets.length) {
             return;
         }
 
-        datasets.map(async (item: any) => {
-            const dataset = await item;
-            DatasetService.saveFile(
-                dataset.datasetPK.datasetId,
-                dataset.datasetImpl
-            );
-        });
+
+        const results = await window.withProgress(
+            {
+                location: ProgressLocation.Notification,
+                title: "Importando Datasets.",
+                cancellable: false
+            },
+            progress => {
+                const increment = 100 / datasets.length;
+                let current = 0;
+
+                progress.report({ increment: 0 });
+
+                return Promise.all(datasets.map(async (item: any) => {
+                    const dataset = await item;
+                    DatasetService.saveFile(
+                        dataset.datasetPK.datasetId,
+                        dataset.datasetImpl,
+                        false
+                    );
+                    current += increment;
+                    progress.report({ increment: current });
+                    return true;
+                }));
+            }
+        );
+
+        window.showInformationMessage(`${results.length} datasets foram importados.`);
     }
 
     /**
@@ -563,7 +584,7 @@ export class DatasetService {
     /**
      * Criar arquivo de dataset
      */
-    public static async saveFile(name: string, content: string) {
+    public static async saveFile(name: string, content: string, openDatasetFile: boolean = true) {
         const datasetUri = Uri.joinPath(UtilsService.getWorkspaceUri(), "datasets", name + ".js");
 
         await workspace.fs.writeFile(
@@ -571,7 +592,9 @@ export class DatasetService {
             Buffer.from(content, "utf-8")
         );
 
-        window.showTextDocument(datasetUri);
-        window.showInformationMessage(`Dataset ${name} importado com sucesso!`);
+        if (openDatasetFile) {
+            window.showTextDocument(datasetUri);
+            window.showInformationMessage(`Dataset ${name} importado com sucesso!`);
+        }
     }
 }

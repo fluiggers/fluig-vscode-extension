@@ -2,6 +2,13 @@
 
 Lista de atualizações da Extensão.
 
+## 2.1.0
+
+Adiciona o comando "Exportar Datasets da Pasta". Esse comando permite exportar vários datasets de uma pasta
+selecionada, incluindo a própria pasta `datasets`.
+
+Adiciona barra de progresso a todos os comandos de importação/exportação de vários itens de uma vez.
+
 ## 2.0.0
 
 **IMPORTANTE**: A partir desta versão a Extensão perde suporte à versão 1.8.1 do Fluig.
