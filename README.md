@@ -132,7 +132,10 @@ selecionar a opção __Novo Dataset__ para criar o Dataset no servidor.
 
 Também é possível exportar múltiplos datasets de uma só vez clicando com o botão direito em uma pasta dentro do diretório `datasets`.
 A extensão irá procurar recursivamente por todos os datasets dentro da pasta selecionada e suas subpastas, permitindo que você
-exporte todos eles de uma vez para o servidor selecionado.
+exporte todos eles de uma vez para o servidor selecionado (antes é necessário selecionar os datasets).
+Caso execute esse comando pelo __Command Pallete__ (pressionando F1) a extensão entenderá que quer exportar todos os datasets do projeto.
+É possível informar que deseja escrever a descrição dos novos datasets (se indicar em não o id do dataset será a sua descrição). Os
+datasets já existentes no servidor manterão a sua descrição original.
 
 ## Novo Formulário
 
