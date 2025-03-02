@@ -146,6 +146,16 @@
                 }
             },
             {
+                "command": "fluiggers-fluig-vscode-extension.exportDataset",
+                "title": "Exportar Dataset",
+                "category": "Fluig"
+            },
+            {
+                "command": "fluiggers-fluig-vscode-extension.exportDatasetFolder",
+                "title": "Exportar Datasets da Pasta",
+                "category": "Fluig"
+            },
+            {
                 "command": "fluiggers-fluig-vscode-extension.importDataset",
                 "title": "Importar Dataset",
                 "category": "Fluig"
@@ -153,11 +163,6 @@
             {
                 "command": "fluiggers-fluig-vscode-extension.importManyDataset",
                 "title": "Importar Vários Datasets",
-                "category": "Fluig"
-            },
-            {
-                "command": "fluiggers-fluig-vscode-extension.exportDataset",
-                "title": "Exportar Dataset",
                 "category": "Fluig"
             },
             {
@@ -241,6 +246,10 @@
                 {
                     "command": "fluiggers-fluig-vscode-extension.datasetView",
                     "when": "false"
+                },
+                {
+                    "command": "fluiggers-fluig-vscode-extension.exportDatasetFolder",
+                    "when": "explorerResourceIsFolder"
                 }
             ],
             "explorer/context": [
@@ -249,21 +258,26 @@
                     "group": "1_Fluig1Dataset@1"
                 },
                 {
-                    "command": "fluiggers-fluig-vscode-extension.importManyDataset",
+                    "command": "fluiggers-fluig-vscode-extension.exportDataset",
+                    "when": "resourcePath =~ /[\\/\\\\]datasets[\\/\\\\].+$/",
                     "group": "1_Fluig1Dataset@2"
                 },
                 {
-                    "command": "fluiggers-fluig-vscode-extension.importDataset",
+                    "command": "fluiggers-fluig-vscode-extension.exportDatasetFolder",
+                    "when": "explorerResourceIsFolder && resourcePath =~ /.*[\\/\\\\]datasets[\\/\\\\]?.*/",
                     "group": "1_Fluig1Dataset@3"
                 },
                 {
-                    "command": "fluiggers-fluig-vscode-extension.exportDataset",
-                    "when": "resourcePath =~ /[\\/\\\\]datasets[\\/\\\\].+$/",
+                    "command": "fluiggers-fluig-vscode-extension.importDataset",
                     "group": "1_Fluig1Dataset@4"
                 },
                 {
-                    "command": "fluiggers-fluig-vscode-extension.searchDataset",
+                    "command": "fluiggers-fluig-vscode-extension.importManyDataset",
                     "group": "1_Fluig1Dataset@5"
+                },
+                {
+                    "command": "fluiggers-fluig-vscode-extension.searchDataset",
+                    "group": "1_Fluig1Dataset@6"
                 },
                 {
                     "command": "fluiggers-fluig-vscode-extension.newForm",

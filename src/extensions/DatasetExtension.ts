@@ -29,6 +29,10 @@ export class DatasetExtension {
             "fluiggers-fluig-vscode-extension.searchDataset",
             DatasetExtension.searchDataset(context)
         ));
+        context.subscriptions.push(vscode.commands.registerCommand(
+            "fluiggers-fluig-vscode-extension.exportDatasetFolder",
+            DatasetExtension.exportDatasetFolder
+        ));
     }
 
     /**
@@ -89,5 +93,16 @@ export class DatasetExtension {
             }
             new DatasetView(context, server).show();
         };
+    }
+
+    /**
+     * Exporta todos os datasets de uma pasta selecionada
+     * 
+     * Se não tiver pasta selecionada entende-se que é pra exportar todos os
+     * datasets do workspace.
+     */
+    private static exportDatasetFolder(folderUri: vscode.Uri) {
+        const datasetsUri = folderUri ? folderUri : vscode.Uri.joinPath(UtilsService.getWorkspaceUri(), "datasets");
+        DatasetService.exportFromFolder(datasetsUri);
     }
 }
