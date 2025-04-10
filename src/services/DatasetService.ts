@@ -189,10 +189,31 @@ export class DatasetService {
             return;
         }
 
-        DatasetService.saveFile(
-            dataset.datasetPK.datasetId,
-            dataset.datasetImpl
-        );
+        const datasetId = dataset.datasetPK.datasetId;
+        const workspaceUri = UtilsService.getWorkspaceUri();
+
+        // Busca por arquivos de dataset com o mesmo nome
+        const existingFiles = glob.sync(workspaceUri.fsPath + "/**/" + datasetId + ".js", {nodir: true});
+
+        if (existingFiles.length === 1) {
+            // Se achar apenas um arquivo, ele vai ser atualizado com o código do dataset importado, mantendo o caminho que o dataset que já existe
+            const targetPath = existingFiles[0];
+
+            // Escreve no arquivo existente
+            await workspace.fs.writeFile(
+                Uri.file(targetPath),
+                Buffer.from(dataset.datasetImpl, "utf-8")
+            );
+
+            window.showTextDocument(Uri.file(targetPath));
+            window.showInformationMessage(`Dataset ${datasetId} atualizado com sucesso!`);
+        } else {
+            // Se não achar nenhum arquivo ou achar mais de um, vai ser salvo na pasta padrão ./datasets
+            DatasetService.saveFile(
+                datasetId,
+                dataset.datasetImpl
+            );
+        }
     }
 
     /**
@@ -211,6 +232,7 @@ export class DatasetService {
             return;
         }
 
+        const workspaceUri = UtilsService.getWorkspaceUri();
 
         const results = await window.withProgress(
             {
@@ -226,11 +248,26 @@ export class DatasetService {
 
                 return Promise.all(datasets.map(async (item: any) => {
                     const dataset = await item;
-                    DatasetService.saveFile(
-                        dataset.datasetPK.datasetId,
-                        dataset.datasetImpl,
-                        false
-                    );
+                    const datasetId = dataset.datasetPK.datasetId;
+
+                    // Busca por arquivos de dataset com o mesmo nome
+                    const existingFiles = glob.sync(workspaceUri.fsPath + "/**/" + datasetId + ".js", {nodir: true});
+
+                    if (existingFiles.length === 1) {
+                        // Se achar apenas um arquivo, ele vai ser atualizado com o código do dataset importado, mantendo o caminho que o dataset que já existe
+                        await workspace.fs.writeFile(
+                            Uri.file(existingFiles[0]),
+                            Buffer.from(dataset.datasetImpl, "utf-8")
+                        );
+                    } else {
+                        // Se não achar nenhum arquivo ou achar mais de um, vai ser salvo na pasta padrão ./datasets
+                        DatasetService.saveFile(
+                            datasetId,
+                            dataset.datasetImpl,
+                            false
+                        );
+                    }
+
                     current += increment;
                     progress.report({ increment: current });
                     return true;
