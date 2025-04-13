@@ -183,7 +183,7 @@ export class DatasetService {
             return;
         }
 
-        const dataset:any = await DatasetService.getOptionSelected(server);
+        const dataset: any = await DatasetService.getOptionSelected(server);
 
         if (!dataset) {
             return;
@@ -193,7 +193,10 @@ export class DatasetService {
         const workspaceUri = UtilsService.getWorkspaceUri();
 
         // Busca por arquivos de dataset com o mesmo nome
-        const existingFiles = glob.sync(workspaceUri.fsPath + "/**/" + datasetId + ".js", {nodir: true});
+        const existingFiles = glob.sync(
+            workspaceUri.fsPath + "/**/" + datasetId + ".js",
+            { nodir: true }
+        );
 
         if (existingFiles.length === 1) {
             // Se achar apenas um arquivo, ele vai ser atualizado com o código do dataset importado, mantendo o caminho que o dataset que já existe
@@ -206,12 +209,14 @@ export class DatasetService {
             );
 
             window.showTextDocument(Uri.file(targetPath));
-            window.showInformationMessage(`Dataset ${datasetId} atualizado com sucesso!`);
+            window.showInformationMessage(
+                `Dataset ${datasetId} atualizado com sucesso!`
+            );
         } else {
             // Se não achar nenhum arquivo ou achar mais de um, vai ser salvo na pasta padrão ./datasets
-            DatasetService.saveFile(
-                datasetId,
-                dataset.datasetImpl
+            DatasetService.saveFile(datasetId, dataset.datasetImpl);
+            window.showInformationMessage(
+                `Dataset ${datasetId} importado com sucesso!`
             );
         }
     }
@@ -238,169 +243,51 @@ export class DatasetService {
             {
                 location: ProgressLocation.Notification,
                 title: "Importando Datasets.",
-                cancellable: false
+                cancellable: false,
             },
-            progress => {
+            (progress) => {
                 const increment = 100 / datasets.length;
                 let current = 0;
 
                 progress.report({ increment: 0 });
 
-                return Promise.all(datasets.map(async (item: any) => {
-                    const dataset = await item;
-                    const datasetId = dataset.datasetPK.datasetId;
+                return Promise.all(
+                    datasets.map(async (item: any) => {
+                        const dataset = await item;
+                        const datasetId = dataset.datasetPK.datasetId;
 
-                    // Busca por arquivos de dataset com o mesmo nome
-                    const existingFiles = glob.sync(workspaceUri.fsPath + "/**/" + datasetId + ".js", {nodir: true});
-
-                    if (existingFiles.length === 1) {
-                        // Se achar apenas um arquivo, ele vai ser atualizado com o código do dataset importado, mantendo o caminho que o dataset que já existe
-                        await workspace.fs.writeFile(
-                            Uri.file(existingFiles[0]),
-                            Buffer.from(dataset.datasetImpl, "utf-8")
+                        // Busca por arquivos de dataset com o mesmo nome
+                        const existingFiles = glob.sync(
+                            workspaceUri.fsPath + "/**/" + datasetId + ".js",
+                            { nodir: true }
                         );
-                    } else {
-                        // Se não achar nenhum arquivo ou achar mais de um, vai ser salvo na pasta padrão ./datasets
-                        DatasetService.saveFile(
-                            datasetId,
-                            dataset.datasetImpl,
-                            false
-                        );
-                    }
 
-                    current += increment;
-                    progress.report({ increment: current });
-                    return true;
-                }));
+                        if (existingFiles.length === 1) {
+                            // Se achar apenas um arquivo, ele vai ser atualizado com o código do dataset importado, mantendo o caminho que o dataset que já existe
+                            await workspace.fs.writeFile(
+                                Uri.file(existingFiles[0]),
+                                Buffer.from(dataset.datasetImpl, "utf-8")
+                            );
+                        } else {
+                            // Se não achar nenhum arquivo ou achar mais de um, vai ser salvo na pasta padrão ./datasets
+                            DatasetService.saveFile(
+                                datasetId,
+                                dataset.datasetImpl,
+                                false
+                            );
+                        }
+
+                        current += increment;
+                        progress.report({ increment: current });
+                        return true;
+                    })
+                );
             }
         );
 
-        window.showInformationMessage(`${results.length} datasets foram importados.`);
-    }
-
-    /**
-     * Criar ou atualizar dataset no servidor
-     */
-     public static async export(fileUri: Uri) {
-        const server = await ServerService.getSelect();
-
-        if (!server) {
-            return;
-        }
-
-        const datasets = await DatasetService.getDatasetsCustom(server);
-        const items = [];
-
-        let datasetIdSelected: string = "";
-        let datasetId: string = basename(fileUri.fsPath, ".js");
-
-        for (let dataset of datasets) {
-            if (dataset.datasetId !== datasetId) {
-                items.push({ label: dataset.datasetId });
-            } else {
-                datasetIdSelected = dataset.datasetId;
-            }
-        }
-
-        items.unshift({ label: "Novo dataset" });
-
-        if (datasetIdSelected !== "") {
-            items.unshift({ label: datasetIdSelected });
-        }
-
-        const dataset = await window.showQuickPick(items, {
-            placeHolder: "Criar ou editar dataset?"
-        });
-
-        if (!dataset) {
-            return;
-        }
-
-        const isNewDataset = dataset.label === "Novo dataset";
-        let datasetStructure: DatasetStructureDTO | undefined = undefined;
-        let description: string = "";
-
-        if (isNewDataset) {
-            let isDatasetExist: boolean = false;
-
-            do {
-                datasetId = await window.showInputBox({
-                    prompt: "Qual o nome do Dataset (sem espaços e sem caracteres especiais)?",
-                    placeHolder: "ds_nome_dataset",
-                    value: datasetId
-                }) || "";
-
-                if (!datasetId) {
-                    return;
-                }
-
-                isDatasetExist = datasets.find((dataset => dataset.datasetId === datasetId)) !== undefined;
-
-                if (isDatasetExist) {
-                    window.showWarningMessage(`O dataset "${datasetId}" já existe no servidor "${server.name}"!`);
-                }
-            } while (isDatasetExist);
-
-            description = await window.showInputBox({
-                prompt: "Qual a descrição do dataset?",
-                placeHolder: "Descrição do dataset",
-                value: datasetId
-            }) || "";
-
-            datasetStructure = {
-                datasetPK: {
-                    companyId: server.companyId,
-                    datasetId: datasetId,
-                },
-                datasetDescription: description,
-                datasetImpl: "",
-                datasetBuilder: "com.datasul.technology.webdesk.dataset.CustomizedDatasetBuilder",
-                serverOffline: false,
-                mobileCache: false,
-                lastReset: 0,
-                lastRemoteSync: 0,
-                type: "CUSTOM",
-                mobileOffline: false,
-                updateIntervalTimestamp: 0
-            };
-        } else {
-            datasetId = dataset.label;
-
-            datasetStructure = await DatasetService.getDataset(server, datasetId);
-
-            description = await window.showInputBox({
-                prompt: "Qual a descrição do dataset?",
-                placeHolder: "Descrição do dataset",
-                value: datasetStructure?.datasetDescription || datasetId
-            }) || "";
-        }
-
-        if (!description || !datasetStructure) {
-            return;
-        }
-
-        const file = readFileSync(fileUri.fsPath, "utf8");
-        datasetStructure.datasetDescription = description;
-        datasetStructure.datasetImpl = file;
-
-        let result: any = undefined;
-
-        // Validar senha antes de exportar
-        if (server.confirmExporting && !(await UtilsService.confirmPassword(server))) {
-            return;
-        }
-
-        if (isNewDataset) {
-            result = await DatasetService.createDataset(server, datasetStructure);
-        } else {
-            result = await DatasetService.updateDataset(server, datasetStructure);
-        }
-
-        if (result.content === "OK") {
-            window.showInformationMessage(`Dataset ${datasetId} exportado com sucesso!`);
-        } else {
-			window.showErrorMessage(`Falha ao exportar o dataset ${datasetId}!\n${result.message.message}`);
-        }
+        window.showInformationMessage(
+            `${results.length} datasets foram importados.`
+        );
     }
 
     /**
