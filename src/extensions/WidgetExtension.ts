@@ -23,5 +23,15 @@ export class WidgetExtension {
                 WidgetService.export(fileUri);
             }
         ));
+
+        context.subscriptions.push(commands.registerCommand(
+            "fluiggers-fluig-vscode-extension.importWidget",
+            WidgetService.import
+        ));
+
+        context.subscriptions.push(commands.registerCommand(
+            "fluiggers-fluig-vscode-extension.exportFluiggersWidget",
+            WidgetService.exportFluiggersWidget
+        ));
     }
 }

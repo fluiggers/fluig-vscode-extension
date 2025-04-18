@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import { ServerDTO } from '../models/ServerDTO';
+import { LoginService } from './LoginService';
 
 export class UtilsService {
     public static generateRandomID() {
@@ -68,5 +69,30 @@ export class UtilsService {
         } while (!isPasswordCorrect);
 
         return isPasswordCorrect;
+    }
+
+    public static async validateServerHasFluiggersWidget(server: ServerDTO) {
+        const url = new URL(`${UtilsService.getHost(server)}/fluiggersWidget/api/ping`);
+
+        const hasWidget = await fetch(
+            url,
+            {
+                method: "GET",
+                headers: { 'Cookie': await LoginService.loginAndGetCookies(server) },
+            }
+        )
+        .then(async function (r) {
+            if (r.status != 200) {
+                return false;
+            }
+
+            return 'pong' === await r.text();
+        });
+
+        console.log(hasWidget);
+
+        if (!hasWidget) {
+            throw new Error("Você precisa instalar a FluiggersWdiget nesse servidor para executar essa operação.")
+        }
     }
 }
