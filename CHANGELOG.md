@@ -2,6 +2,19 @@
 
 Lista de atualizações da Extensão.
 
+## 2.2.0
+
+Adicona os comandos "Exportar Fluiggers Widget" e "Importar Widget".
+
+A "Fluiggers Widget" é uma widget criada pela comunidade Fluiggers para permitir executar comandos diretamente
+no servidor Fluig. Seu código fonte está no repositório [fluig-widget-helper](https://github.com/fluiggers/fluig-widget-helper).
+
+O comando "Importar Widget" permite importar várias widgets do servidor Fluig, porém para executá-lo é
+necessário ter enviado a "Fluiggers Widget" para o servidor Fluig.
+
+Agora ao importar Datasets se for identificado que ele já existe em alguma sub-pasta da `datasets` ele será
+sobreescrito ao invés de importar um novo arquivo na pasta datasets.
+
 ## 2.1.0
 
 Adiciona o comando "Exportar Datasets da Pasta". Esse comando permite exportar vários datasets de uma pasta

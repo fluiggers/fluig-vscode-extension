@@ -75,6 +75,8 @@ Após abrir a pasta do projeto Fluig as seguintes funcionalidades serão disponi
 - [Exportar Mecanismo de Atribuição Customizado](#exportar-mecanismo-de-atribuição-customizado)
 - [Novo Widget](#novo-widget)
 - [Exportar Widget](#exportar-widget)
+- [Exportar Fluiggers Widget](#exportar-fluiggers-widget)
+- [Importar Widget](#importar-widget)
 - [Snippets para HTML](#snippets-para-html)
 - [Snippets para JavaScript](#snippets-para-javascript)
 
@@ -274,6 +276,21 @@ Para exportar Widget clique com o botão direito do mouse sobre a Widget, ou qua
 e selecione `Exportar Widget` ou, enquanto editando a Widget, utilize o atalho __CTRL + F9__ (CMD + F9 no Mac).
 
 Após selecionar o servidor o Widget será exportado automaticamente.
+
+## Exportar Fluiggers Widget
+
+Esse comando é executado somente no __Command Palette__. Ele exporta para o servidor Fluig a widget
+[FluiggersWidget](https://github.com/fluiggers/fluig-widget-helper). Com ela será possível executar
+comandos no Fluig que não existiam, como a opção de Importar Widgets.
+
+Após selecionar o servidor o Widget será exportado automaticamente.
+
+## Importar Widget
+
+Esse comando é executado somente no __Command Palette__. Ele importa as widgets selecionadas do servidor
+escolhido.
+
+É necessário que a `FluiggersWidget` esteja presente no servidor Fluig.
 
 ## Snippets para HTML
 

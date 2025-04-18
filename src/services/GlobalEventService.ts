@@ -33,8 +33,8 @@ export class GlobalEventService {
             }
 
             return response;
-        } catch (error) {
-            window.showErrorMessage(`Erro: ${error}`);
+        } catch (error: any) {
+            window.showErrorMessage(error.message || error);
         }
 
         return [];
@@ -56,8 +56,8 @@ export class GlobalEventService {
                 UtilsService.getRestUrl(server, basePath, "saveEventList"),
                 requestOptions
             ).then(r => r.json());
-        } catch (error) {
-            window.showErrorMessage(`Erro: ${error}`);
+        } catch (error: any) {
+            window.showErrorMessage(error.message || error);
         }
     }
 

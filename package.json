@@ -2,7 +2,7 @@
     "name": "fluiggers-fluig-vscode-extension",
     "displayName": "Fluig - Extensão para Desenvolvimento",
     "description": "Extensão para agilizar o desenvolvimento para o TOTVS Fluig no VS Code",
-    "version": "2.1.0",
+    "version": "2.2.0",
     "publisher": "Fluiggers",
     "icon": "images/icon.png",
     "repository": {
@@ -107,6 +107,16 @@
             {
                 "command": "fluiggers-fluig-vscode-extension.exportWidget",
                 "title": "Exportar Widget",
+                "category": "Fluig"
+            },
+            {
+                "command": "fluiggers-fluig-vscode-extension.importWidget",
+                "title": "Importar Widget",
+                "category": "Fluig"
+            },
+            {
+                "command": "fluiggers-fluig-vscode-extension.exportFluiggersWidget",
+                "title": "Exportar Fluiggers Widget",
                 "category": "Fluig"
             },
             {
@@ -348,6 +358,10 @@
                     "command": "fluiggers-fluig-vscode-extension.exportWidget",
                     "when": "resourcePath =~ /[\\/\\\\]widget[\\/\\\\].+$/",
                     "group": "1_Fluig5WCM@2"
+                },
+                {
+                    "command": "fluiggers-fluig-vscode-extension.importWidget",
+                    "group": "1_Fluig5WCM@3"
                 }
             ],
             "view/title": [
@@ -464,7 +478,8 @@
             "fluig-config": [
                 {
                     "id": "fluiggers-fluig-vscode-extension.servers",
-                    "name": "Servidores"
+                    "name": "Servidores",
+                    "icon": "dist/images/icon-brand.png"
                 }
             ]
         },
