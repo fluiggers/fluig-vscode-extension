@@ -245,7 +245,7 @@ export class DatasetService {
                 title: "Importando Datasets.",
                 cancellable: false,
             },
-            (progress) => {
+            progress => {
                 const increment = 100 / datasets.length;
                 let current = 0;
 
