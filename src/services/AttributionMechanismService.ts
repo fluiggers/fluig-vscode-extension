@@ -28,8 +28,8 @@ export class AttributionMechanismService {
             }
 
             return response;
-        } catch (error) {
-            window.showErrorMessage(`Erro: ${error}`);
+        } catch (error: any) {
+            window.showErrorMessage(error.message || error);
         }
 
         return [];

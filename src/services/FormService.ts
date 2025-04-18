@@ -136,8 +136,9 @@ export class FormService {
     /**
      * Retorna os formulários selecionados
      */
-     public static async getOptionsSelected(server: ServerDTO) {
+    public static async getOptionsSelected(server: ServerDTO) {
         const forms = await FormService.getForms(server);
+
         const items = forms.map(form => ({
             label: form.documentId + ' - ' + form.documentDescription,
             detail: form.datasetName
