@@ -250,11 +250,7 @@ export class WidgetService {
                 return;
             }
 
-            console.log("selecionou servidor");
-
             const widgets = await WidgetService.getOptionsSelected(server);
-
-            console.log(widgets);
 
             if (!widgets || !widgets.length) {
                 return;
