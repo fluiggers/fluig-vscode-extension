@@ -190,11 +190,11 @@ export class DatasetService {
         }
 
         const datasetId = dataset.datasetPK.datasetId;
-        const workspaceUri = UtilsService.getWorkspaceUri();
+        const datasetFolderUri = Uri.joinPath(UtilsService.getWorkspaceUri(), "datasets");
 
         // Busca por arquivos de dataset com o mesmo nome
         const existingFiles = glob.sync(
-            workspaceUri.fsPath + "/**/" + datasetId + ".js",
+            datasetFolderUri.fsPath + "/**/" + datasetId + ".js",
             { nodir: true }
         );
 
@@ -237,7 +237,7 @@ export class DatasetService {
             return;
         }
 
-        const workspaceUri = UtilsService.getWorkspaceUri();
+        const datasetFolderUri = Uri.joinPath(UtilsService.getWorkspaceUri(), "datasets");
 
         const results = await window.withProgress(
             {
@@ -258,7 +258,7 @@ export class DatasetService {
 
                         // Busca por arquivos de dataset com o mesmo nome
                         const existingFiles = glob.sync(
-                            workspaceUri.fsPath + "/**/" + datasetId + ".js",
+                            datasetFolderUri.fsPath + "/**/" + datasetId + ".js",
                             { nodir: true }
                         );
 
