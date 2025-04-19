@@ -66,6 +66,7 @@ Após abrir a pasta do projeto Fluig as seguintes funcionalidades serão disponi
 - [Importar Formulário e Importar Vários Formulários](#importar-formulário)
 - [Exportar Formulário](#exportar-formulário)
 - [Novo Evento de Processo](#novo-evento-de-processo)
+- [Atualizar Evento de Processo](#atualizar-evento-de-processo)
 - [Novo Evento Global](#novo-evento-global)
 - [Importar Evento Global e Importar Vários Eventos Globais](#importar-evento-global)
 - [Exportar Evento Global](#exportar-evento-global)
@@ -88,8 +89,6 @@ adicionar, editar e remover servidores Fluig.
 A senha é criptografada utilizando identificadores do computador como chave da criptografia, assim não é possível
 decifrar a senha em outro computador, prevenindo a perda de credenciais.
 
-![Gerenciando Servidores](images/gerenciar_servidores.jpg)
-
 Ao clicar em um servidor é possível visualizar alguns comandos disponíveis. Com eles podemos consultar dataset, serviços etc.
 
 ### Consultar Dataset
@@ -102,8 +101,6 @@ Diferente do plugin do Eclipse a Consulta de Dataset permite informar uma Constr
 sendo útil para consulta de Pai Filho ou de Datasets que aceitam Constraints que não são campos retornados.
 
 Diferente do Plugin do Eclipse é possível efetuar várias consultas aos Datasets, cada consulta em sua aba.
-
-![Tela de Consulta](images/dataset_consultar.jpg)
 
 ## Novo Dataset
 
@@ -200,6 +197,23 @@ contém a estrutura da função do evento selecionado.
 
 É possível criar uma função compartilhada para o processo selecionando a opção __Nova Função__ no
 menu de eventos. Quando o fizer será solicitado que informe o nome da função.
+
+## Atualizar Evento de Processo
+
+Esse comando permite enviar para o servidor Fluig os eventos já existentes no servidor, atualizando esses
+eventos sem a necessidade de aumentar a versão do Processo.
+
+Utilize esse comando para agilizar no desenvolvimento dos eventos e para correções pontuais em Produção. Efetue
+essas correções somente nos casos que são erros nos quais ter que aumentar a versão do processo e efetuar a
+conversão de diversas solicitações será um problema.
+
+Também é possível indicar uma versão mais antiga do processo, efetuando alguma correção retroativa.
+
+Esse comando é exibido no menu de contexto ao selecionar um evento de processo, que são arquivos .js que estão
+em `workflow/scripts`. Também é possível acionar o comando com o atalho __CTRL + F9__ (CMD + F9 no Mac)
+enquanto estiver editando um evento de processo.
+
+É necessário que a `FluiggersWidget` esteja presente no servidor Fluig.
 
 ## Novo Evento Global
 

@@ -2,6 +2,12 @@
 
 Lista de atualizações da Extensão.
 
+## 2.3.0
+
+Adiciona o comando "Atualizar Evento de Processo", o qual permite atualizar um evento de processo
+sem a necessidade de mudar a versão do processo no servidor Fluig, além de permitir atualizar eventos
+de versões anteriores.
+
 ## 2.2.0
 
 Adicona os comandos "Exportar Fluiggers Widget" e "Importar Widget".
