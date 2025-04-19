@@ -65,6 +65,11 @@
                 "category": "Fluig"
             },
             {
+                "command": "fluiggers-fluig-vscode-extension.updateWorkflowEvent",
+                "title": "Atualizar Evento de Processo",
+                "category": "Fluig"
+            },
+            {
                 "command": "fluiggers-fluig-vscode-extension.newGlobalEvent",
                 "title": "Novo Evento Global",
                 "category": "Fluig"
@@ -226,6 +231,10 @@
                     "when": "false"
                 },
                 {
+                    "command": "fluiggers-fluig-vscode-extension.updateWorkflowEvent",
+                    "when": "false"
+                },
+                {
                     "command": "fluiggers-fluig-vscode-extension.exportDataset",
                     "when": "false"
                 },
@@ -334,21 +343,26 @@
                     "group": "1_Fluig4Workflow@1"
                 },
                 {
-                    "command": "fluiggers-fluig-vscode-extension.exportMechanism",
-                    "when": "resourcePath =~ /[\\/\\\\]mechanisms[\\/\\\\].+$/",
+                    "command": "fluiggers-fluig-vscode-extension.updateWorkflowEvent",
+                    "when": "resourcePath =~ /[\\/\\\\]workflow[\\/\\\\]scripts[\\/\\\\].+\\.js$/",
                     "group": "1_Fluig4Workflow@2"
                 },
                 {
-                    "command": "fluiggers-fluig-vscode-extension.newMechanism",
+                    "command": "fluiggers-fluig-vscode-extension.exportMechanism",
+                    "when": "resourcePath =~ /[\\/\\\\]mechanisms[\\/\\\\].+$/",
                     "group": "1_Fluig4Workflow@3"
                 },
                 {
-                    "command": "fluiggers-fluig-vscode-extension.importManyMechanisms",
+                    "command": "fluiggers-fluig-vscode-extension.newMechanism",
                     "group": "1_Fluig4Workflow@4"
                 },
                 {
-                    "command": "fluiggers-fluig-vscode-extension.importMechanism",
+                    "command": "fluiggers-fluig-vscode-extension.importManyMechanisms",
                     "group": "1_Fluig4Workflow@5"
+                },
+                {
+                    "command": "fluiggers-fluig-vscode-extension.importMechanism",
+                    "group": "1_Fluig4Workflow@6"
                 },
                 {
                     "command": "fluiggers-fluig-vscode-extension.newWidget",
@@ -462,6 +476,12 @@
                 "command": "fluiggers-fluig-vscode-extension.newWorkflowEvent",
                 "key": "ctrl+f12",
                 "mac": "cmd+f12",
+                "when": "editorTextFocus && resourcePath =~ /[\\/\\\\]workflow[\\/\\\\]scripts[\\/\\\\].+\\.js$/"
+            },
+            {
+                "command": "fluiggers-fluig-vscode-extension.updateWorkflowEvent",
+                "key": "ctrl+f9",
+                "mac": "cmd+f9",
                 "when": "editorTextFocus && resourcePath =~ /[\\/\\\\]workflow[\\/\\\\]scripts[\\/\\\\].+\\.js$/"
             }
         ],
