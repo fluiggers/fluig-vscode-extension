@@ -13,3 +13,4 @@ resources/**
 gulpfile.js
 webpack.config.js
 templates/**
+.github/**
