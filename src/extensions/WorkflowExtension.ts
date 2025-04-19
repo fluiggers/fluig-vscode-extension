@@ -3,6 +3,7 @@ import { UtilsService } from "../services/UtilsService";
 import { readFileSync } from "fs";
 import { TemplateService } from "../services/TemplateService";
 import { AttributionMechanismService } from '../services/AttributionMechanismService';
+import { WorkflowService } from '../services/WorkflowService';
 
 export class WorkflowExtension {
 
@@ -10,6 +11,10 @@ export class WorkflowExtension {
         context.subscriptions.push(vscode.commands.registerCommand(
             "fluiggers-fluig-vscode-extension.newWorkflowEvent",
             WorkflowExtension.createWorkflowEvent
+        ));
+        context.subscriptions.push(vscode.commands.registerCommand(
+            "fluiggers-fluig-vscode-extension.updateWorkflowEvent",
+            WorkflowExtension.updateWorkflowEvent
         ));
         context.subscriptions.push(vscode.commands.registerCommand(
             "fluiggers-fluig-vscode-extension.newMechanism",
@@ -36,14 +41,14 @@ export class WorkflowExtension {
         // Ativado pelo Atalho
         if (!folderUri) {
             if (!vscode.window.activeTextEditor) {
-                vscode.window.showErrorMessage("Não há editor de texto ativo com Dataset");
+                vscode.window.showErrorMessage("Não há editor de texto ativo com Processo ou Evento de Processo");
                 return;
             }
             folderUri = vscode.window.activeTextEditor.document.uri;
         }
 
         if (!folderUri.path.endsWith(".process") && !folderUri.path.endsWith(".js")) {
-            vscode.window.showErrorMessage("Necessário selecionar um Processo para criar o evento.");
+            vscode.window.showErrorMessage("Necessário selecionar um Processo ou Evento de Processo para criar o Evento.");
             return;
         }
 
@@ -104,6 +109,27 @@ export class WorkflowExtension {
                 : readFileSync(vscode.Uri.joinPath(TemplateService.workflowEventsUri, `${eventName}.txt`).fsPath)
         );
         vscode.window.showTextDocument(eventUri);
+    }
+
+    /**
+     * Atualiza um ou mais eventos de processo
+     */
+    private static async updateWorkflowEvent(fileUri: vscode.Uri) {
+        // Ativado pelo Atalho
+        if (!fileUri) {
+            if (!vscode.window.activeTextEditor) {
+                vscode.window.showErrorMessage("Não há editor de texto ativo com um Evento de Processo");
+                return;
+            }
+            fileUri = vscode.window.activeTextEditor.document.uri;
+        }
+
+        if (!fileUri.path.endsWith(".js")) {
+            vscode.window.showErrorMessage("Necessário selecionar um Evento de Processo.");
+            return;
+        }
+
+        WorkflowService.updateEvents(fileUri);
     }
 
     /**

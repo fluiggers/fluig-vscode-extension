@@ -89,8 +89,6 @@ export class UtilsService {
             return 'pong' === await r.text();
         });
 
-        console.log(hasWidget);
-
         if (!hasWidget) {
             throw new Error("Você precisa instalar a FluiggersWdiget nesse servidor para executar essa operação.")
         }
