@@ -355,8 +355,18 @@ ser utilizado em qual dos dois ambientes.
 - __fluig-modal__: Criar modal do Fluig
 - __fluig-widget__: Criar o esqueleto de uma Widget
 
-## Colaboração
+## Contribuindo com o Projeto
 
 Sinta-se à vontade para colaborar criando mais snippets, templates de arquivos e comandos.
 
 Basta criar um fork e efetuar uma PR quando estiver pronto.
+
+### Contribuidores
+
+- [Bruno Gasparetto](https://github.com/brunogasparetto)
+- [Bruno T. Araujo](https://github.com/brunotda)
+- [Daniel Bom Conselho Sales](https://github.com/danielbomconselho)
+- [Isaac Figueiredo](https://github.com/isacfg)
+- [Jhonatan Serafim](https://github.com/jhonnytuba)
+- [Matheus Mósso](https://github.com/msmosso)
+- [Pedro Costa](https://github.com/pedro-costa-neto)
