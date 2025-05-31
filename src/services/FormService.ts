@@ -298,8 +298,12 @@ export class FormService {
         }
 
         const formFolder = Uri.joinPath(UtilsService.getWorkspaceUri(), 'forms', formFolderName).fsPath;
+        const isEvent = /[/\\]events$/;
 
-        for (let attachmentPath of glob.sync(formFolder + "/**/*.*", {nodir: true, ignore: formFolder + "/events/**/*.*"})) {
+        for (let attachmentPath of glob.sync(`${formFolder}/**/*.*`, {
+            nodir: true,
+            ignore: { ignored: (path => isEvent.test(path.parentPath) ) }
+        })) {
             const pathParsed = parse(attachmentPath);
 
             const attachment: AttachmentDTO = {
