@@ -2,6 +2,15 @@
 
 Lista de atualizações da Extensão.
 
+## 2.4.0
+
+Efetua correções tipográficas e adiciona os seguintes snippets.
+
+- fluig-checkbox-switch;
+- fluig-pai-filho;
+- fluig-pai-filho-nobuttons;
+- fluig-pai-filho-panel;
+
 ## 2.3.0
 
 Adiciona o comando "Atualizar Evento de Processo", o qual permite atualizar um evento de processo

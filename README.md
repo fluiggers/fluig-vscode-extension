@@ -317,10 +317,14 @@ Os snippets disponibilizados são:
 - __fluig-button-dropdown-split__: Cria um botão com sub menu;
 - __fluig-checkbox__: Cria um input customizado do tipo checkbox;
 - __fluig-checkbox-inline__: Cria um input customizado inline do tipo checkbox;
+- __fluig-checkbox-switch__: Cria um checkbox switch;
 - __fluig-input-data__: cria uma coluna com input do tipo texto e ícone de calendário;
 - __fluig-input-text__: cria uma coluna contendo um input do tipo texto;
 - __fluig-input-textarea__: cria uma coluna contendo um textarea;
 - __fluig-input-zoom__: cria uma coluna contendo um Zoom;
+- __fluig-pai-filho__: Cria uma tabela Pai Filho;
+- __fluig-pai-filho-nobuttons__: Cria uma tabela Pai Filho sem os botões padrões de adicionar e remover;
+- __fluig-pai-filho-panel__: Cria uma tabela Pai Filho usando componente Panel
 - __fluig-panel__: cria um painel;
 - __fluig-panel-collapse__: cria um painel com estrutura de collapse;
 - __fluig-radio__: Cria um input customizado do tipo radio;
