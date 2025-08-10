@@ -1,6 +1,5 @@
 import * as vscode from 'vscode';
 import { ServerDTO } from '../models/ServerDTO';
-import * as path from 'path';
 import { ServerService } from '../services/ServerService';
 import * as fs from 'fs';
 import { ServerView } from '../views/ServerView';
@@ -10,6 +9,7 @@ import { DatasetView } from '../views/DatasetView';
 
 export class ServerItem extends vscode.TreeItem {
     constructor(
+        public context: vscode.ExtensionContext,
         public readonly label: string,
         public readonly collapsibleState: vscode.TreeItemCollapsibleState,
         public server: ServerDTO
@@ -18,8 +18,8 @@ export class ServerItem extends vscode.TreeItem {
     }
 
     iconPath = {
-        light: path.join(__filename, '..', '..', 'dist', 'images', 'light', 'server-environment.svg'),
-        dark: path.join(__filename, '..', '..', 'dist', 'images', 'dark', 'server-environment.svg')
+        light: vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'images', 'light', 'server-environment.svg'),
+        dark: vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'images', 'dark', 'server-environment.svg')
     };
 
     contextValue = 'serverItem';
@@ -27,16 +27,17 @@ export class ServerItem extends vscode.TreeItem {
 
 export class DatasetItem extends ServerItem {
     constructor(
+        public context: vscode.ExtensionContext,
         public readonly label: string,
         public readonly collapsibleState: vscode.TreeItemCollapsibleState,
         public server: ServerDTO
     ) {
-        super(label, collapsibleState, server);
+        super(context, label, collapsibleState, server);
     }
 
     iconPath = {
-        light: path.join(__filename, '..', '..', 'dist', 'images', 'light', 'database.svg'),
-        dark: path.join(__filename, '..', '..', 'dist', 'images', 'dark', 'database.svg')
+        light: vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'images', 'light', 'database.svg'),
+        dark: vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'images', 'dark', 'database.svg')
     };
 
     contextValue = 'DatasetItem';
@@ -60,7 +61,7 @@ export class ServerItemProvider implements vscode.TreeDataProvider<ServerItem> {
     public getChildren(element?: ServerItem): vscode.ProviderResult<ServerItem[]> {
         if (element) {
             return Promise.resolve([
-                new DatasetItem("Dataset", vscode.TreeItemCollapsibleState.None, element.server),
+                new DatasetItem(this.context, "Dataset", vscode.TreeItemCollapsibleState.None, element.server),
             ]);
         } else {
             return Promise.resolve(this.serverItems);
@@ -107,6 +108,7 @@ export class ServerItemProvider implements vscode.TreeDataProvider<ServerItem> {
 
         serverConfig.configurations.forEach((element: ServerDTO) => {
             const serverItem = new ServerItem(
+                this.context,
                 element.name,
                 vscode.TreeItemCollapsibleState.Collapsed,
                 element

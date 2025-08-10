@@ -213,6 +213,15 @@
         "description": "Cria um input customizado inline do tipo checkbox."
     },
 
+    "fluig-checkbox-switch": {
+        "scope": "html",
+        "prefix": "fluig-checkbox-switch",
+        "body": [
+            "<input id=\"${1:check}\" name=\"${1:check}\" type=\"checkbox\" value=\"Sim\" data-on-text=\"Sim\" data-on-color=\"primary\" data-off-text=\"Não\" data-off-color=\"default\">"
+        ],
+        "description": "Cria um checkbox switch. Deve-se usar FLUIGC.switcher.(init|initAll) para inicializar o componente."
+    },
+
     "fluig-alert": {
         "scope": "html",
         "prefix": "fluig-alert",
@@ -257,5 +266,89 @@
             "$0"
         ],
         "description": "Cria um botão com sub menu."
+    },
+
+    "fluig-pai-filho": {
+        "scope": "html",
+        "prefix": "fluig-pai-filho",
+        "body": [
+            "<table id=\"tbl${1:NomeTabela}\" tablename=\"tbl${1:NomeTabela}\" class=\"table table-condensed table-striped\">",
+            "    <thead>",
+            "        <tr>",
+            "            <th>$0</th>",
+            "        </tr>",
+            "    </thead>",
+            "    <tbody>",
+            "        <tr>",
+            "            <td></td>",
+            "        </tr>",
+            "    </tbody>",
+            "</table>"
+        ],
+        "description": "Cria uma tabela Pai Filho."
+    },
+
+    "fluig-pai-filho-nobuttons": {
+        "scope": "html",
+        "prefix": "fluig-pai-filho-nobuttons",
+        "body": [
+            "<table id=\"tbl${1:NomeTabela}\" tablename=\"tbl${1:NomeTabela}\" class=\"table table-condensed table-striped\">",
+            "    <thead>",
+            "        <tr>",
+            "            <th>$0</th>",
+            "            <th class=\"action\"></th>",
+            "        </tr>",
+            "    </thead>",
+            "    <tbody>",
+            "        <tr>",
+            "            <td></td>",
+            "            <td class=\"action\">",
+            "                <button type=\"button\" class=\"btn btn-danger btn-sm removeItem\" title=\"Remover Item\">",
+            "                    <i class=\"flaticon flaticon-trash icon-sm\" aria-hidden=\"true\"></i>",
+            "                </button>",
+            "            </td>",
+            "        </tr>",
+            "    </tbody>",
+            "</table>"
+        ],
+        "description": "Cria uma tabela Pai Filho sem os botões padrões de adicionar e remover."
+
+    },
+
+    "fluig-pai-filho-panel": {
+        "scope": "html",
+        "prefix": "fluig-pai-filho-panel",
+        "body": [
+            "<table tablename=\"tbl${1:NomeTabela}\" id=\"tbl${1:NomeTabela}\" noaddbutton=\"true\" nodeletebutton=\"true\" class=\"table table-condensed tableItemsPanel\">",
+            "    <thead><tr><th></th></tr></thead>",
+            "    <tbody>",
+            "        <tr>",
+            "            <td>",
+            "                <div class=\"panel panel-default\">",
+            "                    <div class=\"panel-heading\">",
+            "                        <h2 class=\"panel-title\">${2:Título Painel}</h2>",
+            "                    </div>",
+            "                    <div class=\"panel-body\">",
+            "                        <div class=\"row\">",
+            "                            $0",
+            "                        </div>",
+            "",
+            "                        <div class=\"row action\">",
+            "                            <div class=\"col-md-12\">",
+            "                                <p class=\"text-right\"><button type=\"button\" class=\"removeRow btn btn-danger\">Remover</button></p>",
+            "                            </div>",
+            "                        </div>",
+            "                    </div>",
+            "                </div>",
+            "            </td>",
+            "        </tr>",
+            "    </tbody>",
+            "</table>",
+            "",
+            "<p class=\"action\">",
+            "    <button type=\"button\" class=\"insertRow btn btn-success\">Incluir</button>",
+            "</p>"
+        ],
+        "description": "Cria uma tabela Pai Filho usando componente Panel."
     }
 }
