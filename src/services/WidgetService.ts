@@ -259,7 +259,7 @@ export class WidgetService {
             const results = await window.withProgress(
                 {
                     location: ProgressLocation.Notification,
-                    title: "Importando Formulários.",
+                    title: "Importando Widgets.",
                     cancellable: false
                 },
                 progress => {
