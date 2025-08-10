@@ -167,6 +167,10 @@ table.dataTable.table-striped>tbody>tr:nth-of-type(2n+1)>* {
     box-shadow: inset 0 0 0 9999px rgba(var(--dt-row-stripe), 0.18);
 }
 
+.modal-title, .modal-body {
+    color: var(--vscode-editor-foreground) !important;
+}
+
 .modal-header {
     border-bottom-color: var(--vscode-input-border, var(--bs-gray));
 }
