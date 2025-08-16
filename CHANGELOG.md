@@ -2,6 +2,10 @@
 
 Lista de atualizações da Extensão.
 
+## 2.4.1
+
+Informa erro ao não encontrar o arquivo .war da widget na importação de widget.
+
 ## 2.4.0
 
 Efetua correções tipográficas e adiciona os seguintes snippets.
