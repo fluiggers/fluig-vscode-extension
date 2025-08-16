@@ -424,6 +424,12 @@ export class WidgetService {
                 headers: { 'Cookie': await LoginService.loginAndGetCookies(server) }
             }
         )
-        .then(r => r.arrayBuffer())
+        .then(async (r) => {
+            if (r.status !== 200) {
+                const message = await r.text();
+                throw `${widgetFileName}: ${message}`;
+            }
+            return r.arrayBuffer();
+        })
     }
 }
