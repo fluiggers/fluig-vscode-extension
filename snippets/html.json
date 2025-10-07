@@ -292,7 +292,7 @@
         "scope": "html",
         "prefix": "fluig-pai-filho-nobuttons",
         "body": [
-            "<table id=\"tbl${1:NomeTabela}\" tablename=\"tbl${1:NomeTabela}\" class=\"table table-condensed table-striped\">",
+            "<table id=\"tbl${1:NomeTabela}\" tablename=\"tbl${1:NomeTabela}\" noaddbutton=\"true\" nodeletebutton=\"true\" class=\"table table-condensed table-striped\">",
             "    <thead>",
             "        <tr>",
             "            <th>$0</th>",
