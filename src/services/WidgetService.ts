@@ -167,7 +167,7 @@ export class WidgetService {
                     }
                 ).then(r => {
                     if (!r.ok) {
-                        throw new Error(`${r.status} - ${r.statusText}. Para Fluig anterior ao 1.8.2 utilize a versão antiga da Extensão.`);
+                        throw new Error(`${r.status} - ${r.statusText}.`);
                     }
 
                     return r.json();

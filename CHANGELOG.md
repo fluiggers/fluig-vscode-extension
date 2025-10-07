@@ -2,6 +2,11 @@
 
 Lista de atualizações da Extensão.
 
+## 2.4.2
+
+- Corrige o snippet fluig-pai-filho-nobuttons;
+- Remove a mensagem "Para Fluig anterior ao 1.8.2 utilize a versão antiga da Extensão." nos erros de exportar Widget;
+
 ## 2.4.1
 
 Informa erro ao não encontrar o arquivo .war da widget na importação de widget.
