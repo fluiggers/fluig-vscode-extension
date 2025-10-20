@@ -2,6 +2,11 @@
 
 Lista de atualizações da Extensão.
 
+## 2.5.0
+
+Ao criar uma Widget o texto "MyWidget" é alterado para o Código da Widget, diminuindo as alterações necessárias
+no arquivo da Widget.
+
 ## 2.4.2
 
 - Corrige o snippet fluig-pai-filho-nobuttons;
