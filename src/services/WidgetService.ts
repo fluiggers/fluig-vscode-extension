@@ -1,14 +1,14 @@
-import { Uri, window, workspace, FileType, ProgressLocation } from 'vscode';
+import { Uri, window, workspace, FileType, ProgressLocation } from "vscode";
 import { readFileSync } from "fs";
 import { glob } from "glob";
 import { basename } from "path";
-import * as JSZip from 'jszip';
+import * as JSZip from "jszip";
 import { UtilsService } from "../services/UtilsService";
 import { TemplateService } from "../services/TemplateService";
 import { ServerService } from "./ServerService";
 import {LoginService} from "./LoginService";
-import { ServerDTO } from '../models/ServerDTO';
-import { WidgetFluiggersDTO } from '../models/WidgetFluiggersDTO';
+import { ServerDTO } from "../models/ServerDTO";
+import { WidgetFluiggersDTO } from "../models/WidgetFluiggersDTO";
 
 export class WidgetService {
     /**
@@ -55,18 +55,18 @@ export class WidgetService {
         );
 
         // Copia todo o template da Widget
-        await workspace.fs.copy(Uri.joinPath(TemplateService.templatesUri, 'widget'), widgetUri);
+        await workspace.fs.copy(Uri.joinPath(TemplateService.templatesUri, "widget"), widgetUri);
 
         const baseResourcesUri = Uri.joinPath(widgetUri, "src", "main", "resources");
         const baseWebAppUri = Uri.joinPath(widgetUri, "src", "main", "webapp");
         const basePropertiesUri = Uri.joinPath(baseResourcesUri, "widgetname.properties");
 
-        const promises = propertiesLanguages.map(lang => workspace.fs.copy(
+        const promisesCreateFiles = propertiesLanguages.map(lang => workspace.fs.copy(
             basePropertiesUri,
             Uri.joinPath(baseResourcesUri, `${widgetName}_${lang}.properties`)
         ));
 
-        promises.push(
+        promisesCreateFiles.push(
             workspace.fs.rename(
                 Uri.joinPath(baseWebAppUri, "resources", "css", "widgetname.css"),
                 Uri.joinPath(baseWebAppUri, "resources", "css", `${widgetName}.css`)
@@ -74,20 +74,38 @@ export class WidgetService {
             workspace.fs.rename(
                 Uri.joinPath(baseWebAppUri, "resources", "js", "widgetname.js"),
                 Uri.joinPath(baseWebAppUri, "resources", "js", `${widgetName}.js`)
-            ),
-            workspace.fs.writeFile(
-                Uri.joinPath(widgetUri, '/src/main/webapp/WEB-INF/jboss-web.xml'),
-                Buffer.from(readFileSync(Uri.joinPath(baseWebAppUri, "WEB-INF", "jboss-web.xml").fsPath, 'utf8').replace(/widgetname/g, widgetName), 'utf8')
-            ),
-            workspace.fs.writeFile(
-                Uri.joinPath(widgetUri, '/src/main/resources/application.info'),
-                Buffer.from(readFileSync(Uri.joinPath(baseResourcesUri, "application.info").fsPath, 'utf8').replace(/widgetname/g, widgetName), 'utf8')
             )
         );
 
-        await Promise.all(promises);
+        await Promise.all(promisesCreateFiles);
 
-        await workspace.fs.rename(basePropertiesUri, Uri.joinPath(baseResourcesUri, `${widgetName}.properties`));
+        // Após todos os arquivos criados/renomeados podemos alterar o conteúdo deles
+        await Promise.all([
+            workspace.fs.writeFile(
+                Uri.joinPath(baseWebAppUri, "WEB-INF", "jboss-web.xml"),
+                Buffer.from(readFileSync(Uri.joinPath(baseWebAppUri, "WEB-INF", "jboss-web.xml").fsPath, "utf8").replace(/widgetname/g, widgetName), "utf8")
+            ),
+            workspace.fs.writeFile(
+                Uri.joinPath(baseResourcesUri, "application.info"),
+                Buffer.from(readFileSync(Uri.joinPath(baseResourcesUri, "application.info").fsPath, "utf8").replace(/widgetname/g, widgetName), "utf8")
+            ),
+            workspace.fs.writeFile(
+                Uri.joinPath(baseResourcesUri, "edit.ftl"),
+                Buffer.from(readFileSync(Uri.joinPath(baseResourcesUri, "edit.ftl").fsPath, "utf8").replace(/widgetname/g, widgetName), "utf8")
+            ),
+            workspace.fs.writeFile(
+                Uri.joinPath(baseResourcesUri, "view.ftl"),
+                Buffer.from(readFileSync(Uri.joinPath(baseResourcesUri, "edit.ftl").fsPath, "utf8").replace(/widgetname/g, widgetName), "utf8")
+            ),
+            workspace.fs.writeFile(
+                Uri.joinPath(baseWebAppUri, "resources", "js", `${widgetName}.js`),
+                Buffer.from(readFileSync(Uri.joinPath(baseWebAppUri, "resources", "js", `${widgetName}.js`).fsPath, "utf8").replace(/widgetname/g, widgetName), "utf8")
+            ),
+            workspace.fs.rename(
+                basePropertiesUri,
+                Uri.joinPath(baseResourcesUri, `${widgetName}.properties`)
+            )
+        ]);
 
         window.showTextDocument(widgetUriFile);
     }
@@ -117,11 +135,11 @@ export class WidgetService {
         zipStream.folder("WEB-INF/classes");
 
         for (const filePath of glob.sync(Uri.joinPath(widgetUri, "src", "main", "webapp", "WEB-INF").fsPath + "/*.xml")) {
-            zipStream.file("WEB-INF/" + basename(filePath), readFileSync(filePath, 'utf8'));
+            zipStream.file("WEB-INF/" + basename(filePath), readFileSync(filePath, "utf8"));
         }
 
         for (const filePath of glob.sync(Uri.joinPath(widgetUri, "src", "main", "resources").fsPath + "/*.*")) {
-            zipStream.file("WEB-INF/classes/" + basename(filePath), readFileSync(filePath, 'utf8'));
+            zipStream.file("WEB-INF/classes/" + basename(filePath), readFileSync(filePath, "utf8"));
         }
 
         async function addFolderFiles(folder: Uri, zipFolder: string) {
@@ -142,9 +160,9 @@ export class WidgetService {
         await addFolderFiles(Uri.joinPath(widgetUri, "src", "main", "webapp", "resources"), "resources");
 
         zipStream.generateAsync({
-            type:'uint8array',
-            compression: 'STORE',
-            mimeType: 'application/java-archive',
+            type:"uint8array",
+            compression: "STORE",
+            mimeType: "application/java-archive",
         })
         .then(async function (content) {
             const url = `${UtilsService.getHost(server)}/portal/api/rest/wcmservice/rest/product/uploadfile`;
@@ -161,7 +179,7 @@ export class WidgetService {
                         method: "POST",
                         headers: {
                             "Accept": "application/json",
-                            'Cookie': await LoginService.loginAndGetCookies(server)
+                            "Cookie": await LoginService.loginAndGetCookies(server)
                         },
                         body: formData,
                     }
@@ -198,7 +216,7 @@ export class WidgetService {
         }
 
         try {
-            const downloadedWidget = await fetch('https://raw.githubusercontent.com/fluiggers/fluig-widget-helper/refs/heads/master/target/fluiggersWidget.war')
+            const downloadedWidget = await fetch("https://raw.githubusercontent.com/fluiggers/fluig-widget-helper/refs/heads/master/target/fluiggersWidget.war")
 
             if (!downloadedWidget.ok || !downloadedWidget.body) {
                 throw new Error("Não foi possível baixar a widget do GitHub");
@@ -207,9 +225,9 @@ export class WidgetService {
             const url = `${UtilsService.getHost(server)}/portal/api/rest/wcmservice/rest/product/uploadfile`;
 
             const formData = new FormData();
-            formData.append("fileName", 'fluiggersWidget.war');
+            formData.append("fileName", "fluiggersWidget.war");
             formData.append("fileDescription", "WCM Eclipse Plugin Deploy Artifact");
-            formData.append("attachment", await downloadedWidget.blob(), 'fluiggersWidget.war');
+            formData.append("attachment", await downloadedWidget.blob(), "fluiggersWidget.war");
 
             const response:any = await fetch(
                 url,
@@ -217,7 +235,7 @@ export class WidgetService {
                     method: "POST",
                     headers: {
                         "Accept": "application/json",
-                        'Cookie': await LoginService.loginAndGetCookies(server)
+                        "Cookie": await LoginService.loginAndGetCookies(server)
                     },
                     body: formData,
                 }
@@ -272,7 +290,7 @@ export class WidgetService {
                         try {
                             const zipFile = await JSZip.loadAsync(await WidgetService.downloadWidgetFile(server, widget.filename));
 
-                            const widgetUri = Uri.joinPath(UtilsService.getWorkspaceUri(), 'wcm', 'widget', widget.code);
+                            const widgetUri = Uri.joinPath(UtilsService.getWorkspaceUri(), "wcm", "widget", widget.code);
 
                             try {
                                 await workspace.fs.delete(widgetUri, { recursive: true, useTrash: true });
@@ -292,7 +310,7 @@ export class WidgetService {
                                 }
 
                                 try {
-                                    await workspace.fs.writeFile(fileUri, await file.async('uint8array'));
+                                    await workspace.fs.writeFile(fileUri, await file.async("uint8array"));
                                 } catch (err: any) {
                                     window.showWarningMessage(err);
                                 }
@@ -327,40 +345,40 @@ export class WidgetService {
     public static getFileImportUri(widgetUri: Uri, relativePath: string): Uri | null {
 
         // Pasta Resources descompacta em src/main/webapp/resources
-        if (relativePath.startsWith('resources/')) {
+        if (relativePath.startsWith("resources/")) {
             return Uri.joinPath(
-                Uri.joinPath(widgetUri, 'src', 'main', 'webapp'),
-                ...relativePath.split('/')
+                Uri.joinPath(widgetUri, "src", "main", "webapp"),
+                ...relativePath.split("/")
             );
         }
 
         // Todos os arquivos da pasta WEB-INF/classes descompacta em src/main/resources
         if (/^WEB-INF\/classes\/\w+\.\w+$/.test(relativePath)) {
             return Uri.joinPath(
-                Uri.joinPath(widgetUri, 'src', 'main', 'resources'),
-                relativePath.replace('WEB-INF/classes/', '')
+                Uri.joinPath(widgetUri, "src", "main", "resources"),
+                relativePath.replace("WEB-INF/classes/", "")
             );
         }
 
         // Todos os arquivos da pasta WEB-INF descompacta em src/main/webapp/WEB-INF
         if (/^WEB-INF\/[\w-]+\.\w+$/.test(relativePath)) {
             return Uri.joinPath(
-                Uri.joinPath(widgetUri, 'src', 'main', 'webapp'),
-                ...relativePath.split('/')
+                Uri.joinPath(widgetUri, "src", "main", "webapp"),
+                ...relativePath.split("/")
             );
         }
 
         // Todos os diretórios da pasta WEB-INF/classes descompacta em src/main/java
         if (/^WEB-INF\/classes\/.+\/[\w-]+\.\w+$/.test(relativePath)) {
             return Uri.joinPath(
-                Uri.joinPath(widgetUri, 'src', 'main', 'java'),
-                ...relativePath.replace('WEB-INF/classes/', '').split('/')
+                Uri.joinPath(widgetUri, "src", "main", "java"),
+                ...relativePath.replace("WEB-INF/classes/", "").split("/")
             );
         }
 
         // Caso seja o pom.xml
-        if (relativePath.endsWith('pom.xml')) {
-            return Uri.joinPath(widgetUri, 'pom.xml');
+        if (relativePath.endsWith("pom.xml")) {
+            return Uri.joinPath(widgetUri, "pom.xml");
         }
 
         return null;
@@ -375,7 +393,7 @@ export class WidgetService {
                 method: "GET",
                 headers: {
                     "Accept": "application/json",
-                    'Cookie': await LoginService.loginAndGetCookies(server)
+                    "Cookie": await LoginService.loginAndGetCookies(server)
                 }
             }
         ).then(r => r.json());
@@ -421,7 +439,7 @@ export class WidgetService {
             `${UtilsService.getHost(server)}/fluiggersWidget/api/widgets/${widgetFileName}`,
             {
                 method: "GET",
-                headers: { 'Cookie': await LoginService.loginAndGetCookies(server) }
+                headers: { "Cookie": await LoginService.loginAndGetCookies(server) }
             }
         )
         .then(async (r) => {

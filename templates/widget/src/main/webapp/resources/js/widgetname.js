@@ -1,10 +1,11 @@
-var MyWidget = SuperWidget.extend({
+var widgetname = SuperWidget.extend({
+
     //variáveis da widget
     variavelNumerica: null,
     variavelCaracter: null,
 
     //método iniciado quando a widget é carregada
-    init: function() {
+    init() {
     },
 
     //BIND de eventos
@@ -15,7 +16,6 @@ var MyWidget = SuperWidget.extend({
         global: {}
     },
 
-    executeAction: function(htmlElement, event) {
+    executeAction(htmlElement, event) {
     }
-
 });
