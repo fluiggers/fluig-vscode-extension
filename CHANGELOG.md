@@ -2,6 +2,10 @@
 
 Lista de atualizações da Extensão.
 
+## 2.6.0
+
+Adiciona o snippet fluig-consulta-jdbc-prepared.
+
 ## 2.5.0
 
 Ao criar uma Widget o texto "MyWidget" é alterado para o Código da Widget, diminuindo as alterações necessárias
