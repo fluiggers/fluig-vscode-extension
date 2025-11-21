@@ -64,7 +64,7 @@ export class DatasetExtension {
 
         await vscode.workspace.fs.writeFile(
             datasetUri,
-            readFileSync(vscode.Uri.joinPath(TemplateService.templatesUri, 'createDataset.txt').fsPath)
+            readFileSync(vscode.Uri.joinPath(TemplateService.templatesUri, 'createDataset.js').fsPath)
         );
         vscode.window.showTextDocument(datasetUri);
     }
@@ -97,7 +97,7 @@ export class DatasetExtension {
 
     /**
      * Exporta todos os datasets de uma pasta selecionada
-     * 
+     *
      * Se não tiver pasta selecionada entende-se que é pra exportar todos os
      * datasets do workspace.
      */

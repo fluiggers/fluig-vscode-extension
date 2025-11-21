@@ -106,7 +106,7 @@ export class WorkflowExtension {
             eventUri,
             isNewFunction
                 ? Buffer.from(TemplateService.createEmptyFunction(eventName), "utf-8")
-                : readFileSync(vscode.Uri.joinPath(TemplateService.workflowEventsUri, `${eventName}.txt`).fsPath)
+                : readFileSync(vscode.Uri.joinPath(TemplateService.workflowEventsUri, `${eventName}.js`).fsPath)
         );
         vscode.window.showTextDocument(eventUri);
     }
@@ -161,7 +161,7 @@ export class WorkflowExtension {
 
         await vscode.workspace.fs.writeFile(
             mechanismUri,
-            readFileSync(vscode.Uri.joinPath(TemplateService.templatesUri, 'createMechanism.txt').fsPath)
+            readFileSync(vscode.Uri.joinPath(TemplateService.templatesUri, 'createMechanism.js').fsPath)
         );
         vscode.window.showTextDocument(mechanismUri);
     }
