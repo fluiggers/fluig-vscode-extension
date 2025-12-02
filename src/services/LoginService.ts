@@ -3,10 +3,10 @@ import { UtilsService } from './UtilsService';
 
 export class LoginService {
 
-    private static cachedCookies : any = {};
+    private static cachedCookies : {[key: string]: string} = {};
 
     public static async loginAndGetCookies(server: ServerDTO) : Promise<string> {
-        const cookiesKey = server.host + server.port + server.username + server.password;
+        const cookiesKey = server.host + server.port + server.username;
         let cookies = this.cachedCookies[cookiesKey];
 
         if (cookies) {
@@ -30,7 +30,7 @@ export class LoginService {
         return cookies;
     }
 
-    private static isAuthenticated(cookies: any) {
+    private static isAuthenticated(cookies: string) {
         return cookies.includes("JSESSIONIDSSO") || cookies.includes("jwt.token");
     }
 
