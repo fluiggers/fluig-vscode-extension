@@ -17,6 +17,24 @@ export class LoginService {
             delete this.cachedCookies[cookiesKey];
         }
 
+        cookies = await this.tryAuthenticate(server);
+
+    	if (this.isAuthenticated(cookies) && !await this.isValidCookies(cookies, server)) {
+			await this.setDemoMode(server);
+
+			cookies = await this.tryAuthenticate(server);
+    	}
+
+        this.cachedCookies[cookiesKey] = cookies;
+
+        return cookies;
+    }
+
+    private static isAuthenticated(cookies: any) {
+        return cookies.includes("JSESSIONIDSSO") || cookies.includes("jwt.token");
+    }
+
+    private static async tryAuthenticate(server: ServerDTO) {
         const loginUrl = `${UtilsService.getHost(server)}/portal/api/servlet/login.do`;
         const loginData = `j_username=${server.username}&j_password=${server.password}`;
 
@@ -28,14 +46,10 @@ export class LoginService {
             body: loginData
         });
 
-        cookies = (response.headers.get('set-cookie') || '')
+        return (response.headers.get('set-cookie') || '')
             .split(',')
             .map(cookie => cookie.split(';')[0])
             .join('; ');
-
-        this.cachedCookies[cookiesKey] = cookies;
-
-        return cookies;
     }
 
     private static async isValidCookies(cookiesCached: string, server: ServerDTO) : Promise<boolean> {
@@ -50,11 +64,19 @@ export class LoginService {
 
         if (response.ok) {
             const body = await response.text();
-            if (body.includes('pong')) {
+            if (body.startsWith("{") && body.includes("pong")) {
                 return true;
             }
         }
 
         return false;
+    }
+
+    private static async setDemoMode(server: ServerDTO) {
+        const pingUrl = `${UtilsService.getHost(server)}/portal/api/servlet/license.do?demo=true`;
+
+        await fetch(pingUrl, {
+            method: 'POST'
+        });
     }
 }
