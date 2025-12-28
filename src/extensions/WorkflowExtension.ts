@@ -13,8 +13,8 @@ export class WorkflowExtension {
             WorkflowExtension.createWorkflowEvent
         ));
         context.subscriptions.push(vscode.commands.registerCommand(
-            "fluiggers-fluig-vscode-extension.updateWorkflowEvent",
-            WorkflowExtension.updateWorkflowEvent
+            "fluiggers-fluig-vscode-extension.exportWorkflowEvent",
+            WorkflowExtension.exportWorkflowEvent
         ));
         context.subscriptions.push(vscode.commands.registerCommand(
             "fluiggers-fluig-vscode-extension.newMechanism",
@@ -112,9 +112,9 @@ export class WorkflowExtension {
     }
 
     /**
-     * Atualiza um ou mais eventos de processo
+     * Exporta um ou mais eventos de processo
      */
-    private static async updateWorkflowEvent(fileUri: vscode.Uri) {
+    private static async exportWorkflowEvent(fileUri: vscode.Uri) {
         // Ativado pelo Atalho
         if (!fileUri) {
             if (!vscode.window.activeTextEditor) {

@@ -64,7 +64,7 @@ Após abrir a pasta do projeto Fluig as seguintes funcionalidades serão disponi
 - [Importar Formulário e Importar Vários Formulários](#importar-formulário)
 - [Exportar Formulário](#exportar-formulário)
 - [Novo Evento de Processo](#novo-evento-de-processo)
-- [Atualizar Evento de Processo](#atualizar-evento-de-processo)
+- [Exportar Evento de Processo](#exportar-evento-de-processo)
 - [Novo Evento Global](#novo-evento-global)
 - [Importar Evento Global e Importar Vários Eventos Globais](#importar-evento-global)
 - [Exportar Evento Global](#exportar-evento-global)
@@ -204,9 +204,9 @@ contém a estrutura da função do evento selecionado.
 É possível criar uma função compartilhada para o processo selecionando a opção __Nova Função__ no
 menu de eventos. Quando o fizer será solicitado que informe o nome da função.
 
-## Atualizar Evento de Processo
+## Exportar Evento de Processo
 
-Esse comando permite enviar para o servidor Fluig os eventos já existentes no servidor, atualizando esses
+Esse comando permite enviar para o servidor Fluig os eventos de Processo, atualizando/criando esses
 eventos sem a necessidade de aumentar a versão do Processo.
 
 Utilize esse comando para agilizar no desenvolvimento dos eventos e para correções pontuais em Produção. Efetue
@@ -219,7 +219,7 @@ Esse comando é exibido no menu de contexto ao selecionar um evento de processo,
 em `workflow/scripts`. Também é possível acionar o comando com o atalho __CTRL + F9__ (CMD + F9 no Mac)
 enquanto estiver editando um evento de processo.
 
-É necessário que a `FluiggersWidget` esteja presente no servidor Fluig.
+É necessário que a `FluiggersWidget` esteja presente no servidor Fluig. Leia [Exportar Fluiggers Widget](#exportar-fluiggers-widget).
 
 ## Novo Evento Global
 

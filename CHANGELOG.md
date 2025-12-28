@@ -2,6 +2,14 @@
 
 Lista de atualizações da Extensão.
 
+## 2.8.0
+
+Altera o nome do comando "Atualizar Evento de Processo" para "Exportar Evento de Processo". Pois a nova versão
+da widget `FluiggersWidget` agora permite enviar novos eventos de processo ao invés de só permitir atualizações.
+
+Foi mantida compatibilidade tanto da Widget quanto da Extensão. Caso não atualize a widget simplesmente os eventos
+novos não serão criados no servidor e não terá erros na extensão.
+
 ## 2.7.0
 
 Adiciona tentativa de Login com Modo Demonstração, melhorando qualidade de vida ao desenvolver
