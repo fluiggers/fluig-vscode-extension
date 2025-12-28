@@ -2,6 +2,11 @@
 
 Lista de atualizações da Extensão.
 
+## 2.7.0
+
+Adiciona tentativa de Login com Modo Demonstração, melhorando qualidade de vida ao desenvolver
+em Fluig localmente sem Servidor de Licença configurado.
+
 ## 2.6.0
 
 Adiciona o snippet fluig-consulta-jdbc-prepared.
