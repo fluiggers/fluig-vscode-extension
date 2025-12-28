@@ -1,8 +1,0 @@
-/**
- *
- *
- * @param {FormController} form
- */
-function inputFields(form) {
-
-}

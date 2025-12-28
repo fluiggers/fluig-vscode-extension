@@ -2,7 +2,7 @@
     "name": "fluiggers-fluig-vscode-extension",
     "displayName": "Fluig - Extensão para Desenvolvimento",
     "description": "Extensão para agilizar o desenvolvimento para o TOTVS Fluig no VS Code",
-    "version": "2.7.0",
+    "version": "2.8.0",
     "publisher": "Fluiggers",
     "icon": "images/icon.png",
     "repository": {
@@ -65,8 +65,8 @@
                 "category": "Fluig"
             },
             {
-                "command": "fluiggers-fluig-vscode-extension.updateWorkflowEvent",
-                "title": "Atualizar Evento de Processo",
+                "command": "fluiggers-fluig-vscode-extension.exportWorkflowEvent",
+                "title": "Exportar Evento de Processo",
                 "category": "Fluig"
             },
             {
@@ -231,7 +231,7 @@
                     "when": "false"
                 },
                 {
-                    "command": "fluiggers-fluig-vscode-extension.updateWorkflowEvent",
+                    "command": "fluiggers-fluig-vscode-extension.exportWorkflowEvent",
                     "when": "false"
                 },
                 {
@@ -343,7 +343,7 @@
                     "group": "1_Fluig4Workflow@1"
                 },
                 {
-                    "command": "fluiggers-fluig-vscode-extension.updateWorkflowEvent",
+                    "command": "fluiggers-fluig-vscode-extension.exportWorkflowEvent",
                     "when": "resourcePath =~ /[\\/\\\\]workflow[\\/\\\\]scripts[\\/\\\\].+\\.js$/",
                     "group": "1_Fluig4Workflow@2"
                 },
@@ -479,7 +479,7 @@
                 "when": "editorTextFocus && resourcePath =~ /[\\/\\\\]workflow[\\/\\\\]scripts[\\/\\\\].+\\.js$/"
             },
             {
-                "command": "fluiggers-fluig-vscode-extension.updateWorkflowEvent",
+                "command": "fluiggers-fluig-vscode-extension.exportWorkflowEvent",
                 "key": "ctrl+f9",
                 "mac": "cmd+f9",
                 "when": "editorTextFocus && resourcePath =~ /[\\/\\\\]workflow[\\/\\\\]scripts[\\/\\\\].+\\.js$/"

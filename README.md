@@ -1,19 +1,17 @@
 # Fluig - Extensão para Desenvolvimento no VSCode
 
-![Visual Studio Marketplace Version (including pre-releases)](https://img.shields.io/visual-studio-marketplace/v/fluiggers.fluiggers-fluig-vscode-extension)
 ![Visual Studio Marketplace Installs](https://img.shields.io/visual-studio-marketplace/i/fluiggers.fluiggers-fluig-vscode-extension)
-![GitHub](https://img.shields.io/github/license/fluiggers/fluig-vscode-extension)
 ![Visual Studio Marketplace Rating (Stars)](https://img.shields.io/visual-studio-marketplace/stars/fluiggers.fluiggers-fluig-vscode-extension)
+![GitHub](https://img.shields.io/github/license/fluiggers/fluig-vscode-extension)
 
-Extensão para facilitar o desenvolvimento na plataforma TOTVS Fluig utilizando o VSCode.
+Extensão desenvolvida pela comunidade de desenvolvedores Fluig para facilitar o desenvolvimento na plataforma
+TOTVS Fluig utilizando o VSCode.
 
-![Menu de F1](images/menu_f1.jpg) ![Menu de Contexto](images/menu_contexto.jpg)
+![Menu de Contexto](images/menu_contexto.jpg)
 
-## Aviso
+## ATENÇÃO
 
 __Essa extensão não é mantida pela TOTVS e não possuí suporte da TOTVS.__
-
-A extensão __Fluig - Extensão para Desenvolvimento no VSCode__ foi desenvolvida pela comunidade de desenvolvedores para Fluig.
 
 O ambiente oficial para desenvolvimento no Fluig continua sendo o Eclipse Luna, conforme documentação oficial do Fluig.
 
@@ -26,17 +24,7 @@ comando `ext install fluiggers.fluiggers-fluig-vscode-extension`.
 ### Erro de Linguagem não reconhecida
 
 Os snippets para a linguagem FreeMarker (extensão ftl e utilizada nos templates) pode gerar erro de
-linguagem não reconhecida caso o VSCode não tenha extensão para tratar a FreeMarker.
-
-## Auto-Completar
-
-Essa extensão cria os arquivos utilizando os tipos declarados na biblioteca [Declaração de Tipos
-para o Fluig](https://github.com/fluiggers/fluig-declaration-type) para ter auto-complete no
-VSCode, por isso é recomendado que ela seja instalada.
-
-Você pode instalar a __Declaração de Tipos para o Fluig__ baixando o último release disponibilizado no GitHub ou
-pode executar o comando `Fluig: Instalar Declarações de Tipo`, no __Command Palette__ (normalmente com a tecla de atalho F1),
-para que a Extensão baixe os arquivos para o seu workspace / diretório.
+linguagem não reconhecida caso o VSCode não tenha alguma extensão para tratar FreeMarker.
 
 ## Como utilizar
 
@@ -52,7 +40,17 @@ O comportamento padrão do VSCode é trabalhar com um projeto por vez. Para se t
 é necessário instalar extensões. Por isso essa extensão para Fluig foi desenvolvida pensando em um projeto
 por vez.
 
-### Funcionalidades da Extensão
+## Auto-Completar
+
+Essa extensão cria os arquivos utilizando os tipos declarados na biblioteca [Declaração de Tipos
+para o Fluig](https://github.com/fluiggers/fluig-declaration-type) para ter auto-complete no
+VSCode, por isso é recomendado que ela seja instalada.
+
+Você pode instalar a __Declaração de Tipos para o Fluig__ baixando o último release disponibilizado no GitHub ou
+pode executar o comando `Fluig: Instalar Declarações de Tipo`, no __Command Palette__ (normalmente com a tecla de atalho F1),
+para que a Extensão baixe os arquivos para o seu workspace / diretório.
+
+## Funcionalidades da Extensão
 
 Após abrir a pasta do projeto Fluig as seguintes funcionalidades serão disponibilizadas:
 
@@ -60,13 +58,13 @@ Após abrir a pasta do projeto Fluig as seguintes funcionalidades serão disponi
 - [Consultar Dataset](#consultar-dataset)
 - [Novo Dataset](#novo-dataset)
 - [Importar Dataset e Importar Vários Datasets](#importar-dataset)
-- [Exportar Dataset](#exportar-dataset)
+- [Exportar Dataset e Exportar Vários Datasets](#exportar-dataset)
 - [Novo Formulário](#novo-formulário)
 - [Novo Evento de Formulário](#novo-evento-de-formulário)
 - [Importar Formulário e Importar Vários Formulários](#importar-formulário)
 - [Exportar Formulário](#exportar-formulário)
 - [Novo Evento de Processo](#novo-evento-de-processo)
-- [Atualizar Evento de Processo](#atualizar-evento-de-processo)
+- [Exportar Evento de Processo](#exportar-evento-de-processo)
 - [Novo Evento Global](#novo-evento-global)
 - [Importar Evento Global e Importar Vários Eventos Globais](#importar-evento-global)
 - [Exportar Evento Global](#exportar-evento-global)
@@ -146,6 +144,10 @@ O arquivo HTML vem com o esqueleto básico de um formulário Fluig utilizando o 
 Você pode executar esse comando no __Command Palette__, no menu de contexto no __File Explorer__ ou pelo
 atalho __CTRL + F11__ (CMD + F11 no Mac).
 
+É importante manter o nome do arquivo HTML do formulário igual ao nome da pasta do formulário para que a extensão
+identifique qual arquivo HTML é a definição do formulário (diferente do Eclipse no qual podemos indicar ao invés
+de ser padronizado).
+
 ## Novo Evento de Formulário
 
 Esse comando cria um arquivo JavaScript, após selecionar o evento, no diretório `events` do
@@ -165,6 +167,10 @@ importação (`Fluig: Importar Formulário` ou `Fluig: Importar Vários Formulá
 
 Após selecionar o servidor é exibido a lista de Formulários do servidor para selecionar qual/quais serão
 importados.
+
+A extensão não insere o "ID" do formulário no nome da pasta, como  Eclipse faz, justamente por usar o nome
+da pasta como padrão de nomenclatura para encontrar o arquivo principal. Além disso inserir o ID no nome só
+dificulta quando tratando com ambientes diferentes (homologação/produção).
 
 ## Exportar Formulário
 
@@ -198,9 +204,9 @@ contém a estrutura da função do evento selecionado.
 É possível criar uma função compartilhada para o processo selecionando a opção __Nova Função__ no
 menu de eventos. Quando o fizer será solicitado que informe o nome da função.
 
-## Atualizar Evento de Processo
+## Exportar Evento de Processo
 
-Esse comando permite enviar para o servidor Fluig os eventos já existentes no servidor, atualizando esses
+Esse comando permite enviar para o servidor Fluig os eventos de Processo, atualizando/criando esses
 eventos sem a necessidade de aumentar a versão do Processo.
 
 Utilize esse comando para agilizar no desenvolvimento dos eventos e para correções pontuais em Produção. Efetue
@@ -213,7 +219,7 @@ Esse comando é exibido no menu de contexto ao selecionar um evento de processo,
 em `workflow/scripts`. Também é possível acionar o comando com o atalho __CTRL + F9__ (CMD + F9 no Mac)
 enquanto estiver editando um evento de processo.
 
-É necessário que a `FluiggersWidget` esteja presente no servidor Fluig.
+É necessário que a `FluiggersWidget` esteja presente no servidor Fluig. Leia [Exportar Fluiggers Widget](#exportar-fluiggers-widget).
 
 ## Novo Evento Global
 
@@ -291,6 +297,8 @@ e selecione `Exportar Widget` ou, enquanto editando a Widget, utilize o atalho _
 
 Após selecionar o servidor o Widget será exportado automaticamente.
 
+Diferente do Eclipse não o arquivo `.war` não permanecerá salvo na pasta target do widget.
+
 ## Exportar Fluiggers Widget
 
 Esse comando é executado somente no __Command Palette__. Ele exporta para o servidor Fluig a widget
@@ -341,6 +349,7 @@ ser utilizado em qual dos dois ambientes.
 ### Snippets para Back-End
 
 - __fluig-consulta-jdbc__: cria uma consulta direta ao Banco de Dados usando JDBC;
+- __fluig-consulta-jdbc-prepared__: cria uma consulta direta ao Banco de Dados usando JDBC e PreparedStatement;
 - __fluig-function-data__: cria uma função que retorna a data atual formatada no padrão solicitado;
 - __fluig-paifilho-loop__: cria um loop for percorrendo os elementos de uma tabela pai filho em evento de Formulário;
 - __fluig-paifilho-loop-workflow__: cria um loop for percorrendo os elementos de uma tabela pai filho em evento de Processo;
@@ -355,9 +364,9 @@ ser utilizado em qual dos dois ambientes.
 - __fluig-data-atual__: Pega a data atual formatada em PT-BR;
 - __fluig-zoom-removed__: Função executada ao desmarcar item no Zoom;
 - __fluig-zoom-selected__: Função executada ao selecionar item no Zoom;
-- __fluig-dataset-async__: Chamar Dataset de modo Assíncrono
-- __fluig-modal__: Criar modal do Fluig
-- __fluig-widget__: Criar o esqueleto de uma Widget
+- __fluig-dataset-async__: Chamar Dataset de modo Assíncrono;
+- __fluig-modal__: Criar modal do Fluig;
+- __fluig-widget__: Criar o esqueleto de uma Widget com itens privados;
 
 ## Contribuindo com o Projeto
 

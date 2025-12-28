@@ -62,7 +62,7 @@ export class GlobalEventExtension {
 
         await vscode.workspace.fs.writeFile(
             eventUri,
-            readFileSync(vscode.Uri.joinPath(TemplateService.globalEventsUri, `${eventName}.txt`).fsPath)
+            readFileSync(vscode.Uri.joinPath(TemplateService.globalEventsUri, eventFilename).fsPath)
         );
         vscode.window.showTextDocument(eventUri);
     }

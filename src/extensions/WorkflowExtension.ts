@@ -13,8 +13,8 @@ export class WorkflowExtension {
             WorkflowExtension.createWorkflowEvent
         ));
         context.subscriptions.push(vscode.commands.registerCommand(
-            "fluiggers-fluig-vscode-extension.updateWorkflowEvent",
-            WorkflowExtension.updateWorkflowEvent
+            "fluiggers-fluig-vscode-extension.exportWorkflowEvent",
+            WorkflowExtension.exportWorkflowEvent
         ));
         context.subscriptions.push(vscode.commands.registerCommand(
             "fluiggers-fluig-vscode-extension.newMechanism",
@@ -106,15 +106,15 @@ export class WorkflowExtension {
             eventUri,
             isNewFunction
                 ? Buffer.from(TemplateService.createEmptyFunction(eventName), "utf-8")
-                : readFileSync(vscode.Uri.joinPath(TemplateService.workflowEventsUri, `${eventName}.txt`).fsPath)
+                : readFileSync(vscode.Uri.joinPath(TemplateService.workflowEventsUri, `${eventName}.js`).fsPath)
         );
         vscode.window.showTextDocument(eventUri);
     }
 
     /**
-     * Atualiza um ou mais eventos de processo
+     * Exporta um ou mais eventos de processo
      */
-    private static async updateWorkflowEvent(fileUri: vscode.Uri) {
+    private static async exportWorkflowEvent(fileUri: vscode.Uri) {
         // Ativado pelo Atalho
         if (!fileUri) {
             if (!vscode.window.activeTextEditor) {
@@ -161,7 +161,7 @@ export class WorkflowExtension {
 
         await vscode.workspace.fs.writeFile(
             mechanismUri,
-            readFileSync(vscode.Uri.joinPath(TemplateService.templatesUri, 'createMechanism.txt').fsPath)
+            readFileSync(vscode.Uri.joinPath(TemplateService.templatesUri, 'createMechanism.js').fsPath)
         );
         vscode.window.showTextDocument(mechanismUri);
     }

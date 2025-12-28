@@ -72,7 +72,7 @@ export class FormExtension {
 
         await vscode.workspace.fs.writeFile(
             formUri,
-            readFileSync(vscode.Uri.joinPath(TemplateService.templatesUri, 'form.txt').fsPath)
+            readFileSync(vscode.Uri.joinPath(TemplateService.templatesUri, 'form.html').fsPath)
         );
         vscode.window.showTextDocument(formUri);
     }
@@ -147,7 +147,7 @@ export class FormExtension {
             eventUri,
             isNewFunction
                 ? Buffer.from(TemplateService.createEmptyFunction(eventName), "utf-8")
-                : readFileSync(vscode.Uri.joinPath(TemplateService.formEventsUri, `${eventName}.txt`).fsPath)
+                : readFileSync(vscode.Uri.joinPath(TemplateService.formEventsUri, eventFilename).fsPath)
         );
 
         vscode.window.showTextDocument(eventUri);

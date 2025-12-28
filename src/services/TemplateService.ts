@@ -20,8 +20,8 @@ export class TemplateService {
      * @returns Nome dos arquivos sem a extensão
      */
     static getTemplatesNameFromPath(templatesUri: Uri): string[] {
-        return globSync(Uri.joinPath(templatesUri, '*.txt').path)
-            .map(filename => basename(filename, ".txt"))
+        return globSync(Uri.joinPath(templatesUri, '*.js').path)
+            .map(filename => basename(filename, ".js"))
             .sort((a, b) => a.localeCompare(b))
         ;
     }
