@@ -11,5 +11,6 @@ export interface ServerDTO {
     password: string;
     userCode: string;
     confirmExporting: boolean;
+    hasBrowser: boolean;
     companyId: number;
 }

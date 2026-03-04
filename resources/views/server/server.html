@@ -22,14 +22,16 @@
         <h1>${d.serverData ? 'Editar Servidor' : 'Adicionar Servidor'}</h1>
 
         <form id="formServer">
-            <div class="row g-3">
+            <div class="row mb-3">
                 <div class="col-md-12 form-group">
                     <label for="name" class="form-label">Nome</label>
                     <input type="text" class="form-control" id="name" name="name" required value="${d.serverData ? d.serverData.name : ''}">
                     <input type="hidden" class="form-control" id="id" value="${d.serverData ? d.serverData.id : ''}">
                 </div>
+            </div>
 
-                <div class="col-md-8 form-group">
+            <div class="row">
+                <div class="col-md-8 mb-3 form-group">
                     <label for="host" class="form-label">Host</label>
                     <input
                         type="text"
@@ -42,7 +44,7 @@
                     >
                 </div>
 
-                <div class="col-md-2 form-group">
+                <div class="col-md-2 mb-3 form-group">
                     <label for="ssl" class="form-label">SSL</label>
                     <select class="form-select" id="ssl">
                         <option value="yes" ${d.ssl ? "selected" : ""}>Sim</option>
@@ -50,7 +52,7 @@
                     </select>
                 </div>
 
-                <div class="col-md-2 form-group">
+                <div class="col-md-2 mb-3 form-group">
                     <label for="port" class="form-label">Porta</label>
                     <input
                         type="number"
@@ -64,41 +66,67 @@
                         value="${d.serverData ? d.serverData.port : ''}"
                     >
                 </div>
+            </div>
 
-                <div class="col-md-6 form-group">
+            <div class="row">
+                <div class="col-md-5 mb-3 form-group">
+                    <label for="hasBrowser" class="form-label">Login via navegador (necessário se o MFA estiver ativo)?</label>
+                    <select class="form-select" id="hasBrowser" name="hasBrowser">
+                        <option value="yes" ${d.serverData && d.serverData.hasBrowser ? "selected" : ""}>Sim</option>
+                        <option value="no" ${!d.serverData || !d.serverData.hasBrowser ? "selected" : ""}>Não</option>
+                    </select>
+                </div>
+
+                <div class="col-md-4 mb-3 form-group" id="companyId_group" style="display: ${d.serverData && d.serverData.hasBrowser ? 'block' : 'none'};">
+                    <label for="companyId" class="form-label">Código da empresa</label>
+                    <input
+                        type="text"
+                        class="form-control"
+                        id="companyId"
+                        name="companyId"
+                        ${d.serverData && d.serverData.hasBrowser ? 'required' : ''}
+                        value="${d.serverData ? d.serverData.companyId : ''}"
+                    >
+                </div>
+            </div>
+
+            <div class="row" id="username_password_group" style="display: ${d.serverData && d.serverData.hasBrowser ? 'none' : 'block'};">
+                <div class="col-md-6 mb-3 form-group">
                     <label for="username" class="form-label">Usuário</label>
                     <input
                         type="text"
                         class="form-control"
                         id="username"
                         name="username"
-                        required
+                        ${d.serverData && d.serverData.hasBrowser ? '' : 'required'}
                         value="${d.serverData ? d.serverData.username : ''}"
                     >
                 </div>
 
-                <div class="col-md-6 form-group">
+                <div class="col-md-6 mb-3 form-group" id="password_group">
                     <label for="password" class="form-label">Senha</label>
                     <input
                         type="password"
                         class="form-control"
                         id="password"
                         name="password"
-                        required
+                        ${d.serverData && d.serverData.hasBrowser ? '' : 'required'}
                         value="${d.serverData ? d.serverData.password : ''}"
                     >
                 </div>
+            </div>
 
-                <div class="col-md-5 form-group">
-                    <label for="confirm_pass_exporting" class="form-label">Confirmar senha quando exportar</label>
-                    <select class="form-select" id="confirm_pass_exporting">
+            <div class="row" id="confirmExporting_group" style="display: ${d.serverData && d.serverData.hasBrowser ? 'none' : 'block'};">
+                <div class="col-md-4 mb-3 form-group">
+                    <label for="confirmExporting" class="form-label">Confirmar senha quando exportar</label>
+                    <select class="form-select" id="confirmExporting">
                         <option value="yes" ${d.confirmExporting ? "selected" : ""}>Sim</option>
                         <option value="no" ${!d.confirmExporting ? "selected" : ""}>Não</option>
                     </select>
                 </div>
             </div>
 
-            <p class="mt-3">
+            <p>
                 <button class="btn btn-primary" type="submit" id="btnSalvar">
                     <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                     Salvar

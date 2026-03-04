@@ -1,6 +1,5 @@
 import { ExtensionContext, Uri, window, workspace, ProgressLocation } from "vscode";
 import { ServerDTO } from "../models/ServerDTO";
-import { createClientAsync } from 'soap';
 import { ServerService } from "./ServerService";
 import { DocumentDTO } from "../models/DocumentDTO";
 import { CustomizationEventsDTO } from "../models/CustomizationEventsDTO";
@@ -11,6 +10,7 @@ import { basename, parse } from "path";
 import { FormDTO } from "../models/FormDTO";
 import { AttachmentDTO } from "../models/AttachmentDTO";
 import { GlobalStorageService } from "./GlobalStorageService";
+import { LoginService } from "./LoginService";
 
 export class FormService {
 
@@ -29,7 +29,7 @@ export class FormService {
             colleagueId: server.userCode
         };
 
-        return createClientAsync(FormService.getUri(server))
+        return LoginService.createAuthenticatedClientAsync(server, FormService.getUri(server))
             .then((client) => {
                 return client.getCardIndexesWithoutApproverAsync(params);
             }).then((response) => {
@@ -49,7 +49,7 @@ export class FormService {
             colleagueId: server.userCode
         };
 
-        return createClientAsync(FormService.getUri(server))
+        return LoginService.createAuthenticatedClientAsync(server, FormService.getUri(server))
             .then((client) => {
                 return client.getAttachmentsListAsync(params);
             }).then((response) => {
@@ -77,7 +77,7 @@ export class FormService {
             nomeArquivo: fileName
         };
 
-        return createClientAsync(FormService.getUri(server))
+        return LoginService.createAuthenticatedClientAsync(server, FormService.getUri(server))
             .then((client) => {
                 return client.getCardIndexContentAsync(params);
             }).then((response) => {
@@ -96,7 +96,7 @@ export class FormService {
             documentId: documentId
         };
 
-        return createClientAsync(FormService.getUri(server))
+        return LoginService.createAuthenticatedClientAsync(server, FormService.getUri(server))
             .then((client) => {
                 return client.getCustomizationEventsAsync(params);
             }).then((response) => {
@@ -324,7 +324,7 @@ export class FormService {
         }
 
         try {
-            const client = await createClientAsync(FormService.getUri(server));
+            const client = await LoginService.createAuthenticatedClientAsync(server, FormService.getUri(server));
             const response = selectedForm === "novo"
                 ? await client.createSimpleCardIndexWithDatasetPersisteTypeAsync(params)
                 : await client.updateSimpleCardIndexWithDatasetAndGeneralInfoAsync(params)
