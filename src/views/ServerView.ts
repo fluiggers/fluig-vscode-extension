@@ -93,13 +93,12 @@ export class ServerView {
             if (!response.content) {
                 throw response.message?.message;
             }
-            if (server.companyId != response.content.tenantId) {
+            if (server.companyId && server.companyId != response.content.tenantId) {
                 LoginService.clearCookies(server);
                 throw new Error("O servidor retornou um Código da empresa diferente do Código informado.");
             }
 
             server.companyId = response.content.tenantId;
-
             server.userCode = response.content.userCode;
 
             ServerService.createOrUpdate(server);

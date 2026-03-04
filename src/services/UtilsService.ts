@@ -123,7 +123,7 @@ export class UtilsService {
         }
 
         if (payload && payload.tenant) {
-            if (server.companyId != payload.tenant) {
+            if (server.companyId && server.companyId != payload.tenant) {
                 LoginService.clearCookies(server);
                 throw new Error("O servidor retornou um Código da empresa diferente do Código informado.");
             }
