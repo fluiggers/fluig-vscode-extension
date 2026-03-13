@@ -1,12 +1,14 @@
+import { Client, createClientAsync, IOptions } from 'soap';
 import { ServerDTO } from '../models/ServerDTO';
 import { UtilsService } from './UtilsService';
+import puppeteer from 'puppeteer';
 
 export class LoginService {
 
     private static cachedCookies : {[key: string]: string} = {};
 
     public static async loginAndGetCookies(server: ServerDTO) : Promise<string> {
-        const cookiesKey = server.host + server.port + server.username;
+        const cookiesKey = this.getCookiesKey(server);
         let cookies = this.cachedCookies[cookiesKey];
 
         if (cookies) {
@@ -17,12 +19,12 @@ export class LoginService {
             delete this.cachedCookies[cookiesKey];
         }
 
-        cookies = await this.tryAuthenticate(server);
+        cookies = server.hasBrowser ? await this.tryBrowserAuthenticate(server) : await this.tryAuthenticate(server);
 
     	if (this.isAuthenticated(cookies) && !await this.isValidCookies(cookies, server)) {
 			await this.setDemoMode(server);
 
-			cookies = await this.tryAuthenticate(server);
+			cookies = server.hasBrowser ? await this.tryBrowserAuthenticate(server) : await this.tryAuthenticate(server);
     	}
 
         this.cachedCookies[cookiesKey] = cookies;
@@ -30,26 +32,34 @@ export class LoginService {
         return cookies;
     }
 
-    private static isAuthenticated(cookies: string) {
-        return cookies.includes("JSESSIONIDSSO") || cookies.includes("jwt.token");
+    public static async createAuthenticatedClientAsync(server: ServerDTO, uri: string, options?: IOptions) : Promise<Client> {
+        const cookies = await LoginService.loginAndGetCookies(server);
+
+        const client: any = await createClientAsync(uri, options);
+        if (cookies) {
+            client.addHttpHeader("Cookie", cookies);
+        }
+
+        return client;
     }
 
-    private static async tryAuthenticate(server: ServerDTO) {
-        const loginUrl = `${UtilsService.getHost(server)}/portal/api/servlet/login.do`;
-        const loginData = `j_username=${server.username}&j_password=${server.password}`;
+    public static clearCookies(server: ServerDTO) {
+        delete this.cachedCookies[this.getCookiesKey(server)];
+    }
 
-        const response = await fetch(loginUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: loginData
-        });
+    private static getCookiesKey(server: ServerDTO) {
+        let cookiesKey = String(server.hasBrowser) + server.host + server.port;
 
-        return (response.headers.get('set-cookie') || '')
-            .split(',')
-            .map(cookie => cookie.split(';')[0])
-            .join('; ');
+        if (server.hasBrowser) {
+            cookiesKey += server.companyId;
+        } else {
+            cookiesKey += server.username;
+        }
+        return cookiesKey;
+    }
+
+    private static isAuthenticated(cookies: string) {
+        return cookies.includes("JSESSIONIDSSO") || cookies.includes("jwt.token");
     }
 
     private static async isValidCookies(cookiesCached: string, server: ServerDTO) : Promise<boolean> {
@@ -78,5 +88,89 @@ export class LoginService {
         await fetch(pingUrl, {
             method: 'POST'
         });
+    }
+
+    private static async tryAuthenticate(server: ServerDTO) {
+        const loginUrl = `${UtilsService.getHost(server)}/portal/api/servlet/login.do`;
+        const loginData = `j_username=${server.username}&j_password=${server.password}`;
+
+        const response = await fetch(loginUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: loginData
+        });
+
+        return (response.headers.get('set-cookie') || '')
+            .split(',')
+            .map(cookie => cookie.split(';')[0])
+            .join('; ');
+    }
+
+    private static async tryBrowserAuthenticate(server: ServerDTO) {
+        let browser;
+        try {
+            browser = await puppeteer.launch({ headless: false });
+            const pages = await browser.pages();
+            const page = pages[0]; // Usa a primeira aba aberta
+
+            // Navega para a página e aguarda o login
+            const viewport = page.viewport();
+            if (viewport) {
+                await page.setViewport({width: viewport.width, height: viewport.height});
+            }
+            await page.goto(`${UtilsService.getHost(server)}/portal/p/${server.companyId}/home`);
+
+            // Monitora os cookies a cada intervalo
+            const cookiesPromise = new Promise<string>((resolve, reject) => {
+                // watch for the login or page being closed
+                const checkCookie = setInterval(async () => {
+                    try {
+                        const cookies = await page.cookies();
+                        const sessionCookie = cookies.find(c => c.name === 'JSESSIONIDSSO' || c.name === 'jwt.token');
+
+                        if (sessionCookie) {
+                            clearInterval(checkCookie);
+                            clearTimeout(timeout);
+
+                            // Formata os cookies no mesmo padrão que o fetch retornava
+                            const cookieString = cookies
+                                .map(c => `${c.name}=${c.value}`)
+                                .join('; ');
+
+                            resolve(cookieString);
+                        }
+                    } catch (e) {
+                        // in case the page is already closed and cookies() throws
+                        clearInterval(checkCookie);
+                        clearTimeout(timeout);
+                        reject();
+                    }
+                }, 1000);
+
+                // reject if the user closes the page manually
+                page.once('close', () => {
+                    clearInterval(checkCookie);
+                    clearTimeout(timeout);
+                    reject();
+                });
+
+                // add a generous timeout so we don't hang forever
+                const timeout = setTimeout(() => {
+                    clearInterval(checkCookie);
+                    reject();
+                }, 5 * 60 * 1000); // 5 minutes
+            });
+
+            const cookies = await cookiesPromise;
+            await browser.close();
+            return cookies;
+        } catch (ignored) {
+            if (browser) {
+                await browser.close();
+            }
+        }
+        return "";
     }
 }

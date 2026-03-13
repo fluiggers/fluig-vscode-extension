@@ -4,6 +4,23 @@
     $(function () {
         $("#formServer").on("submit", saveServer);
         $("#host").on("change", validateHost);
+        $("#hasBrowser").on("change", function() {
+            const hasBrowser = this.value === "yes";
+
+            if (hasBrowser) {
+                $("#companyId_group").show();
+                $("#username_password_group").hide();
+                $("#confirmExporting_group").hide();
+            } else {
+                $("#companyId_group").hide();
+                $("#username_password_group").show();
+                $("#confirmExporting_group").show();
+            }
+
+            $("#companyId").attr("required", hasBrowser);
+            $("#username").attr("required", !hasBrowser);
+            $("#password").attr("required", !hasBrowser);
+        });
     });
 
     /**
@@ -20,11 +37,13 @@
             id: document.getElementById("id").value,
             name: document.getElementById("name").value,
             host: document.getElementById("host").value,
-            ssl: document.getElementById("ssl").value == "yes",
+            ssl: document.getElementById("ssl").value === "yes",
             port: document.getElementById("port").value,
             username: document.getElementById("username").value,
             password: document.getElementById("password").value,
-            confirmExporting: document.getElementById("confirm_pass_exporting").value == "yes",
+            hasBrowser: document.getElementById("hasBrowser").value === "yes",
+            companyId: document.getElementById("companyId").value,
+            confirmExporting: document.getElementById("confirmExporting").value === "yes",
         });
     }
 

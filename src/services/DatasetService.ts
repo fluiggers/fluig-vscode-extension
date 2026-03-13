@@ -6,7 +6,6 @@ import { DatasetDTO } from "../models/DatasetDTO";
 import { DatasetStructureDTO } from "../models/DatasetStructureDTO";
 import { UtilsService } from "./UtilsService";
 import { readFileSync } from "fs";
-import { createClientAsync } from "soap";
 import {LoginService} from "./LoginService";
 import { glob } from "glob";
 
@@ -21,7 +20,7 @@ export class DatasetService {
     /**
      * Retorna uma lista com todos os datasets do servidor
      */
-    public static getDatasets(server: ServerDTO): Promise<DatasetDTO[]> {
+    public static async getDatasets(server: ServerDTO): Promise<DatasetDTO[]> {
         const uri = UtilsService.getHost(server) + "/webdesk/ECMDatasetService?wsdl";
 
         const params = {
@@ -30,7 +29,7 @@ export class DatasetService {
             password: server.password
         };
 
-        return createClientAsync(uri)
+        return LoginService.createAuthenticatedClientAsync(server, uri)
             .then((client) => {
                 return client.findAllFormulariesDatasetsAsync(params);
             }).then((response) => {
@@ -70,8 +69,7 @@ export class DatasetService {
             order: {item: order}
         };
 
-        const client = await createClientAsync(uri, { handleNilAsNull: true, disableCache: true });
-
+        const client = await LoginService.createAuthenticatedClientAsync(server, uri, { handleNilAsNull: true, disableCache: true });
         const dataset = await client.getDatasetAsync(params).then((response: any) => response[0].dataset);
         const columns = Array.isArray(dataset.columns) ? dataset.columns : [dataset.columns];
 

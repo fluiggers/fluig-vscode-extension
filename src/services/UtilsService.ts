@@ -93,4 +93,54 @@ export class UtilsService {
             throw new Error("Você precisa instalar a FluiggersWdiget nesse servidor para executar essa operação.")
         }
     }
+
+    /**
+     * Se houver um token JWT nos cookies retornados pelo login, preenche o servidor
+     * com o companyId (`tenant`) e login (`sub`) encontrado no payload.
+     * Não lança erro caso o cookie não exista ou seja inválido.
+     */
+    public static fillServerFromJwtCookies(cookies: string, server: ServerDTO): void {
+        if (!cookies) {
+            return;
+        }
+
+        // encontrar cookie jwt.token
+        const jwtCookie = cookies.split(/; ?/).find(c => c.startsWith('jwt.token='));
+        if (!jwtCookie) {
+            return;
+        }
+
+        const token = jwtCookie.split('=')[1];
+        const parts = token.split('.');
+        if (parts.length < 2) {
+            return;
+        }
+
+        let payload: any;
+        try {
+            payload = JSON.parse(UtilsService.base64UrlDecode(parts[1]));
+        } catch (ignored) {
+        }
+
+        if (payload && payload.tenant) {
+            if (server.companyId && server.companyId != payload.tenant) {
+                LoginService.clearCookies(server);
+                throw new Error("O servidor retornou um Código da empresa diferente do Código informado.");
+            }
+            server.companyId = payload.tenant;
+
+            if (payload.sub) {
+                server.username = payload.sub;
+            }
+        }
+    }
+
+    private static base64UrlDecode(str: string): string {
+        // adiciona padding
+        str = str.replace(/-/g, '+').replace(/_/g, '/');
+        while (str.length % 4) {
+            str += '=';
+        }
+        return Buffer.from(str, 'base64').toString('utf8');
+    }
 }

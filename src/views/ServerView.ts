@@ -4,6 +4,7 @@ import {ServerService} from '../services/ServerService';
 import * as fs from 'fs';
 import {UserService} from '../services/UserService';
 import {Server} from '../models/Server';
+import { LoginService } from '../services/LoginService';
 
 const compile = require('template-literal');
 
@@ -60,10 +61,15 @@ export class ServerView {
     }
 
     private messageListener(obj: any) {
-        if (!obj.name || !obj.host || !obj.port || !obj.username || !obj.password) {
+        if (obj.hasBrowser && !obj.companyId) {
             return;
         }
-
+        if (!obj.hasBrowser && (!obj.username || !obj.password)) {
+            return;
+        }
+        if (!obj.name || !obj.host || !obj.port) {
+            return;
+        }
         if (!this.currentPanel || !this.currentPanel.webview) {
             return;
         }
@@ -77,18 +83,24 @@ export class ServerView {
         server.ssl = obj.ssl;
         server.port = parseInt(obj.port);
         server.userCode = "";
-        server.username = obj.username;
-        server.password = obj.password;
-        server.confirmExporting = obj.confirmExporting;
-        server.companyId = 0;
+        server.hasBrowser = obj.hasBrowser;
+        server.companyId = obj.hasBrowser ? obj.companyId : '';
+        server.username = !obj.hasBrowser ? obj.username : '';
+        server.password = !obj.hasBrowser ? obj.password : '';
+        server.confirmExporting = !obj.hasBrowser && obj.confirmExporting;
 
         UserService.getUser(server).then((response:any) => {
             if (!response.content) {
                 throw response.message?.message;
             }
+            if (server.companyId && server.companyId != response.content.tenantId) {
+                LoginService.clearCookies(server);
+                throw new Error("O servidor retornou um Código da empresa diferente do Código informado.");
+            }
 
             server.companyId = response.content.tenantId;
             server.userCode = response.content.userCode;
+
             ServerService.createOrUpdate(server);
 
             if (this.currentPanel) {

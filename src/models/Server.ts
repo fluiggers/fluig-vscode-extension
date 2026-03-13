@@ -11,6 +11,7 @@ export class Server implements ServerDTO {
     public ssl: boolean = false;
     public port: number = 80;
     public confirmExporting: boolean = false;
+    public hasBrowser: boolean = false;
     public companyId: number = 0;
     public userCode: string = "";
     public username: string = "";
@@ -39,6 +40,7 @@ export class Server implements ServerDTO {
         this._password = server?.password || "";
         this.userCode = server?.userCode || "";
         this.confirmExporting = server?.confirmExporting || false;
+        this.hasBrowser = server?.hasBrowser || false;
         this.companyId = server?.companyId || 0;
     }
 
@@ -53,6 +55,7 @@ export class Server implements ServerDTO {
             password: this._password,
             userCode: this.userCode,
             confirmExporting: this.confirmExporting,
+            hasBrowser: this.hasBrowser,
             companyId: this.companyId,
         };
     }
