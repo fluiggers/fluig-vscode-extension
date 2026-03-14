@@ -2,7 +2,7 @@
     "name": "fluiggers-fluig-vscode-extension",
     "displayName": "Fluig - Extensão para Desenvolvimento",
     "description": "Extensão para agilizar o desenvolvimento para o TOTVS Fluig no VS Code",
-    "version": "2.9.0",
+    "version": "2.10.0",
     "publisher": "Fluiggers",
     "icon": "images/icon.png",
     "repository": {
@@ -522,6 +522,20 @@
                 "language": "ftl",
                 "path": "./snippets/html.json"
             }
+        ],
+        "configuration": [
+            {
+                "title": "Fluiggers",
+                "order": 1,
+                "properties": {
+                    "fluiggers.browserPath": {
+                        "type": "string",
+                        "description": "Caminho do seu Navegador",
+                        "default": "",
+                        "scope": "machine"
+                    }
+                }
+            }
         ]
     },
     "scripts": {
@@ -566,7 +580,7 @@
         "html5sortable": "^0.13.3",
         "jquery": "^3.7.1",
         "jszip": "^3.10.1",
-        "puppeteer": "^24.39.1",
+        "puppeteer-core": "^24.39.1",
         "select2": "^4.1.0-rc.0",
         "select2-bootstrap-5-theme": "^1.3.0",
         "soap": "^1.0.3",

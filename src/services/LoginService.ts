@@ -1,7 +1,8 @@
+import { window, workspace, ConfigurationTarget } from "vscode";
 import { Client, createClientAsync, IOptions } from 'soap';
 import { ServerDTO } from '../models/ServerDTO';
 import { UtilsService } from './UtilsService';
-import puppeteer from 'puppeteer';
+import * as puppeteer from 'puppeteer-core';
 
 export class LoginService {
 
@@ -110,16 +111,43 @@ export class LoginService {
 
     private static async tryBrowserAuthenticate(server: ServerDTO) {
         let browser;
-        try {
-            browser = await puppeteer.launch({ headless: false });
-            const pages = await browser.pages();
-            const page = pages[0]; // Usa a primeira aba aberta
 
-            // Navega para a página e aguarda o login
+        const config = workspace.getConfiguration('fluiggers');
+        let customPath = config.get<string>('browserPath', "");
+
+        if (!customPath.length) {
+            const fileUri = await window.showOpenDialog({
+                canSelectMany: false,
+                title: "Selecione o executável do seu navegador para efetuar o Login",
+                openLabel: 'Selecionar',
+                filters: {
+                    'Executables': ['exe', 'app', 'bin', 'sh']
+                }
+            });
+
+            if (fileUri && fileUri[0]) {
+                customPath = fileUri[0].fsPath;
+                await config.update('browserPath', customPath, ConfigurationTarget.Global);
+            } else {
+                window.showErrorMessage("Preencha o caminho até o seu navegador nas configurações da Extensão Fluiggers!");
+                return "";
+            }
+        }
+
+        try {
+            browser = await puppeteer.launch({
+                headless: false,
+                executablePath: customPath,
+                browser: /firefox/i.test(customPath) ? "firefox" : "chrome",
+            });
+            const pages = await browser.pages();
+            const page = pages[0];
             const viewport = page.viewport();
+
             if (viewport) {
                 await page.setViewport({width: viewport.width, height: viewport.height});
             }
+
             await page.goto(`${UtilsService.getHost(server)}/portal/p/${server.companyId}/home`);
 
             // Monitora os cookies a cada intervalo

@@ -2,6 +2,18 @@
 
 Lista de atualizações da Extensão.
 
+## 2.10.0
+
+Adiciona configuração para indicar o caminho do navegador que gostaria de usar para efetuar o Login (pensando em MFA).
+
+Essa opção foi adicionada para que não seja necessário instalar o binário do Chromium na extensão, o que a estava aumentando
+consideravelmente.
+
+Na primeira vez que tentar efetuar um login pelo navegador e o path não estiver configurado, abrirá uma janela para que selecione
+o executável do navegador.
+
+**IMPORTANTE**: Só funciona com navegadores baseados em Chromium e Firefox.
+
 ## 2.9.0
 
 Adiciona suporte para autenticação via navegador e atualiza o gerenciamento de cookies no LoginService.
