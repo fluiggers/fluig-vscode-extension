@@ -110,7 +110,7 @@ export class LoginService {
     }
 
     private static async tryBrowserAuthenticate(server: ServerDTO) {
-        let browser;
+        let browser: puppeteer.Browser|null = null;
 
         const config = workspace.getConfiguration('fluiggers');
         let customPath = config.get<string>('browserPath', "");
@@ -140,6 +140,7 @@ export class LoginService {
                 executablePath: customPath,
                 browser: /firefox/i.test(customPath) ? "firefox" : "chrome",
             });
+
             const pages = await browser.pages();
             const page = pages[0];
             const viewport = page.viewport();
@@ -155,7 +156,11 @@ export class LoginService {
                 // watch for the login or page being closed
                 const checkCookie = setInterval(async () => {
                     try {
-                        const cookies = await page.cookies();
+                        if (!browser) {
+                            throw new Error("Não foi possível carregar o navegador");
+                        }
+
+                        const cookies = await browser.cookies();
                         const sessionCookie = cookies.find(c => c.name === 'JSESSIONIDSSO' || c.name === 'jwt.token');
 
                         if (sessionCookie) {
@@ -199,6 +204,7 @@ export class LoginService {
                 await browser.close();
             }
         }
+
         return "";
     }
 }

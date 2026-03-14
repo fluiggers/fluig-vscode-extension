@@ -2,6 +2,11 @@
 
 Lista de atualizações da Extensão.
 
+## 2.10.1
+
+Atualizado o método de leitura de cookies no login por navegador, pois a leitura de cookie no contexto da página estava
+marcada como obsoleto na versão mais atual do puppeteer-core.
+
 ## 2.10.0
 
 Adiciona configuração para indicar o caminho do navegador que gostaria de usar para efetuar o Login (pensando em MFA).
