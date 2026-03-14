@@ -3,6 +3,7 @@
 Lista de atualizações da Extensão.
 
 ## 2.9.0
+
 Adiciona suporte para autenticação via navegador e atualiza o gerenciamento de cookies no LoginService.
 
 ## 2.8.0

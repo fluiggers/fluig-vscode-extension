@@ -87,6 +87,8 @@ adicionar, editar e remover servidores Fluig.
 A senha é criptografada utilizando identificadores do computador como chave da criptografia, assim não é possível
 decifrar a senha em outro computador, prevenindo a perda de credenciais.
 
+Há a opção de indicar que efetuará o login via Navegador. Essa opção é útil para os casos que configurou MFA no Fluig.
+
 Ao clicar em um servidor é possível visualizar alguns comandos disponíveis. Com eles podemos consultar dataset, serviços etc.
 
 ### Consultar Dataset
