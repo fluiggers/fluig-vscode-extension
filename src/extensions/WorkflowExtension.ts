@@ -4,6 +4,7 @@ import { readFileSync } from "fs";
 import { TemplateService } from "../services/TemplateService";
 import { AttributionMechanismService } from '../services/AttributionMechanismService';
 import { WorkflowService } from '../services/WorkflowService';
+import { ServerService } from "../services/ServerService";
 
 export class WorkflowExtension {
 
@@ -31,6 +32,10 @@ export class WorkflowExtension {
         context.subscriptions.push(vscode.commands.registerCommand(
             "fluiggers-fluig-vscode-extension.exportMechanism",
             WorkflowExtension.exportMechanism
+        ));
+        context.subscriptions.push(vscode.commands.registerCommand(
+            "fluiggers-fluig-vscode-extension.listProcesses",
+            WorkflowExtension.listProcesses
         ));
     }
 
@@ -177,5 +182,65 @@ export class WorkflowExtension {
         }
 
         AttributionMechanismService.export(fileUri);
+    }
+
+    private static async listProcesses() {
+        const server = await ServerService.getSelect();
+
+        if (!server) return;
+
+        try {
+            await UtilsService.validateServerHasFluiggersWidget(server);
+
+            const processes = await WorkflowService.listProcesses(server);
+
+            if (!processes || !processes.length) {
+                vscode.window.showWarningMessage("Nenhum processo encontrado.");
+                return;
+            }
+
+            const selected = await vscode.window.showQuickPick(
+                processes.map(p => ({
+                    label: p.processId,
+                    description: p.description || "",
+                    detail: `Versão: ${p.version} ${p.active ? "| Ativo" : ""}`,
+                    processId: p.processId,
+                    version: p.version
+                })),
+                {
+                    canPickMany: true,
+                    placeHolder: "Selecione os processos para importar"
+                }
+            );
+
+            if (!selected || !selected.length) return;
+
+            if (server.confirmExporting && !(await UtilsService.confirmPassword(server))) {
+                return;
+            }
+
+            const workspace = UtilsService.getWorkspaceUri();
+
+            for (const proc of selected) {
+                try {
+                    await WorkflowService.exportProcess(
+                        server,
+                        proc.processId,
+                        proc.version,
+                        workspace
+                    );
+                } catch (e: any) {
+                    vscode.window.showErrorMessage(
+                        `Erro ao exportar ${proc.processId}: ${e.message || e}`
+                    );
+                    return;
+                }
+            }
+
+            vscode.window.showInformationMessage("Processos exportados com sucesso!");
+
+        } catch (error: any) {
+            vscode.window.showErrorMessage(error.message || error);
+        }
     }
 }

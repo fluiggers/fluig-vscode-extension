@@ -26,6 +26,10 @@
         {
             "name": "Jhonatan Serafim",
             "url": "https://github.com/jhonnytuba"
+        },
+        {
+            "name": "Guilherme Mesquita",
+            "url": "https://github.com/GuilhermeMesquita"
         }
     ],
     "engines": {
@@ -218,6 +222,11 @@
                     "light": "dist/images/light/preview.svg",
                     "dark": "dist/images/dark/preview.svg"
                 }
+            },
+            {
+                "command": "fluiggers-fluig-vscode-extension.listProcesses",
+                "title": "Fluig: Listar Processos",
+                "category": "Fluig"
             }
         ],
         "menus": {

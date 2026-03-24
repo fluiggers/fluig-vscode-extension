@@ -3,7 +3,7 @@ import { readFileSync } from "fs";
 import { glob } from "glob";
 import { UtilsService } from "./UtilsService";
 import { ServerService } from "./ServerService";
-import {LoginService} from "./LoginService";
+import { LoginService } from "./LoginService";
 import { ServerDTO } from '../models/ServerDTO';
 
 export class WorkflowService {
@@ -46,10 +46,10 @@ export class WorkflowService {
 
         const updateMultipleChoice = await window.showQuickPick(
             [
-                { label: "Não" , value: false },
-                { label: "Sim" , value: true },
+                { label: "Não", value: false },
+                { label: "Sim", value: true },
             ],
-            { placeHolder: "Deseja atualizar múltiplos eventos?"}
+            { placeHolder: "Deseja atualizar múltiplos eventos?" }
         );
 
         if (!updateMultipleChoice) {
@@ -96,13 +96,13 @@ export class WorkflowService {
                     body: JSON.stringify(eventsToUpdate),
                 }
             )
-            .then(r => {
-                if (!r.ok) {
-                    throw `Não foi possível atualizar os eventos. ${r.statusText}`;
-                }
+                .then(r => {
+                    if (!r.ok) {
+                        throw `Não foi possível atualizar os eventos. ${r.statusText}`;
+                    }
 
-                return r.json();
-            });
+                    return r.json();
+                });
 
             if (!response.hasError) {
                 window.showInformationMessage("Todos os eventos foram atualizados");
@@ -148,13 +148,131 @@ export class WorkflowService {
                 headers: { 'Cookie': await LoginService.loginAndGetCookies(server) }
             }
         )
-        .then(async r => {
-            if (!r.ok) {
-                return 0;
-            }
+            .then(async r => {
+                if (!r.ok) {
+                    return 0;
+                }
 
-            const version = await r.text();
-            return parseInt(version);
+                const version = await r.text();
+                return parseInt(version);
+            });
+    }
+
+    public static async listProcesses(server: ServerDTO): Promise<Array<{
+        processId: string;
+        description: string;
+        version: number;
+        active: boolean;
+    }>> {
+
+        return await fetch(
+            `${UtilsService.getHost(server)}/fluiggersWidget/api/workflows`,
+            {
+                method: "GET",
+                headers: {
+                    Cookie: await LoginService.loginAndGetCookies(server)
+                }
+            }
+        )
+            .then(async r => {
+                if (!r.ok) {
+                    throw new Error(`Não foi possível buscar os processos. ${r.statusText}`);
+                }
+
+                return await r.json() as Array<{
+                    processId: string;
+                    description: string;
+                    version: number;
+                    active: boolean;
+                }>;
+            });
+    }
+
+    public static async exportProcesses() {
+        const server = await ServerService.getSelect();
+
+        if (!server) return;
+
+        let processes;
+
+        try {
+            processes = await WorkflowService.listProcesses(server);
+        } catch (e: any) {
+            window.showErrorMessage(e.message || e);
+            return;
+        }
+
+        const selected = await window.showQuickPick(
+            processes.map(p => ({
+                label: `${p.processId} (v${p.version})`,
+                description: p.description,
+                processId: p.processId,
+                version: p.version
+            })),
+            {
+                placeHolder: "Selecione os processos para exportar",
+                canPickMany: true
+            }
+        );
+
+        if (!selected || !selected.length) return;
+
+        if (server.confirmExporting && !(await UtilsService.confirmPassword(server))) {
+            return;
+        }
+
+        const workspace = UtilsService.getWorkspaceUri();
+
+        for (const proc of selected) {
+            try {
+                await WorkflowService.exportProcess(server, proc.processId, proc.version, workspace);
+            } catch (e: any) {
+                window.showErrorMessage(`Erro ao exportar ${proc.processId}: ${e.message || e}`);
+            }
+        }
+
+        window.showInformationMessage("Processos exportados com sucesso!");
+    }
+
+    public static async exportProcess(
+        server: ServerDTO,
+        processId: string,
+        version: number,
+        workspace: Uri
+    ) {
+        const response = await fetch(
+            `${UtilsService.getHost(server)}/fluiggersWidget/api/workflows/${encodeURIComponent(processId)}/${version}/export`,
+            {
+                method: "GET",
+                headers: {
+                    Cookie: await LoginService.loginAndGetCookies(server)
+                }
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error(`Erro ao exportar: ${response.statusText}`);
+        }
+
+        const data: any = await response.json();
+
+        const fs = require("fs");
+        const path = require("path");
+
+        const dir = path.join(workspace.fsPath, processId);
+
+        if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir);
+        }
+
+        fs.writeFileSync(`${dir}/process.xml`, data.definition || "");
+
+        (data.events || []).forEach((ev: any) => {
+            fs.writeFileSync(`${dir}/${ev.name}.js`, ev.script || "");
+        });
+
+        (data.formEvents || []).forEach((ev: any) => {
+            fs.writeFileSync(`${dir}/${ev.name}_form.js`, ev.script || "");
         });
     }
 }
