@@ -1,4 +1,5 @@
 import { Uri, window } from 'vscode';
+import { IZipEntry } from "adm-zip";
 import { readFileSync } from "fs";
 import { glob } from "glob";
 import { UtilsService } from "./UtilsService";
@@ -190,7 +191,6 @@ export class WorkflowService {
 
     public static async exportProcesses() {
         const server = await ServerService.getSelect();
-
         if (!server) return;
 
         let processes;
@@ -215,7 +215,7 @@ export class WorkflowService {
             }
         );
 
-        if (!selected || !selected.length) return;
+        if (!selected?.length) return;
 
         if (server.confirmExporting && !(await UtilsService.confirmPassword(server))) {
             return;
@@ -225,13 +225,18 @@ export class WorkflowService {
 
         for (const proc of selected) {
             try {
-                await WorkflowService.exportProcess(server, proc.processId, proc.version, workspace);
+                await WorkflowService.exportProcess(
+                    server,
+                    proc.processId,
+                    proc.version,
+                    workspace
+                );
             } catch (e: any) {
-                window.showErrorMessage(`Erro ao exportar ${proc.processId}: ${e.message || e}`);
+                window.showErrorMessage(`Erro ao importar ${proc.processId}: ${e.message || e}`);
             }
         }
 
-        window.showInformationMessage("Processos exportados com sucesso!");
+        window.showInformationMessage("Processos importados com sucesso!");
     }
 
     public static async exportProcess(
@@ -240,39 +245,89 @@ export class WorkflowService {
         version: number,
         workspace: Uri
     ) {
-        const response = await fetch(
-            `${UtilsService.getHost(server)}/fluiggersWidget/api/workflows/${encodeURIComponent(processId)}/${version}/export`,
+        const fs = require("fs");
+        const path = require("path");
+        const AdmZip = require("adm-zip");
+
+        const host = UtilsService.getHost(server);
+        const cookie = await LoginService.loginAndGetCookies(server);
+
+        const zipResponse = await fetch(
+            `${host}/ecm/api/rest/ecm/processdefinition/exportProcessToZip?processId=${encodeURIComponent(processId)}&version=${version}`,
             {
                 method: "GET",
                 headers: {
-                    Cookie: await LoginService.loginAndGetCookies(server)
+                    Cookie: cookie
                 }
             }
         );
 
-        if (!response.ok) {
-            throw new Error(`Erro ao exportar: ${response.statusText}`);
+        if (!zipResponse.ok) {
+            throw new Error(`Erro ao baixar ZIP: ${zipResponse.statusText}`);
         }
 
-        const data: any = await response.json();
+        const zipBuffer = Buffer.from(await zipResponse.arrayBuffer());
 
-        const fs = require("fs");
-        const path = require("path");
+        const zip = new AdmZip(zipBuffer);
+        const entries = zip.getEntries();
 
-        const dir = path.join(workspace.fsPath, processId);
+        const processEntry = entries.find((e: IZipEntry) =>
+            !e.isDirectory &&
+            e.entryName.endsWith(".xml")
+        );
 
-        if (!fs.existsSync(dir)) {
-            fs.mkdirSync(dir);
+        if (!processEntry) {
+            throw new Error("Arquivo .xml não encontrado no ZIP do Fluig");
         }
 
-        fs.writeFileSync(`${dir}/process.xml`, data.definition || "");
+        const processContent = processEntry.getData();
 
-        (data.events || []).forEach((ev: any) => {
-            fs.writeFileSync(`${dir}/${ev.name}.js`, ev.script || "");
-        });
 
-        (data.formEvents || []).forEach((ev: any) => {
-            fs.writeFileSync(`${dir}/${ev.name}_form.js`, ev.script || "");
-        });
+        const scriptsResponse = await fetch(
+            `${host}/fluiggersWidget/api/workflows/${encodeURIComponent(processId)}/${version}/import`,
+            {
+                method: "GET",
+                headers: {
+                    Cookie: cookie
+                }
+            }
+        );
+
+        if (!scriptsResponse.ok) {
+            throw new Error(`Erro ao buscar scripts: ${scriptsResponse.statusText}`);
+        }
+
+        type ProcessExport = {
+            events: { name: string; script: string }[];
+        };
+
+        const scriptsData = await scriptsResponse.json() as ProcessExport;
+        const workflowDir = path.join(workspace.fsPath, "workflow");
+        const diagramsDir = path.join(workflowDir, "diagrams");
+        const scriptsDir = path.join(workflowDir, "scripts");
+
+        if (!fs.existsSync(workflowDir)) {
+            throw new Error("Pasta 'workflow' não encontrada na workspace.");
+        }
+
+        if (!fs.existsSync(diagramsDir)) {
+            fs.mkdirSync(diagramsDir, { recursive: true });
+        }
+
+        if (!fs.existsSync(scriptsDir)) {
+            fs.mkdirSync(scriptsDir, { recursive: true });
+        }
+
+        const processFilePath = path.join(diagramsDir, `${processId}.xml`);
+        fs.writeFileSync(processFilePath, processContent);
+
+        for (const ev of (scriptsData.events || [])) {
+            if (!ev?.name) continue;
+
+            const scriptFileName = `${processId}.${ev.name}.js`;
+            const scriptFilePath = path.join(scriptsDir, scriptFileName);
+
+            fs.writeFileSync(scriptFilePath, ev.script || "", "utf8");
+        }
     }
 }

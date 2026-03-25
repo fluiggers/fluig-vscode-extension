@@ -225,7 +225,7 @@
             },
             {
                 "command": "fluiggers-fluig-vscode-extension.listProcesses",
-                "title": "Fluig: Listar Processos",
+                "title": "Importar Processo(s)",
                 "category": "Fluig"
             }
         ],
@@ -563,6 +563,7 @@
     },
     "devDependencies": {
         "@popperjs/core": "^2.11.8",
+        "@types/adm-zip": "^0.5.8",
         "@types/glob": "^8.1.0",
         "@types/mocha": "^10.0.6",
         "@types/node": "^20.12.12",
@@ -602,5 +603,8 @@
     },
     "overrides": {
         "yauzl": "^3.2.1"
+    },
+    "dependencies": {
+        "adm-zip": "^0.5.16"
     }
 }

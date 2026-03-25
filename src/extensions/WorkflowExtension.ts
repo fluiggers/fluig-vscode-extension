@@ -186,7 +186,6 @@ export class WorkflowExtension {
 
     private static async listProcesses() {
         const server = await ServerService.getSelect();
-
         if (!server) return;
 
         try {
@@ -199,45 +198,64 @@ export class WorkflowExtension {
                 return;
             }
 
-            const selected = await vscode.window.showQuickPick(
-                processes.map(p => ({
-                    label: p.processId,
-                    description: p.description || "",
-                    detail: `Versão: ${p.version} ${p.active ? "| Ativo" : ""}`,
-                    processId: p.processId,
-                    version: p.version
-                })),
+            const quickPick = vscode.window.createQuickPick();
+
+            quickPick.title = "Selecionar processos para importar";
+            quickPick.placeholder = "Marque os processos e pressione Enter";
+            quickPick.canSelectMany = true;
+
+            quickPick.items = processes.map(p => ({
+                label: p.processId,
+                description: p.description || "",
+                detail: `Versão: ${p.version} ${p.active ? "| Ativo" : ""}`,
+                processId: p.processId,
+                version: p.version
+            }));
+
+            quickPick.buttons = [
                 {
-                    canPickMany: true,
-                    placeHolder: "Selecione os processos para importar"
+                    iconPath: new vscode.ThemeIcon("check"),
+                    tooltip: "Confirmar"
                 }
-            );
+            ];
 
-            if (!selected || !selected.length) return;
+            quickPick.onDidAccept(async () => {
+                const selectedItems = quickPick.selectedItems as any[];
 
-            if (server.confirmExporting && !(await UtilsService.confirmPassword(server))) {
-                return;
-            }
+                quickPick.hide();
 
-            const workspace = UtilsService.getWorkspaceUri();
+                if (!selectedItems.length) return;
 
-            for (const proc of selected) {
-                try {
-                    await WorkflowService.exportProcess(
-                        server,
-                        proc.processId,
-                        proc.version,
-                        workspace
-                    );
-                } catch (e: any) {
-                    vscode.window.showErrorMessage(
-                        `Erro ao exportar ${proc.processId}: ${e.message || e}`
-                    );
+                if (server.confirmExporting && !(await UtilsService.confirmPassword(server))) {
                     return;
                 }
-            }
 
-            vscode.window.showInformationMessage("Processos exportados com sucesso!");
+                const workspace = UtilsService.getWorkspaceUri();
+
+                await vscode.window.withProgress(
+                    {
+                        location: vscode.ProgressLocation.Notification,
+                        title: "Exportando processos...",
+                        cancellable: false
+                    },
+                    async () => {
+                        for (const proc of selectedItems) {
+                            await WorkflowService.exportProcess(
+                                server,
+                                proc.processId,
+                                proc.version,
+                                workspace
+                            );
+                        }
+                    }
+                );
+
+                vscode.window.showInformationMessage("Processos importados com sucesso!");
+            });
+
+            quickPick.onDidHide(() => quickPick.dispose());
+
+            quickPick.show();
 
         } catch (error: any) {
             vscode.window.showErrorMessage(error.message || error);
