@@ -235,12 +235,12 @@ export class WorkflowExtension {
                 await vscode.window.withProgress(
                     {
                         location: vscode.ProgressLocation.Notification,
-                        title: "Exportando processos...",
+                        title: "Importando processos...",
                         cancellable: false
                     },
                     async () => {
                         for (const proc of selectedItems) {
-                            await WorkflowService.exportProcess(
+                            await WorkflowService.importProcess(
                                 server,
                                 proc.processId,
                                 proc.version,

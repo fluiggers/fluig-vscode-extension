@@ -374,6 +374,10 @@
                     "group": "1_Fluig4Workflow@6"
                 },
                 {
+                    "command": "fluiggers-fluig-vscode-extension.listProcesses",
+                    "group": "1_Fluig4Workflow@7"
+                },
+                {
                     "command": "fluiggers-fluig-vscode-extension.newWidget",
                     "group": "1_Fluig5WCM@1"
                 },

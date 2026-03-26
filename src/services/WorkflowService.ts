@@ -189,7 +189,7 @@ export class WorkflowService {
             });
     }
 
-    public static async exportProcesses() {
+    public static async importProcesses() {
         const server = await ServerService.getSelect();
         if (!server) return;
 
@@ -225,7 +225,7 @@ export class WorkflowService {
 
         for (const proc of selected) {
             try {
-                await WorkflowService.exportProcess(
+                await WorkflowService.importProcess(
                     server,
                     proc.processId,
                     proc.version,
@@ -239,7 +239,7 @@ export class WorkflowService {
         window.showInformationMessage("Processos importados com sucesso!");
     }
 
-    public static async exportProcess(
+    public static async importProcess(
         server: ServerDTO,
         processId: string,
         version: number,

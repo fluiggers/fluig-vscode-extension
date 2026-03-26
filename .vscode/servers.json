@@ -2,13 +2,13 @@
 	"version": "1.0.0",
 	"configurations": [
 		{
-			"id": "usx7xje6kcmn4wsb3k7saul8x0tav",
+			"id": "5lxyta5fe0nmn5hj0mvgvvuhkb80d",
 			"name": "CDHUDEV",
 			"host": "cdhudev.fluig.cloudtotvs.com.br",
 			"ssl": true,
 			"port": 443,
 			"username": "adm",
-			"password": "eyJpdiI6IjhmYTkwZWE1OWFiNTk5ZGVmN2YzNTZlYjhkNDgxMjk1Iiwic2FsdCI6IjQxNjI3MDdkYWMzNDk3Mzc0MDgwYzViMjQzNDZhMmFhIiwidGV4dCI6ImU1YzY3NWVhMWYxYzcwMTQ4ZmRmNzU4NWUzYmRhNzg3In0=",
+			"password": "eyJpdiI6ImEwNzhkNGUxYzNmODZhN2VmMjJhNjQ1NzA2NzJmNjI0Iiwic2FsdCI6ImIzYjU3ZWQ5ZjM2YjA2YWFjOTcxZjQ2OTI0NDk1Njc2IiwidGV4dCI6IjMyNzFkZDU3Yzk5MTkxODNiMTA1ODNjNDdkZDAyODQzIn0=",
 			"userCode": "adm",
 			"confirmExporting": false,
 			"hasBrowser": false,

@@ -54,30 +54,44 @@ para que a Extensão baixe os arquivos para o seu workspace / diretório.
 
 Após abrir a pasta do projeto Fluig as seguintes funcionalidades serão disponibilizadas:
 
-- [Gerenciar Servidores](#gerenciar-servidores)
-- [Consultar Dataset](#consultar-dataset)
-- [Novo Dataset](#novo-dataset)
-- [Importar Dataset e Importar Vários Datasets](#importar-dataset)
-- [Exportar Dataset e Exportar Vários Datasets](#exportar-dataset)
-- [Novo Formulário](#novo-formulário)
-- [Novo Evento de Formulário](#novo-evento-de-formulário)
-- [Importar Formulário e Importar Vários Formulários](#importar-formulário)
-- [Exportar Formulário](#exportar-formulário)
-- [Novo Evento de Processo](#novo-evento-de-processo)
-- [Exportar Evento de Processo](#exportar-evento-de-processo)
-- [Novo Evento Global](#novo-evento-global)
-- [Importar Evento Global e Importar Vários Eventos Globais](#importar-evento-global)
-- [Exportar Evento Global](#exportar-evento-global)
-- [Excluir Evento Global](#excluir-evento-global)
-- [Novo Mecanismo Customizado](#novo-mecanismo-customizado)
-- [Importar Mecanismo de Atribuição Customizado](#importar-mecanismo-de-atribuição-customizado)
-- [Exportar Mecanismo de Atribuição Customizado](#exportar-mecanismo-de-atribuição-customizado)
-- [Novo Widget](#novo-widget)
-- [Exportar Widget](#exportar-widget)
-- [Exportar Fluiggers Widget](#exportar-fluiggers-widget)
-- [Importar Widget](#importar-widget)
-- [Snippets para HTML](#snippets-para-html)
-- [Snippets para JavaScript](#snippets-para-javascript)
+- [Fluig - Extensão para Desenvolvimento no VSCode](#fluig---extensão-para-desenvolvimento-no-vscode)
+  - [ATENÇÃO](#atenção)
+  - [Instalação](#instalação)
+    - [Erro de Linguagem não reconhecida](#erro-de-linguagem-não-reconhecida)
+  - [Como utilizar](#como-utilizar)
+    - [ATENÇÃO](#atenção-1)
+  - [Auto-Completar](#auto-completar)
+  - [Funcionalidades da Extensão](#funcionalidades-da-extensão)
+  - [Gerenciar Servidores](#gerenciar-servidores)
+    - [Consultar Dataset](#consultar-dataset)
+  - [Novo Dataset](#novo-dataset)
+  - [Importar Dataset](#importar-dataset)
+  - [Exportar Dataset](#exportar-dataset)
+  - [Novo Formulário](#novo-formulário)
+  - [Novo Evento de Formulário](#novo-evento-de-formulário)
+  - [Importar Formulário](#importar-formulário)
+  - [Exportar Formulário](#exportar-formulário)
+  - [Novo Evento de Processo](#novo-evento-de-processo)
+  - [Exportar Evento de Processo](#exportar-evento-de-processo)
+  - [Novo Evento Global](#novo-evento-global)
+  - [Importar Evento Global](#importar-evento-global)
+  - [Exportar Evento Global](#exportar-evento-global)
+  - [Excluir Evento Global](#excluir-evento-global)
+    - [CUIDADO](#cuidado)
+  - [Novo Mecanismo Customizado](#novo-mecanismo-customizado)
+  - [Importar Mecanismo de Atribuição Customizado](#importar-mecanismo-de-atribuição-customizado)
+  - [Exportar Mecanismo de Atribuição Customizado](#exportar-mecanismo-de-atribuição-customizado)
+  - [Importar Processo(s)](#importar-processos)
+  - [Novo Widget](#novo-widget)
+  - [Exportar Widget](#exportar-widget)
+  - [Exportar Fluiggers Widget](#exportar-fluiggers-widget)
+  - [Importar Widget](#importar-widget)
+  - [Snippets para HTML](#snippets-para-html)
+  - [Snippets para JavaScript](#snippets-para-javascript)
+    - [Snippets para Back-End](#snippets-para-back-end)
+    - [Snippets para Front-End](#snippets-para-front-end)
+  - [Contribuindo com o Projeto](#contribuindo-com-o-projeto)
+    - [Contribuidores](#contribuidores)
 
 ## Gerenciar Servidores
 
@@ -285,6 +299,18 @@ opção `Exportar Mecanismo Customizado` ou, enquanto edita o arquivo do mecanis
 
 Após selecionar o servidor será solicitado que informe um código, nome e descrição ao mecanismo customizado.
 
+
+## Importar Processo(s)
+
+Esse comando realiza a importação de um ou mais processos disponíveis nos servidores cadastrados, permitindo a seleção por meio de uma listagem.
+__PS:__
+O arquivo ".process", ainda não é gerado com a estrutura correta ele apenas retorna o XML e 
+salva no diretório `workflow/diagrams`. Apesar disso, todos os scripts relacionados ao diagrama são importados.
+
+É necessário que a `FluiggersWidget` esteja presente no servidor Fluig.
+
+Você pode executar esse comando no __Command Palette__ e no menu de contexto no __File Explorer__.
+
 ## Novo Widget
 
 Esse comando cria uma estrutura básica de widget, após você preencher o nome do Widget, no
@@ -385,3 +411,4 @@ Basta criar um fork e efetuar uma PR quando estiver pronto.
 - [Jhonatan Serafim](https://github.com/jhonnytuba)
 - [Matheus Mósso](https://github.com/msmosso)
 - [Pedro Costa](https://github.com/pedro-costa-neto)
+- [Guilherme Mesquita](https://github.com/GuilhermeMesquita)
