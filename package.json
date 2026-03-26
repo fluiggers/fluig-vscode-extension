@@ -26,6 +26,10 @@
         {
             "name": "Jhonatan Serafim",
             "url": "https://github.com/jhonnytuba"
+        },
+        {
+            "name": "Guilherme Mesquita",
+            "url": "https://github.com/GuilhermeMesquita"
         }
     ],
     "engines": {
@@ -218,6 +222,11 @@
                     "light": "dist/images/light/preview.svg",
                     "dark": "dist/images/dark/preview.svg"
                 }
+            },
+            {
+                "command": "fluiggers-fluig-vscode-extension.listProcesses",
+                "title": "Importar Processo(s)",
+                "category": "Fluig"
             }
         ],
         "menus": {
@@ -363,6 +372,10 @@
                 {
                     "command": "fluiggers-fluig-vscode-extension.importMechanism",
                     "group": "1_Fluig4Workflow@6"
+                },
+                {
+                    "command": "fluiggers-fluig-vscode-extension.listProcesses",
+                    "group": "1_Fluig4Workflow@7"
                 },
                 {
                     "command": "fluiggers-fluig-vscode-extension.newWidget",
@@ -554,6 +567,7 @@
     },
     "devDependencies": {
         "@popperjs/core": "^2.11.8",
+        "@types/adm-zip": "^0.5.8",
         "@types/glob": "^8.1.0",
         "@types/mocha": "^10.0.6",
         "@types/node": "^20.12.12",
@@ -593,5 +607,8 @@
     },
     "overrides": {
         "yauzl": "^3.2.1"
+    },
+    "dependencies": {
+        "adm-zip": "^0.5.16"
     }
 }

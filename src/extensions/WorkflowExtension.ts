@@ -4,6 +4,7 @@ import { readFileSync } from "fs";
 import { TemplateService } from "../services/TemplateService";
 import { AttributionMechanismService } from '../services/AttributionMechanismService';
 import { WorkflowService } from '../services/WorkflowService';
+import { ServerService } from "../services/ServerService";
 
 export class WorkflowExtension {
 
@@ -31,6 +32,10 @@ export class WorkflowExtension {
         context.subscriptions.push(vscode.commands.registerCommand(
             "fluiggers-fluig-vscode-extension.exportMechanism",
             WorkflowExtension.exportMechanism
+        ));
+        context.subscriptions.push(vscode.commands.registerCommand(
+            "fluiggers-fluig-vscode-extension.listProcesses",
+            WorkflowExtension.listProcesses
         ));
     }
 
@@ -177,5 +182,83 @@ export class WorkflowExtension {
         }
 
         AttributionMechanismService.export(fileUri);
+    }
+
+    private static async listProcesses() {
+        const server = await ServerService.getSelect();
+        if (!server) return;
+
+        try {
+            await UtilsService.validateServerHasFluiggersWidget(server);
+
+            const processes = await WorkflowService.listProcesses(server);
+
+            if (!processes || !processes.length) {
+                vscode.window.showWarningMessage("Nenhum processo encontrado.");
+                return;
+            }
+
+            const quickPick = vscode.window.createQuickPick();
+
+            quickPick.title = "Selecionar processos para importar";
+            quickPick.placeholder = "Marque os processos e pressione Enter";
+            quickPick.canSelectMany = true;
+
+            quickPick.items = processes.map(p => ({
+                label: p.processId,
+                description: p.description || "",
+                detail: `Versão: ${p.version} ${p.active ? "| Ativo" : ""}`,
+                processId: p.processId,
+                version: p.version
+            }));
+
+            quickPick.buttons = [
+                {
+                    iconPath: new vscode.ThemeIcon("check"),
+                    tooltip: "Confirmar"
+                }
+            ];
+
+            quickPick.onDidAccept(async () => {
+                const selectedItems = quickPick.selectedItems as any[];
+
+                quickPick.hide();
+
+                if (!selectedItems.length) return;
+
+                if (server.confirmExporting && !(await UtilsService.confirmPassword(server))) {
+                    return;
+                }
+
+                const workspace = UtilsService.getWorkspaceUri();
+
+                await vscode.window.withProgress(
+                    {
+                        location: vscode.ProgressLocation.Notification,
+                        title: "Importando processos...",
+                        cancellable: false
+                    },
+                    async () => {
+                        for (const proc of selectedItems) {
+                            await WorkflowService.importProcess(
+                                server,
+                                proc.processId,
+                                proc.version,
+                                workspace
+                            );
+                        }
+                    }
+                );
+
+                vscode.window.showInformationMessage("Processos importados com sucesso!");
+            });
+
+            quickPick.onDidHide(() => quickPick.dispose());
+
+            quickPick.show();
+
+        } catch (error: any) {
+            vscode.window.showErrorMessage(error.message || error);
+        }
     }
 }

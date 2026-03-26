@@ -72,6 +72,7 @@ Após abrir a pasta do projeto Fluig as seguintes funcionalidades serão disponi
 - [Novo Mecanismo Customizado](#novo-mecanismo-customizado)
 - [Importar Mecanismo de Atribuição Customizado](#importar-mecanismo-de-atribuição-customizado)
 - [Exportar Mecanismo de Atribuição Customizado](#exportar-mecanismo-de-atribuição-customizado)
+- [Importar Processo(s)](#importar-processos)
 - [Novo Widget](#novo-widget)
 - [Exportar Widget](#exportar-widget)
 - [Exportar Fluiggers Widget](#exportar-fluiggers-widget)
@@ -285,6 +286,17 @@ opção `Exportar Mecanismo Customizado` ou, enquanto edita o arquivo do mecanis
 
 Após selecionar o servidor será solicitado que informe um código, nome e descrição ao mecanismo customizado.
 
+## Importar Processo(s)
+
+Esse comando realiza a importação de um ou mais processos disponíveis nos servidores cadastrados, permitindo a seleção por meio de uma listagem.
+__PS:__
+O arquivo ".process", ainda não é gerado com a estrutura correta ele apenas retorna o XML e 
+salva no diretório `workflow/diagrams`. Apesar disso, todos os scripts relacionados ao diagrama são importados.
+
+É necessário que a `FluiggersWidget` esteja presente no servidor Fluig.
+
+Você pode executar esse comando no __Command Palette__ e no menu de contexto no __File Explorer__.
+
 ## Novo Widget
 
 Esse comando cria uma estrutura básica de widget, após você preencher o nome do Widget, no
@@ -385,3 +397,4 @@ Basta criar um fork e efetuar uma PR quando estiver pronto.
 - [Jhonatan Serafim](https://github.com/jhonnytuba)
 - [Matheus Mósso](https://github.com/msmosso)
 - [Pedro Costa](https://github.com/pedro-costa-neto)
+- [Guilherme Mesquita](https://github.com/GuilhermeMesquita)
