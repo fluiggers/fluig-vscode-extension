@@ -2,6 +2,14 @@
 
 Lista de atualizações da Extensão.
 
+## 2.11.0
+
+Adiciona a opção de selecionar um local diferente para salvar o arquivo de configuração de servidores.
+
+Essa opção visa atender à necessidade de usuários que utilizam o VS Code para tratar vários projetos simultâneos
+e ter todos os servidores configurados em um único arquivo garante praticidade para esses usuários. Também pode
+trazer um pouco mais de segurança para os usuários que, erroneamente, não colocam o arquivo de servidores no `.gitignore`.
+
 ## 2.10.1
 
 Atualizado o método de leitura de cookies no login por navegador, pois a leitura de cookie no contexto da página estava
