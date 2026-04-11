@@ -6,7 +6,6 @@ import { ServerView } from '../views/ServerView';
 import { Server } from '../models/Server';
 import { DatasetView } from '../views/DatasetView';
 
-
 export class ServerItem extends vscode.TreeItem {
     constructor(
         public context: vscode.ExtensionContext,
@@ -75,6 +74,33 @@ export class ServerItemProvider implements vscode.TreeDataProvider<ServerItem> {
     public add(): void {
         const serverView = new ServerView(this.context);
         serverView.show();
+    }
+
+    public async changeConfigPath(): Promise<void> {
+        const config = vscode.workspace.getConfiguration("fluiggers");
+        let customPath = config.get<string>("serverConfigPath", "");
+
+        const fileUri = await vscode.window.showSaveDialog({
+            title: "Arquivo de Configuração de Servidores (não será sobreescrito)",
+            saveLabel: "Selecione",
+            defaultUri: customPath.length ? vscode.Uri.file(customPath) : undefined,
+            filters: {
+                "JSON": ["json"],
+            },
+        });
+
+        if (fileUri) {
+            customPath = fileUri.fsPath;
+        } else {
+            customPath = "";
+            vscode.window.showInformationMessage("Caminho do arquivo de configuração será na pasta .vscode");
+        }
+
+        await config.update('serverConfigPath', customPath, vscode.ConfigurationTarget.Global);
+
+        ServerService.updateConfigPath();
+        this.serverConfigListener();
+        this.refresh();
     }
 
     public delete(serverItem: ServerItem): void {

@@ -1,5 +1,5 @@
 import { existsSync, mkdirSync, writeFileSync, readFileSync } from 'fs';
-import { window, Uri, QuickPickItem } from "vscode";
+import { window, workspace, Uri, QuickPickItem } from "vscode";
 import { UtilsService } from "./UtilsService";
 import { ServerConfig } from "../models/ServerConfig";
 import { ServerDTO } from "../models/ServerDTO";
@@ -10,8 +10,8 @@ const SERVER_CONFIG_VERSION = '1.0.0';
 
 export class ServerService {
     private static PATH = Uri.joinPath(UtilsService.getWorkspaceUri(), '.vscode').fsPath;
-    private static FILE_SERVER_CONFIG = Uri.joinPath(UtilsService.getWorkspaceUri(), '.vscode', 'servers.json').fsPath;
     private static SELECTED_SERVER: string = "";
+    private static FILE_SERVER_CONFIG = ServerService.getConfigPath();
 
     /**
      * Adiciona um novo servidor
@@ -227,5 +227,21 @@ export class ServerService {
         ServerService.writeServerConfig(serverConfig);
 
         return true;
+    }
+
+    private static getConfigPath(): string {
+        const config = workspace.getConfiguration('fluiggers');
+        let customPath = config.get<string>('serverConfigPath', "");
+
+        if (customPath != "") {
+            return customPath;
+        }
+
+        return Uri.joinPath(UtilsService.getWorkspaceUri(), '.vscode', 'servers.json').fsPath;
+    }
+
+    public static updateConfigPath(): void {
+        ServerService.FILE_SERVER_CONFIG = ServerService.getConfigPath();
+        ServerService.getFileServerConfig();
     }
 }

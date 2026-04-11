@@ -2,7 +2,7 @@
     "name": "fluiggers-fluig-vscode-extension",
     "displayName": "Fluig - Extensão para Desenvolvimento",
     "description": "Extensão para agilizar o desenvolvimento para o TOTVS Fluig no VS Code",
-    "version": "2.10.1",
+    "version": "2.11.0",
     "publisher": "Fluiggers",
     "icon": "images/icon.png",
     "repository": {
@@ -131,6 +131,15 @@
                 "icon": {
                     "light": "dist/images/light/add.svg",
                     "dark": "dist/images/dark/add.svg"
+                }
+            },
+            {
+                "command": "fluiggers-fluig-vscode-extension.changeServerConfigPath",
+                "title": "Alterar Caminho para o Arquivo de Configuração de Servidores",
+                "category": "Fluig",
+                "icon": {
+                    "light": "dist/images/light/edit.svg",
+                    "dark": "dist/images/dark/edit.svg"
                 }
             },
             {
@@ -385,13 +394,13 @@
                     "group": "navigation"
                 },
                 {
-                    "command": "fluiggers-fluig-vscode-extension.refreshServer",
+                    "command": "fluiggers-fluig-vscode-extension.changeServerConfigPath",
                     "when": "view == fluiggers-fluig-vscode-extension.servers",
                     "group": "navigation"
                 },
                 {
-                    "command": "fluiggers-fluig-vscode-extension.datasetView",
-                    "when": "view == fluiggers-fluig-vscode-extension.datasetViewList",
+                    "command": "fluiggers-fluig-vscode-extension.refreshServer",
+                    "when": "view == fluiggers-fluig-vscode-extension.servers",
                     "group": "navigation"
                 }
             ],
@@ -530,7 +539,13 @@
                 "properties": {
                     "fluiggers.browserPath": {
                         "type": "string",
-                        "description": "Caminho do seu Navegador",
+                        "description": "Caminho do seu Navegador para Autenticação MFA",
+                        "default": "",
+                        "scope": "machine"
+                    },
+                    "fluiggers.serverConfigPath": {
+                        "type": "string",
+                        "description": "Caminho do seu Arquivo de Configuração de Servidores",
                         "default": "",
                         "scope": "machine"
                     }

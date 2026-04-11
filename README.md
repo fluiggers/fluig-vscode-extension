@@ -91,6 +91,11 @@ Há a opção de indicar que efetuará o login via Navegador. Essa opção é ú
 
 Ao clicar em um servidor é possível visualizar alguns comandos disponíveis. Com eles podemos consultar dataset, serviços etc.
 
+Por padrão o arquivo de configuração é salvo na pasta `.vscode` do seu Workspace, porém é possível alterar o local de salvamento
+do arquivo de configuração de servidores, bastando clicar no icone de edição (ao lado do botão "Adicionar Servidor"). Caso já tenha
+um arquivo de configuração pode copiá-lo para o novo local e só configurar o VS Code para apontar para ele. Arquivos existentes não
+serão apagados ao serem selecionados, diferente do alerta que o VS Code emite.
+
 ### Consultar Dataset
 
 Ao clicar no servidor será disponibilizada a opção Dataset. Nela você pode consultar um dataset do servidor.

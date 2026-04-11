@@ -17,6 +17,10 @@ export class ServerExtension {
             () => serverItemProvider.add()
         ));
         context.subscriptions.push(vscode.commands.registerCommand(
+            "fluiggers-fluig-vscode-extension.changeServerConfigPath",
+            () => serverItemProvider.changeConfigPath()
+        ));
+        context.subscriptions.push(vscode.commands.registerCommand(
             "fluiggers-fluig-vscode-extension.refreshServer",
             () => serverItemProvider.refresh()
         ));
