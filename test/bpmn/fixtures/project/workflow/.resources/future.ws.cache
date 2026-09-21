@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<java class="java.beans.XMLDecoder">
+  <string>mecanismo</string>
+  <array class="java.lang.Object" length="4">
+    <array class="java.lang.Object" length="2"><string>Atribui&#xe7;&#xe3;o por Associa&#xe7;&#xe3;o</string><string>Associado</string></array>
+    <array class="java.lang.Object" length="2"><string>Atribui&#xe7;&#xe3;o por Grupo HelpDesk</string><string>atrib_tratar_chamado</string></array>
+    <array class="java.lang.Object" length="2"><string>Atribui&#xe7;&#xe3;o por Campo de Formul&#xe1;rio</string><string>Campo Formul&#xe1;rio</string></array>
+    <array class="java.lang.Object" length="2"><string>Mecanismo customizado</string><string>mecBuscaAprovadorTP</string></array>
+  </array>
+  <void method="put"></void>
+  <string>expediente</string>
+  <array class="java.lang.String" length="1">
+    <void index="0"><string>Default</string></void>
+  </array>
+  <void method="put"></void>
+</java>

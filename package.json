@@ -2,8 +2,16 @@
     "name": "fluiggers-fluig-vscode-extension",
     "displayName": "Fluig - Extensão para Desenvolvimento",
     "description": "Extensão para agilizar o desenvolvimento para o TOTVS Fluig no VS Code",
-    "version": "2.11.0",
+    "version": "2.12.0",
     "publisher": "Fluiggers",
+    "activationEvents": [
+        "workspaceContains:**/*.process",
+        "onCustomEditor:fluigBpmn.processEditor",
+        "onCommand:fluigBpmn.openText",
+        "onCommand:fluigBpmn.validate",
+        "onCommand:fluigBpmn.generateTranslations",
+        "onCommand:fluiggers-fluig-vscode-extension.newWorkflowProcess"
+    ],
     "icon": "images/icon.png",
     "repository": {
         "type": "git",
@@ -38,6 +46,18 @@
     ],
     "main": "./dist/extension.js",
     "contributes": {
+        "customEditors": [
+            {
+                "viewType": "fluigBpmn.processEditor",
+                "displayName": "Fluig BPMN",
+                "selector": [
+                    {
+                        "filenamePattern": "*.process"
+                    }
+                ],
+                "priority": "default"
+            }
+        ],
         "commands": [
             {
                 "command": "fluiggers-fluig-vscode-extension.installDeclarationLibrary",
@@ -60,6 +80,11 @@
                 "category": "Fluig"
             },
             {
+                "command": "fluiggers-fluig-vscode-extension.newWorkflowProcess",
+                "title": "Novo Diagrama de Processo",
+                "category": "Fluig"
+            },
+            {
                 "command": "fluiggers-fluig-vscode-extension.newWorkflowEvent",
                 "title": "Novo Evento de Processo",
                 "category": "Fluig"
@@ -67,6 +92,21 @@
             {
                 "command": "fluiggers-fluig-vscode-extension.exportWorkflowEvent",
                 "title": "Exportar Evento de Processo",
+                "category": "Fluig"
+            },
+            {
+                "command": "fluiggers-fluig-vscode-extension.generateWorkflowProcessArtifact",
+                "title": "Gerar ECM30 do Processo",
+                "category": "Fluig"
+            },
+            {
+                "command": "fluiggers-fluig-vscode-extension.validateWorkflowProcessExport",
+                "title": "Validar Exportacao de Processo",
+                "category": "Fluig"
+            },
+            {
+                "command": "fluiggers-fluig-vscode-extension.exportWorkflowProcess",
+                "title": "Exportar Processo",
                 "category": "Fluig"
             },
             {
@@ -227,6 +267,21 @@
                     "light": "dist/images/light/preview.svg",
                     "dark": "dist/images/dark/preview.svg"
                 }
+            },
+            {
+                "command": "fluigBpmn.openText",
+                "title": "Abrir processo como texto",
+                "category": "Fluig BPMN"
+            },
+            {
+                "command": "fluigBpmn.validate",
+                "title": "Validar processo",
+                "category": "Fluig BPMN"
+            },
+            {
+                "command": "fluigBpmn.generateTranslations",
+                "title": "Gerar arquivos de tradução",
+                "category": "Fluig BPMN"
             }
         ],
         "menus": {
@@ -281,6 +336,11 @@
                 }
             ],
             "explorer/context": [
+                {
+                    "command": "fluiggers-fluig-vscode-extension.newWorkflowProcess",
+                    "when": "explorerResourceIsFolder",
+                    "group": "1_Fluig4Workflow@0"
+                },
                 {
                     "command": "fluiggers-fluig-vscode-extension.newDataset",
                     "group": "1_Fluig1Dataset@1"
@@ -357,21 +417,36 @@
                     "group": "1_Fluig4Workflow@2"
                 },
                 {
-                    "command": "fluiggers-fluig-vscode-extension.exportMechanism",
-                    "when": "resourcePath =~ /[\\/\\\\]mechanisms[\\/\\\\].+$/",
+                    "command": "fluiggers-fluig-vscode-extension.generateWorkflowProcessArtifact",
+                    "when": "resourceExtname == .process",
                     "group": "1_Fluig4Workflow@3"
                 },
                 {
-                    "command": "fluiggers-fluig-vscode-extension.newMechanism",
+                    "command": "fluiggers-fluig-vscode-extension.validateWorkflowProcessExport",
+                    "when": "resourceExtname == .process",
                     "group": "1_Fluig4Workflow@4"
                 },
                 {
-                    "command": "fluiggers-fluig-vscode-extension.importManyMechanisms",
+                    "command": "fluiggers-fluig-vscode-extension.exportWorkflowProcess",
+                    "when": "resourceExtname == .process",
                     "group": "1_Fluig4Workflow@5"
                 },
                 {
-                    "command": "fluiggers-fluig-vscode-extension.importMechanism",
+                    "command": "fluiggers-fluig-vscode-extension.exportMechanism",
+                    "when": "resourcePath =~ /[\\/\\\\]mechanisms[\\/\\\\].+$/",
                     "group": "1_Fluig4Workflow@6"
+                },
+                {
+                    "command": "fluiggers-fluig-vscode-extension.newMechanism",
+                    "group": "1_Fluig4Workflow@7"
+                },
+                {
+                    "command": "fluiggers-fluig-vscode-extension.importManyMechanisms",
+                    "group": "1_Fluig4Workflow@8"
+                },
+                {
+                    "command": "fluiggers-fluig-vscode-extension.importMechanism",
+                    "group": "1_Fluig4Workflow@9"
                 },
                 {
                     "command": "fluiggers-fluig-vscode-extension.newWidget",
@@ -492,6 +567,12 @@
                 "key": "ctrl+f9",
                 "mac": "cmd+f9",
                 "when": "editorTextFocus && resourcePath =~ /[\\/\\\\]workflow[\\/\\\\]scripts[\\/\\\\].+\\.js$/"
+            },
+            {
+                "command": "fluiggers-fluig-vscode-extension.exportWorkflowProcess",
+                "key": "ctrl+f9",
+                "mac": "cmd+f9",
+                "when": "editorTextFocus && resourceExtname == .process"
             }
         ],
         "viewsContainers": {
@@ -548,13 +629,56 @@
                         "description": "Caminho do seu Arquivo de Configuração de Servidores",
                         "default": "",
                         "scope": "machine"
+                    },
+                    "fluiggers.eclipsePluginsPath": {
+                        "type": "string",
+                        "description": "Pasta plugins de um Fluig Studio local. Opcional quando o VSIX ja inclui os JARs do conversor ECM30",
+                        "default": "",
+                        "scope": "machine"
+                    },
+                    "fluiggers.javaPath": {
+                        "type": "string",
+                        "description": "Executavel Java ou pasta JAVA_HOME para o gerador ECM30. Vazio usa JAVA_HOME e depois o Java disponivel no PATH",
+                        "default": "",
+                        "scope": "machine"
+                    },
+                    "fluiggers.fluigRuntimeVersion": {
+                        "type": "string",
+                        "description": "Versao de compatibilidade do runtime Fluig usada pelo conversor ECM30",
+                        "default": "1.8.2",
+                        "scope": "machine"
+                    },
+                    "fluiggers.generateEcm30OnSave": {
+                        "type": "boolean",
+                        "description": "Gera e atualiza automaticamente o ECM30 sempre que um arquivo .process e salvo",
+                        "default": true,
+                        "scope": "resource"
+                    },
+                    "fluiggers.bpmnBackupDirectory": {
+                        "type": "string",
+                        "description": "Diretorio relativo a raiz do workspace usado para backups antes de editar arquivos .process",
+                        "default": ".fluig-bpmn/backups",
+                        "scope": "resource"
+                    },
+                    "fluiggers.bpmnEditorPriority": {
+                        "type": "string",
+                        "enum": [
+                            "visual",
+                            "text"
+                        ],
+                        "description": "Preferencia informativa do editor BPMN; use Reopen Editor With para alternar",
+                        "default": "visual",
+                        "scope": "resource"
                     }
                 }
             }
         ]
     },
     "scripts": {
-        "vscode:prepublish": "npm run package",
+        "vscode:prepublish": "npm run prepare:runtime && npm run package",
+        "prepare:runtime": "node scripts/prepare-fluig-runtime.js",
+        "prepare:runtime:check": "node scripts/prepare-fluig-runtime.js --check",
+        "package:vsix": "vsce package",
         "precompile": "gulp",
         "buildResources": "gulp buildResources",
         "buildLibraries": "gulp buildLibraries",
@@ -565,7 +689,10 @@
         "test-watch": "tsc -watch -p ./",
         "pretest": "npm run test-compile && npm run lint",
         "lint": "eslint src --ext ts",
-        "test": "node ./out/test/runTest.js"
+        "test": "node ./out/test/runTest.js",
+        "test:process-export": "node --test test/FluigProcessExportService.test.js",
+        "test:ecm30-generation": "node --test test/Ecm30GenerationService.test.js",
+        "test:bpmn": "node --import tsx --require ./test/bpmn/stableProcessFixture.js --test test/bpmn/*.test.js"
     },
     "devDependencies": {
         "@popperjs/core": "^2.11.8",
@@ -575,6 +702,7 @@
         "@types/vscode": "^1.89.0",
         "@typescript-eslint/eslint-plugin": "^7.9.0",
         "@typescript-eslint/parser": "^7.9.0",
+        "@vscode/vsce": "^3.6.2",
         "@vscode/test-electron": "^2.3.10",
         "bootstrap": "^5.3.3",
         "bufferutil": "^4.1.0",
@@ -596,11 +724,13 @@
         "jquery": "^3.7.1",
         "jszip": "^3.10.1",
         "puppeteer-core": "^24.39.1",
+        "sax": "^1.5.0",
         "select2": "^4.1.0-rc.0",
         "select2-bootstrap-5-theme": "^1.3.0",
-        "soap": "^1.0.3",
+        "soap": "^1.8.0",
         "template-literal": "^1.0.4",
         "ts-loader": "^9.5.1",
+        "tsx": "^4.20.6",
         "typescript": "^5.4.5",
         "utf-8-validate": "^6.0.6",
         "webpack": "^5.91.0",

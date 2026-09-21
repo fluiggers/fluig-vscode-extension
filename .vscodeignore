@@ -1,7 +1,9 @@
 .vscode/**
 .vscode-test/**
+.validation-cache/**
 out/**
 src/**
+test/**
 .gitignore
 .yarnrc
 **/tsconfig.json
@@ -14,3 +16,5 @@ gulpfile.js
 webpack.config.js
 templates/**
 .github/**
+scripts/**
+runtime/java/**

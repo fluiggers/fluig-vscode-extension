@@ -4,3 +4,6 @@ node_modules
 .vscode-test/
 *.vsix
 .idea/
+.validation-cache/
+runtime/java/
+runtime/fluig-studio/

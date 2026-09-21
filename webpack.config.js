@@ -28,7 +28,20 @@ const config = {
     rules: [
       {
         test: /\.ts$/,
-        exclude: /node_modules/,
+        include: path.resolve(__dirname, 'src', 'bpmn'),
+        use: [
+          {
+            loader: 'ts-loader',
+            options: { transpileOnly: true }
+          }
+        ]
+      },
+      {
+        test: /\.ts$/,
+        exclude: [
+          /node_modules/,
+          path.resolve(__dirname, 'src', 'bpmn')
+        ],
         use: [
           {
             loader: 'ts-loader'
