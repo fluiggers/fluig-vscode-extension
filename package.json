@@ -2,7 +2,7 @@
     "name": "fluiggers-fluig-vscode-extension",
     "displayName": "Fluig - Extensão para Desenvolvimento",
     "description": "Extensão para agilizar o desenvolvimento para o TOTVS Fluig no VS Code",
-    "version": "2.12.0",
+    "version": "3.0.0-alpha",
     "publisher": "Fluiggers",
     "activationEvents": [
         "workspaceContains:**/*.process",
@@ -675,7 +675,7 @@
         ]
     },
     "scripts": {
-        "vscode:prepublish": "npm run prepare:runtime && npm run package",
+        "vscode:prepublish": "npm run package",
         "prepare:runtime": "node scripts/prepare-fluig-runtime.js",
         "prepare:runtime:check": "node scripts/prepare-fluig-runtime.js --check",
         "package:vsix": "vsce package",
