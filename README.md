@@ -1,7 +1,5 @@
 # Fluig - Extensão para Desenvolvimento no VSCode
 
-![Visual Studio Marketplace Installs](https://img.shields.io/visual-studio-marketplace/i/fluiggers.fluiggers-fluig-vscode-extension)
-![Visual Studio Marketplace Rating (Stars)](https://img.shields.io/visual-studio-marketplace/stars/fluiggers.fluiggers-fluig-vscode-extension)
 ![GitHub](https://img.shields.io/github/license/fluiggers/fluig-vscode-extension)
 
 Extensão desenvolvida pela comunidade de desenvolvedores Fluig para facilitar o desenvolvimento na plataforma
