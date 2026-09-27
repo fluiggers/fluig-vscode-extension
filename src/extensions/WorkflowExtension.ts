@@ -4,10 +4,18 @@ import { readFileSync } from "fs";
 import { TemplateService } from "../services/TemplateService";
 import { AttributionMechanismService } from '../services/AttributionMechanismService';
 import { WorkflowService } from '../services/WorkflowService';
+import { WorkflowProcessExportService } from '../services/WorkflowProcessExportService';
+import { WorkflowProcessArtifactService } from '../services/WorkflowProcessArtifactService';
+import { WorkflowProcessScaffoldService } from '../services/WorkflowProcessScaffoldService';
 
 export class WorkflowExtension {
 
     public static activate(context: vscode.ExtensionContext): void {
+        WorkflowProcessArtifactService.initialize(context);
+        context.subscriptions.push(vscode.commands.registerCommand(
+            "fluiggers-fluig-vscode-extension.newWorkflowProcess",
+            (folderUri?: vscode.Uri) => WorkflowProcessScaffoldService.create(context, folderUri)
+        ));
         context.subscriptions.push(vscode.commands.registerCommand(
             "fluiggers-fluig-vscode-extension.newWorkflowEvent",
             WorkflowExtension.createWorkflowEvent
@@ -15,6 +23,18 @@ export class WorkflowExtension {
         context.subscriptions.push(vscode.commands.registerCommand(
             "fluiggers-fluig-vscode-extension.exportWorkflowEvent",
             WorkflowExtension.exportWorkflowEvent
+        ));
+        context.subscriptions.push(vscode.commands.registerCommand(
+            "fluiggers-fluig-vscode-extension.generateWorkflowProcessArtifact",
+            WorkflowProcessArtifactService.generate
+        ));
+        context.subscriptions.push(vscode.commands.registerCommand(
+            "fluiggers-fluig-vscode-extension.validateWorkflowProcessExport",
+            WorkflowProcessExportService.validate
+        ));
+        context.subscriptions.push(vscode.commands.registerCommand(
+            "fluiggers-fluig-vscode-extension.exportWorkflowProcess",
+            WorkflowProcessExportService.export
         ));
         context.subscriptions.push(vscode.commands.registerCommand(
             "fluiggers-fluig-vscode-extension.newMechanism",

@@ -11,7 +11,7 @@ TOTVS Fluig utilizando o VSCode.
 
 ## ATENÇÃO
 
-__Essa extensão não é mantida pela TOTVS e não possuí suporte da TOTVS.__
+**Todos os direitos sobre a plataforma TOTVS Fluig, suas marcas, seus produtos e sua documentação oficial pertencem à TOTVS e/ou aos respectivos titulares.** Este repositório não é mantido, aprovado ou patrocinado pela TOTVS e não inclui código proprietário do Fluig.
 
 O ambiente oficial para desenvolvimento no Fluig continua sendo o Eclipse Luna, conforme documentação oficial do Fluig.
 
@@ -50,10 +50,28 @@ Você pode instalar a __Declaração de Tipos para o Fluig__ baixando o último 
 pode executar o comando `Fluig: Instalar Declarações de Tipo`, no __Command Palette__ (normalmente com a tecla de atalho F1),
 para que a Extensão baixe os arquivos para o seu workspace / diretório.
 
+## Diagrama de Processos
+
+De forma **EXPERIMENTAL**, esssa extensão agora permite desenhar os diagramas de processo e exportá-los ao servidor Fluig.
+
+A intenção ao disponibilizar essa funcionalidade é permitir que os usuários auxiliem nossa comunidade,
+tanto ao indicar problemas como issues como auxiliar na programação em si.
+
+> **Não use essa funcionalidade em Produção**
+
+Para desenhar os diagramas é necessário configurar a extensão com os seguintes dados:
+
+- Indicar a versão do Fluig;
+- Indicar o caminho da pasta Plugins do Eclipse que possua
+o plugin Fluig Studio instalado.
+- Idicar o caminho do executável Java, caso ele não esteja na variável JAVA_HOME ou PATH do seu ambiente;
+
+
 ## Funcionalidades da Extensão
 
 Após abrir a pasta do projeto Fluig as seguintes funcionalidades serão disponibilizadas:
 
+- [Editor visual de processos BPMN](#editor-visual-de-processos-bpmn)
 - [Gerenciar Servidores](#gerenciar-servidores)
 - [Consultar Dataset](#consultar-dataset)
 - [Novo Dataset](#novo-dataset)
@@ -78,6 +96,14 @@ Após abrir a pasta do projeto Fluig as seguintes funcionalidades serão disponi
 - [Importar Widget](#importar-widget)
 - [Snippets para HTML](#snippets-para-html)
 - [Snippets para JavaScript](#snippets-para-javascript)
+
+## Editor visual de processos BPMN
+
+Arquivos `.process` abrem diretamente no editor visual Fluig BPMN, agora incorporado a esta extensão. O editor permite visualizar, criar, conectar, mover e configurar elementos do processo preservando o formato usado pelo Fluig Studio.
+
+Os comandos `Fluig BPMN: Validar processo`, `Fluig BPMN: Gerar arquivos de tradução` e `Fluig BPMN: Abrir processo como texto` ficam disponíveis na Paleta de Comandos. O diretório de backup pode ser alterado pela configuração `fluiggers.bpmnBackupDirectory`.
+
+O host do editor faz parte do build TypeScript da extensão. Os arquivos de interface em `media/bpmn` continuam em JavaScript e CSS porque são executados na webview isolada do VS Code. A antiga extensão BPMN separada não deve permanecer instalada junto com este pacote, pois ambas registram o mesmo editor customizado.
 
 ## Gerenciar Servidores
 
@@ -374,6 +400,42 @@ ser utilizado em qual dos dois ambientes.
 - __fluig-dataset-async__: Chamar Dataset de modo Assíncrono;
 - __fluig-modal__: Criar modal do Fluig;
 - __fluig-widget__: Criar o esqueleto de uma Widget com itens privados;
+
+## Gerador ECM30 multiplataforma
+
+O VSIX nao inclui um JRE ou JDK portatil. Para converter `.process` em
+`ecm30.xml`, a extensao usa um Java 8 ou superior instalado no Windows, Linux
+ou macOS.
+
+O executavel e localizado nesta ordem:
+
+1. `fluiggers.javaPath`, que pode apontar para o executavel `java`/`java.exe` ou
+   para a pasta raiz do Java, no mesmo formato de `JAVA_HOME`;
+2. variavel de ambiente `JAVA_HOME`;
+3. comando `java` disponivel no `PATH`.
+
+`fluiggers.javaPath` possui escopo global da maquina: nao e lida nem
+sobrescrita pelo `.vscode/settings.json` do workspace. Deixe o campo vazio para
+usar `JAVA_HOME` ou `PATH`.
+
+Antes de gerar o VSIX, disponibilize uma instalacao local do Fluig Studio em
+`%USERPROFILE%\\EclipsePortable\\App\\eclipse\\plugins` ou informe a pasta:
+
+```powershell
+$env:FLUIG_ECLIPSE_PLUGINS = "C:\\EclipsePortable\\App\\eclipse\\plugins"
+npm run prepare:runtime
+npm run prepare:runtime:check
+npm run package:vsix
+```
+
+O comando `vscode:prepublish`, executado pelo empacotador VS Code, chama
+automaticamente `prepare:runtime`. O pacote recebe somente os JARs observados
+como necessarios para o conversor ECM30. O mesmo VSIX pode ser instalado no
+Windows, Linux e macOS, desde que haja um Java compativel disponivel.
+
+Os JARs TOTVS sao proprietarios e sao copiados apenas da instalacao local. A
+equipe responsavel deve confirmar a permissao contratual de redistribuicao antes
+de compartilhar o VSIX fora da organizacao.
 
 ## Contribuindo com o Projeto
 
