@@ -11,7 +11,7 @@ TOTVS Fluig utilizando o VSCode.
 
 ## ATENÇÃO
 
-__Essa extensão não é mantida pela TOTVS e não possuí suporte da TOTVS.__
+**Todos os direitos sobre a plataforma TOTVS Fluig, suas marcas, seus produtos e sua documentação oficial pertencem à TOTVS e/ou aos respectivos titulares.** Este repositório não é mantido, aprovado ou patrocinado pela TOTVS e não inclui código proprietário do Fluig.
 
 O ambiente oficial para desenvolvimento no Fluig continua sendo o Eclipse Luna, conforme documentação oficial do Fluig.
 
@@ -49,6 +49,23 @@ VSCode, por isso é recomendado que ela seja instalada.
 Você pode instalar a __Declaração de Tipos para o Fluig__ baixando o último release disponibilizado no GitHub ou
 pode executar o comando `Fluig: Instalar Declarações de Tipo`, no __Command Palette__ (normalmente com a tecla de atalho F1),
 para que a Extensão baixe os arquivos para o seu workspace / diretório.
+
+## Diagrama de Processos
+
+De forma **EXPERIMENTAL**, esssa extensão agora permite desenhar os diagramas de processo e exportá-los ao servidor Fluig.
+
+A intenção ao disponibilizar essa funcionalidade é permitir que os usuários auxiliem nossa comunidade,
+tanto ao indicar problemas como issues como auxiliar na programação em si.
+
+> **Não use essa funcionalidade em Produção**
+
+Para desenhar os diagramas é necessário configurar a extensão com os seguintes dados:
+
+- Indicar a versão do Fluig;
+- Indicar o caminho da pasta Plugins do Eclipse que possua
+o plugin Fluig Studio instalado.
+- Idicar o caminho do executável Java, caso ele não esteja na variável JAVA_HOME ou PATH do seu ambiente;
+
 
 ## Funcionalidades da Extensão
 

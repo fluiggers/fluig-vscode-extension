@@ -1,9 +1,16 @@
 # Change Log
 
-## 2.12.0
+## 3.0.0-alpha
+
+Adiciona, como experimental, o editor de Diagrama de Processo, além de permitir exportar o processo para o servidor Fluig.
+
+Essa funcionalidade não está pronta para usar em Produção, então use-a somente para testes e assim auxiliar a comunidade
+no avanço do desenvolvimento, abrindo issues no repositório.
+
+É necessário ter o Eclipse instalado juntamente com o seu plugin do Fluig Studio, e então indicar os caminhos dos plugins
+e do Java na configuração da extensão.
 
 - Permite excluir pools e raias pela lixeira, painel de propriedades, tecla Delete ou selecao multipla, preservando os elementos do fluxo e redistribuindo as raias restantes.
-
 - Adiciona o botão `Erros`, com lista de problemas agrupada por elemento e navegação direta para o item no diagrama.
 - Permite excluir em lote os elementos selecionados, incluindo fluxos incidentes e scripts pertencentes à seleção, com backup e validação estrutural.
 - Habilita a exclusão segura das atividades de negócio, script e serviço; o script vinculado à tarefa é removido na mesma operação.
@@ -22,37 +29,20 @@
 - Mantem a webview em JavaScript e CSS, executada no sandbox do VS Code e empacotada em `media/bpmn`.
 - Unifica comandos, editor customizado e configuracoes de backup no namespace da extensao.
 - Preserva a cobertura funcional do editor com 302 testes automatizados dentro do repositorio principal.
-
-## 2.11.5
-
 - Prepara VSIX autocontido com JRE Eclipse Temurin privado, sem alterar `PATH` ou `JAVA_HOME`.
 - Empacota somente os JARs necessarios do Fluig Studio para o conversor ECM30.
 - Usa Java e plugins empacotados automaticamente, preservando configuracoes locais como override.
 - Valida checksum do JRE baixado e registra um manifesto dos binarios incluidos.
-
-Lista de atualizações da Extensão.
-
-## 2.11.4
-
 - Atualiza automaticamente `workflow/.resources/<processo>.ecm30.xml` a cada salvamento do `.process`, como o Fluig Studio.
 - Consolida eventos duplicados de salvamento com debounce e serializa conversoes concorrentes do mesmo processo.
 - Mantem o ultimo ECM30 valido quando o processo ainda nao atende as precondicoes do conversor e registra o diagnostico no canal `Fluig ECM30`.
 - Permite desativar o comportamento por recurso com `fluiggers.generateEcm30OnSave`.
-
-## 2.11.3
-
 - Adiciona o comando `Fluig: Gerar ECM30 do Processo` usando o conversor BPMN2ECM30 do Fluig Studio instalado localmente.
 - Executa a conversao fora da interface do Eclipse, incluindo scripts e literais do projeto.
 - Valida a raiz e as entidades obrigatorias do runtime antes de gravar.
 - Preserva o ECM30 anterior em `workflow/.resources/.backups` quando o conteudo muda.
-
-## 2.11.2
-
-Bloqueia a validação e a exportação quando o `ecm30.xml` ou o SVG estiver ausente ou for mais antigo que o arquivo `.process`, evitando publicar uma representação de runtime obsoleta.
-
-## 2.11.1
-
-Adiciona validacao local e exportacao SOAP de processos Fluig a partir dos artefatos `ecm30.xml` e SVG gerados pelo Studio.
+- Bloqueia a validação e a exportação quando o `ecm30.xml` ou o SVG estiver ausente ou for mais antigo que o arquivo `.process`, evitando publicar uma representação de runtime obsoleta.
+- Adiciona validacao local e exportacao SOAP de processos Fluig a partir dos artefatos `ecm30.xml` e SVG gerados pelo Studio.
 
 ## 2.11.0
 
