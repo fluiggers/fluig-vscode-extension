@@ -12,6 +12,7 @@ const {
     loadXmlArtifact,
     normalizeStudioText,
     assertGeneratedArtifactsFresh,
+    containsProcessVersionNotFound,
 } = require("../src/services/FluigProcessExportService");
 
 function fixture() {
@@ -195,6 +196,45 @@ test("processo novo pula criacao de versao e recarrega a lista", async t => {
             "getWorkFlowProcessVersion",
         ]
     );
+});
+
+test("processo inexistente troca automaticamente de nova versao para novo processo", async t => {
+    const files = fixture();
+    t.after(() => fs.rmSync(files.root, { recursive: true, force: true }));
+    const gateway = new FakeGateway();
+    gateway.invoke = async function (_client, operation, params) {
+        this.calls.push({ operation, params });
+        if (operation === "createWorkFlowProcessVersion") {
+            throw new Error(
+                'soapServer: Process version not found. Company 1 process PROC_TESTE: {"Exception":null}'
+            );
+        }
+        if (operation === "getWorkFlowProcessVersion") {
+            return 1;
+        }
+        return "OK";
+    };
+    const service = new FluigProcessExportService(gateway);
+
+    const result = await service.export(server(), options(files, { dryRun: false }));
+
+    assert.equal(result.newProcess, true);
+    assert.equal(result.modeAdjusted, true);
+    const importCall = gateway.calls.find(call => call.operation === "importProcess");
+    assert.equal(importCall.params.companyId, 1);
+    assert.equal(importCall.params.newProcess, true);
+    assert.ok(gateway.calls.some(call => call.operation === "getAllProcessAvailableToExport"));
+});
+
+test("reconhece o erro de versao inexistente sem confundir outras falhas SOAP", () => {
+    assert.equal(
+        containsProcessVersionNotFound({
+            message: "soapServer: Process version not found. Company 1 process PROC_TESTE",
+            root: { Exception: null },
+        }),
+        true
+    );
+    assert.equal(containsProcessVersionNotFound(new Error("Access denied")), false);
 });
 
 test("falha quando importProcess retorna ok=false", async t => {

@@ -18,3 +18,4 @@ templates/**
 .github/**
 scripts/**
 runtime/java/**
+debug.log
