@@ -124,6 +124,7 @@
     const message = event.data;
     if (message.type === 'model') renderModel(message.data);
     if (message.type === 'toast') showToast(message.message);
+    if (message.type === 'renderPng') void renderPng(message);
     if (message.type === 'layoutComplete') {
       state.layoutCommitPending = false;
       updateAlignmentButtons();
@@ -282,6 +283,7 @@
     if (event.target === validationDialog) validationDialog.close();
   });
   document.getElementById('validate').addEventListener('click', () => vscode.postMessage({ type: 'validate' }));
+  document.getElementById('exportPng').addEventListener('click', () => vscode.postMessage({ type: 'exportPng' }));
   document.getElementById('openText').addEventListener('click', () => vscode.postMessage({ type: 'openText' }));
   document.getElementById('search').addEventListener('input', filterDiagram);
   paletteToggle.addEventListener('click', () => setPaletteCollapsed(!state.paletteCollapsed));
@@ -365,6 +367,79 @@
       ? state.selectedIds
       : Array.isArray(saved.selectedIds) ? saved.selectedIds : saved.selectedId ? [saved.selectedId] : [];
     setSelection(previousSelection.filter((id) => findElement(id)), false);
+  }
+
+  async function renderPng(message) {
+    const requestId = String(message.requestId ?? '');
+    let objectUrl = '';
+    try {
+      if (!requestId || typeof message.svg !== 'string' || !message.svg.includes('<svg')) {
+        throw new Error('Conteudo SVG invalido.');
+      }
+      const parsed = new DOMParser().parseFromString(message.svg, 'image/svg+xml');
+      if (parsed.querySelector('parsererror')) throw new Error('O SVG gerado nao pode ser interpretado.');
+      const root = parsed.documentElement;
+      const sourceWidth = Number(root.getAttribute('width'));
+      const sourceHeight = Number(root.getAttribute('height'));
+      if (!(sourceWidth > 0) || !(sourceHeight > 0)) throw new Error('O SVG nao possui dimensoes validas.');
+
+      const preferredScale = Math.max(1, Number(message.preferredScale) || 1);
+      const maxDimension = Math.max(1, Number(message.maxDimension) || 16384);
+      const maxPixels = Math.max(1, Number(message.maxPixels) || 67108864);
+      const scale = Math.max(0.01, Math.min(
+        preferredScale,
+        maxDimension / sourceWidth,
+        maxDimension / sourceHeight,
+        Math.sqrt(maxPixels / (sourceWidth * sourceHeight))
+      ));
+      const width = Math.max(1, Math.floor(sourceWidth * scale));
+      const height = Math.max(1, Math.floor(sourceHeight * scale));
+      objectUrl = URL.createObjectURL(new Blob([message.svg], { type: 'image/svg+xml;charset=utf-8' }));
+      const image = await loadImage(objectUrl);
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const context = canvas.getContext('2d');
+      if (!context) throw new Error('Canvas 2D indisponivel.');
+      context.drawImage(image, 0, 0, width, height);
+      const png = await new Promise((resolve, reject) => {
+        canvas.toBlob((blob) => blob ? resolve(blob) : reject(new Error('Falha ao codificar o PNG.')), 'image/png');
+      });
+      const dataUrl = await blobDataUrl(png);
+      vscode.postMessage({
+        type: 'pngExportReady',
+        requestId,
+        base64: dataUrl.slice(dataUrl.indexOf(',') + 1),
+        width,
+        height
+      });
+    } catch (error) {
+      vscode.postMessage({
+        type: 'pngExportFailed',
+        requestId,
+        error: error?.message || String(error)
+      });
+    } finally {
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+    }
+  }
+
+  function loadImage(url) {
+    return new Promise((resolve, reject) => {
+      const image = new Image();
+      image.onload = () => resolve(image);
+      image.onerror = () => reject(new Error('Falha ao rasterizar o SVG.'));
+      image.src = url;
+    });
+  }
+
+  function blobDataUrl(blob) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result ?? ''));
+      reader.onerror = () => reject(reader.error || new Error('Falha ao ler o PNG gerado.'));
+      reader.readAsDataURL(blob);
+    });
   }
 
   function hydrateCachedRemoteFormFields(data) {

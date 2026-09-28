@@ -404,6 +404,24 @@ test('canvas oferece zoom centralizado pelo cursor com Ctrl e roda do mouse', ()
   assert.doesNotMatch(styles, /#diagram \{[^}]*min-width: 100%/);
 });
 
+test('toolbar e comando exportam o diagrama completo como PNG', () => {
+  const html = fs.readFileSync(path.join(__dirname, '..', '..', 'src', 'bpmn', 'webviewHtml.ts'), 'utf8');
+  const source = fs.readFileSync(path.join(__dirname, '..', '..', 'media', 'bpmn', 'editor.js'), 'utf8');
+  const provider = fs.readFileSync(path.join(__dirname, '..', '..', 'src', 'bpmn', 'FluigProcessEditorProvider.ts'), 'utf8');
+  const extension = fs.readFileSync(path.join(__dirname, '..', '..', 'src', 'extensions', 'BpmnEditorExtension.ts'), 'utf8');
+
+  assert.match(html, /id="exportPng"/);
+  assert.match(html, /img-src \$\{webview\.cspSource\} data: blob:/);
+  assert.match(source, /type: 'exportPng'/);
+  assert.match(source, /function renderPng\(message\)/);
+  assert.match(source, /canvas\.toBlob/);
+  assert.match(source, /type: 'pngExportReady'/);
+  assert.match(provider, /showSaveDialog/);
+  assert.match(provider, /renderProcessImageSvg\(document\.getText\(\)\)/);
+  assert.match(provider, /vscode\.workspace\.fs\.writeFile\(pending\.destination, png\)/);
+  assert.match(extension, /"fluigBpmn\.exportPng"/);
+});
+
 test('editor permite escolher e persistir uma cor de fundo com grade contrastante', () => {
   const html = fs.readFileSync(path.join(__dirname, '..', '..', 'src', 'bpmn', 'webviewHtml.ts'), 'utf8');
   const source = fs.readFileSync(path.join(__dirname, '..', '..', 'media', 'bpmn', 'editor.js'), 'utf8');

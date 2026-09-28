@@ -59,7 +59,7 @@ function getWebviewHtml(webview, scriptUri, styleUri, nonce, dragGeometryUri = '
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource}; script-src 'nonce-${nonce}'; img-src ${webview.cspSource} data:;">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource}; script-src 'nonce-${nonce}'; img-src ${webview.cspSource} data: blob:;">
   <link rel="stylesheet" href="${styleUri}">
   <title>Fluig BPMN</title>
 </head>
@@ -94,6 +94,7 @@ function getWebviewHtml(webview, scriptUri, styleUri, nonce, dragGeometryUri = '
       <button id="generateTranslations" title="Gerar e sincronizar os arquivos de tradução">Traduções</button>
       <button id="showErrors" class="validation-list-button" title="Exibir erros agrupados por elemento" disabled>Erros (0)</button>
       <button id="validate" title="Validar estrutura">Validar</button>
+      <button id="exportPng" title="Exportar o diagrama completo como imagem PNG">PNG</button>
       <button id="openText" title="Abrir no editor de texto">XML</button>
     </div>
   </header>
