@@ -1,6 +1,6 @@
 'use strict';
 
-const { attr } = require('./processModel');
+const { attr, chopboxAnchor } = require('./processModel');
 const { parseGatewayConditions } = require('./gatewayConditions');
 
 function validateProcess(model) {
@@ -36,7 +36,7 @@ function validateProcess(model) {
     }
     if (['true', '1'].includes(flow.attributes.defaultLink)
       && !(source?.tag === 'BpmnGateway' && ['120', '121'].includes(String(source.type)))) {
-      add(findings, 'error', 'COND-007', `${flow.id} é padrão, mas sua origem não é um gateway exclusivo ou inclusivo.`, flow.id);
+      add(findings, 'warning', 'COND-007', `${flow.id} é padrão, mas sua origem não é um gateway exclusivo ou inclusivo.`, flow.id);
     }
     if (!flow.connection) add(findings, 'error', 'LINK-001', `Fluxo ${flow.id} não possui conexão visual.`, flow.id);
     const visualLabel = attr(flow.connection?.labelNode, 'value');
@@ -119,8 +119,10 @@ function validateVisualConnections(model, byId, findings) {
     const targetShape = model.shapeById.get(flow.attributes.targetRef);
     const sourceIndex = shapes.indexOf(sourceShape?.node);
     const targetIndex = shapes.indexOf(targetShape?.node);
-    const expectedStart = `/0/@children.${sourceIndex}/@anchors.0`;
-    const expectedEnd = `/0/@children.${targetIndex}/@anchors.0`;
+    const sourceAnchor = chopboxAnchor(sourceShape?.node);
+    const targetAnchor = chopboxAnchor(targetShape?.node);
+    const expectedStart = `/0/@children.${sourceIndex}/@anchors.${sourceAnchor.index}`;
+    const expectedEnd = `/0/@children.${targetIndex}/@anchors.${targetAnchor.index}`;
     if (sourceIndex < 0 || attr(connectionNode, 'start') !== expectedStart) {
       add(findings, 'error', 'POS-001', `Origem visual de ${flowId} não corresponde a ${flow.attributes.sourceRef}.`, flowId);
     }
@@ -128,12 +130,10 @@ function validateVisualConnections(model, byId, findings) {
       add(findings, 'error', 'POS-002', `Destino visual de ${flowId} não corresponde a ${flow.attributes.targetRef}.`, flowId);
     }
     const connectionRef = `/0/@connections.${connectionIndex}`;
-    const sourceAnchor = sourceShape?.node.children.find((node) => node.localName === 'anchors');
-    const targetAnchor = targetShape?.node.children.find((node) => node.localName === 'anchors');
-    if (!splitRefs(attr(sourceAnchor, 'outgoingConnections')).includes(connectionRef)) {
+    if (!splitRefs(attr(sourceAnchor.node, 'outgoingConnections')).includes(connectionRef)) {
       add(findings, 'error', 'POS-003', `Anchor de origem de ${flowId} não referencia ${connectionRef}.`, flowId);
     }
-    if (!splitRefs(attr(targetAnchor, 'incomingConnections')).includes(connectionRef)) {
+    if (!splitRefs(attr(targetAnchor.node, 'incomingConnections')).includes(connectionRef)) {
       add(findings, 'error', 'POS-004', `Anchor de destino de ${flowId} não referencia ${connectionRef}.`, flowId);
     }
     if (!pictogramLinks.includes(`${connectionRef}/@link`)) {

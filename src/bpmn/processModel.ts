@@ -226,9 +226,17 @@ function attr(node, name) {
   return node?.attributeMap?.[name]?.value ?? '';
 }
 
+// Fluig Studio may place a BoxRelativeAnchor before the ChopboxAnchor (e.g. subprocesses),
+// so connection refs must use the ChopboxAnchor's actual position.
+function chopboxAnchor(shapeNode) {
+  const anchors = shapeNode?.children.filter((node) => node.localName === 'anchors') ?? [];
+  const node = anchors.find((item) => attr(item, 'xsi:type') === 'pi:ChopboxAnchor') ?? anchors[0] ?? null;
+  return { node, index: anchors.indexOf(node) };
+}
+
 function numberAttr(node, name) {
   const value = Number.parseFloat(attr(node, name));
   return Number.isFinite(value) ? value : 0;
 }
 
-module.exports = { BUSINESS_TAGS, TYPE_LABELS, attr, parseProcess };
+module.exports = { BUSINESS_TAGS, TYPE_LABELS, attr, chopboxAnchor, parseProcess };
