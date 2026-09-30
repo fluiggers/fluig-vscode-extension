@@ -333,13 +333,20 @@ test('toolbar exibe erros agrupados por elemento e permite navegar ao item', () 
   const source = fs.readFileSync(path.join(__dirname, '..', '..', 'media', 'bpmn', 'editor.js'), 'utf8');
   const styles = fs.readFileSync(path.join(__dirname, '..', '..', 'media', 'bpmn', 'editor.css'), 'utf8');
   assert.match(html, /id="showErrors"[^>]*>Erros \(0\)<\/button>/);
-  assert.match(html, /id="validationDialog"/);
+  assert.match(html, /id="validationDialog" class="validation-dialog-overlay hidden" role="dialog" aria-modal="true"/);
   assert.match(source, /function validationProblemGroups\(data\)/);
   assert.match(source, /element\.configurationIssues/);
   assert.match(source, /data\.validation\?\.errors/);
+  assert.match(source, /showErrorsButton\.disabled = !data\?\.supported/);
+  assert.match(source, /Nenhum erro ou aviso encontrado\./);
   assert.match(source, /function createValidationProblemGroup\(group\)/);
+  assert.match(source, /function findConnection\(id\) \{ return state\.connectionById\.get\(id\); \}/);
   assert.match(source, /focusDiagramElement\(group\.elementId\)/);
-  assert.match(styles, /\.validation-dialog::backdrop/);
+  assert.match(source, /function openValidationProblems\(\)/);
+  assert.match(source, /validationDialog\.classList\.remove\('hidden'\)/);
+  assert.match(source, /function closeValidationProblems\(\)/);
+  assert.match(source, /Não foi possível montar a lista de erros\./);
+  assert.match(styles, /\.validation-dialog-overlay/);
   assert.match(styles, /\.validation-problem-group/);
 });
 
