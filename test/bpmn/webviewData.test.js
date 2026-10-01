@@ -91,6 +91,7 @@ test('serializa modelo seguro para a webview', () => {
   const exclusiveGateway = data.elements.find((element) => element.id === 'exclusivegateway39');
   const connectedIntermediate = data.elements.find((element) => element.id === 'intermediateevent61');
   const connectedIntermediateWithOutgoing = data.elements.find((element) => element.id === 'intermediateevent63');
+  const attachedError = data.elements.find((element) => element.id === 'intermediateerror45');
   assert.equal(data.elements.find((element) => element.id === 'endevent65'), undefined);
   assert.equal(data.counts.diagramElements, model.counts.diagramElements);
   assert.ok(data.elements.filter((element) => element.configurationIssues.length).length >= 33);
@@ -179,6 +180,7 @@ test('serializa modelo seguro para a webview', () => {
   assert.equal(data.elements.find((element) => element.id === 'mailtask31').taskAssignmentEditor, null);
   assert.deepEqual(connectedIntermediate.configurationIssues, []);
   assert.deepEqual(connectedIntermediateWithOutgoing.configurationIssues, ['Elemento sem fluxo de saída.']);
+  assert.deepEqual(attachedError.configurationIssues, ['Elemento sem fluxo de saída.']);
   assert.deepEqual(
     data.elements
       .filter((element) => element.tag === 'BpmnEndEvent' && element.configurationIssues.length)
@@ -300,6 +302,19 @@ test('serializa modelo seguro para a webview', () => {
   assert.equal(serviceTask.taskJointEditor, null);
   assert.equal(data.elements[0].node, undefined);
   assert.doesNotThrow(() => JSON.stringify(data));
+});
+
+test('não exige entrada da captura de erro somente quando o vínculo com o serviço é válido', () => {
+  const text = fs.readFileSync(path.join(__dirname, 'fixtures', 'project', 'workflow', 'diagrams', 'toexportbpmnteste.process'), 'ascii');
+  const detached = text.replace('attachedEvents="intermediateerror45"', 'attachedEvents=""');
+  const model = parseProcess(detached);
+  const data = toWebviewData(model, validateProcess(model));
+  const detachedError = data.elements.find((element) => element.id === 'intermediateerror45');
+
+  assert.deepEqual(detachedError.configurationIssues, [
+    'Elemento sem fluxo de entrada.',
+    'Elemento sem fluxo de saída.'
+  ]);
 });
 
 test('mapeia intermediate link para um seletor de eventos receptores', () => {
