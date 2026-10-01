@@ -3,6 +3,7 @@ import * as vscode from "vscode";
 interface FluigProcessEditorCommands {
     validateActiveDocument(): Promise<void>;
     generateActiveTranslations(): Promise<void>;
+    exportActivePng(processUri?: vscode.Uri): Promise<void>;
 }
 
 type FluigProcessEditorProviderInstance = vscode.CustomTextEditorProvider & FluigProcessEditorCommands;
@@ -47,6 +48,10 @@ export class BpmnEditorExtension {
             vscode.commands.registerCommand(
                 "fluigBpmn.generateTranslations",
                 () => provider.generateActiveTranslations()
+            ),
+            vscode.commands.registerCommand(
+                "fluigBpmn.exportPng",
+                (processUri?: vscode.Uri) => provider.exportActivePng(processUri)
             )
         );
     }

@@ -5,6 +5,7 @@ const crypto = require('node:crypto');
 const path = require('node:path');
 const zlib = require('node:zlib');
 const { parseProcess } = require('./processModel');
+const { renderProcessImageSvg } = require('./processImage');
 const { WorkflowProcessArtifactService } = require('../services/WorkflowProcessArtifactService');
 const {
   convertTaskType,
@@ -84,6 +85,10 @@ class FluigProcessEditorProvider {
     ));
     /** @type {Map<string, vscode.TextDocument>} */
     this.documents = new Map();
+    /** @type {Map<string, Set<vscode.WebviewPanel>>} */
+    this.panels = new Map();
+    /** @type {Map<string, {panel:vscode.WebviewPanel,destination:vscode.Uri,timeout:NodeJS.Timeout}>} */
+    this.pendingPngExports = new Map();
     /** @type {Set<string>} */
     this.internalProcessRenames = new Set();
     /** @type {Map<string, {oldCode:string,newCode:string,relatedCount:number}>} */
@@ -134,7 +139,11 @@ class FluigProcessEditorProvider {
    * @param {vscode.WebviewPanel} panel
    */
   async resolveCustomTextEditor(document, panel) {
-    this.documents.set(document.uri.toString(), document);
+    const documentKey = document.uri.toString();
+    this.documents.set(documentKey, document);
+    const documentPanels = this.panels.get(documentKey) ?? new Set();
+    documentPanels.add(panel);
+    this.panels.set(documentKey, documentPanels);
     panel.webview.options = {
       enableScripts: true,
       localResourceRoots: [vscode.Uri.joinPath(this.context.extensionUri, 'media', 'bpmn')]
@@ -203,6 +212,9 @@ class FluigProcessEditorProvider {
       if (message.type === 'validate') this.showValidation(document);
       if (message.type === 'openText') void vscode.commands.executeCommand('vscode.openWith', document.uri, 'default');
       if (message.type === 'generateTranslations') void this.generateTranslations(document, panel);
+      if (message.type === 'exportPng') void this.exportPng(document, panel);
+      if (message.type === 'pngExportReady') void this.finishPngExport(panel, message);
+      if (message.type === 'pngExportFailed') this.failPngExport(panel, message);
       if (message.type === 'updateProperties') {
         void this.applyPropertyChanges(document, panel, message.elementId, message.changes);
       }
@@ -335,8 +347,125 @@ class FluigProcessEditorProvider {
     });
     panel.onDidDispose(() => {
       changeSubscription.dispose();
-      this.documents.delete(document.uri.toString());
+      const remainingPanels = this.panels.get(documentKey);
+      remainingPanels?.delete(panel);
+      if (!remainingPanels?.size) {
+        this.panels.delete(documentKey);
+        this.documents.delete(documentKey);
+      }
+      for (const [requestId, pending] of this.pendingPngExports) {
+        if (pending.panel !== panel) continue;
+        clearTimeout(pending.timeout);
+        this.pendingPngExports.delete(requestId);
+      }
     });
+  }
+
+  /**
+   * Exporta o processo selecionado usando o rasterizador do webview do editor.
+   * @param {vscode.Uri=} processUri
+   */
+  async exportActivePng(processUri) {
+    let uri = processUri;
+    if (!uri) {
+      const input = vscode.window.tabGroups.activeTabGroup.activeTab?.input;
+      if (input instanceof vscode.TabInputText || input instanceof vscode.TabInputCustom) uri = input.uri;
+    }
+    if (!uri || path.extname(uri.fsPath).toLowerCase() !== '.process') {
+      void vscode.window.showInformationMessage('Selecione um arquivo .process para exportar o diagrama.');
+      return;
+    }
+
+    const key = uri.toString();
+    if (!this.panels.get(key)?.size) {
+      await vscode.commands.executeCommand('vscode.openWith', uri, FluigProcessEditorProvider.viewType);
+    }
+    const panels = [...(this.panels.get(key) ?? [])];
+    const panel = panels.find((candidate) => candidate.visible) ?? panels[0];
+    const document = this.documents.get(key);
+    if (!panel || !document) {
+      void vscode.window.showErrorMessage('Nao foi possivel abrir o editor visual para exportar o PNG.');
+      return;
+    }
+    await this.exportPng(document, panel);
+  }
+
+  /**
+   * @param {vscode.TextDocument} document
+   * @param {vscode.WebviewPanel} panel
+   */
+  async exportPng(document, panel) {
+    try {
+      const processId = path.basename(document.uri.fsPath, path.extname(document.uri.fsPath));
+      const destination = await vscode.window.showSaveDialog({
+        title: 'Exportar diagrama como PNG',
+        saveLabel: 'Exportar',
+        defaultUri: vscode.Uri.file(path.join(path.dirname(document.uri.fsPath), `${processId}.png`)),
+        filters: { PNG: ['png'] }
+      });
+      if (!destination) return;
+
+      const svg = renderProcessImageSvg(document.getText());
+      const requestId = crypto.randomUUID();
+      const timeout = setTimeout(() => {
+        if (!this.pendingPngExports.delete(requestId)) return;
+        void vscode.window.showErrorMessage('A exportacao do PNG excedeu o tempo limite.');
+      }, 30000);
+      this.pendingPngExports.set(requestId, { panel, destination, timeout });
+      const delivered = await panel.webview.postMessage({
+        type: 'renderPng',
+        requestId,
+        svg,
+        preferredScale: 2,
+        maxDimension: 16384,
+        maxPixels: 67108864
+      });
+      if (!delivered) {
+        clearTimeout(timeout);
+        this.pendingPngExports.delete(requestId);
+        throw new Error('O editor visual nao esta disponivel para renderizar o PNG.');
+      }
+    } catch (error) {
+      void vscode.window.showErrorMessage(`Falha ao exportar o diagrama: ${error?.message || String(error)}`);
+    }
+  }
+
+  /** @param {vscode.WebviewPanel} panel @param {any} message */
+  async finishPngExport(panel, message) {
+    const pending = this.takePendingPngExport(panel, message.requestId);
+    if (!pending) return;
+    try {
+      const png = Buffer.from(String(message.base64 ?? ''), 'base64');
+      const signature = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+      if (png.length <= signature.length || !png.subarray(0, signature.length).equals(signature)) {
+        throw new Error('O editor visual retornou um arquivo PNG invalido.');
+      }
+      await vscode.workspace.fs.writeFile(pending.destination, png);
+      const action = await vscode.window.showInformationMessage(
+        `Diagrama exportado para ${pending.destination.fsPath}.`,
+        'Abrir PNG'
+      );
+      if (action === 'Abrir PNG') await vscode.commands.executeCommand('vscode.open', pending.destination);
+    } catch (error) {
+      void vscode.window.showErrorMessage(`Falha ao gravar o PNG: ${error?.message || String(error)}`);
+    }
+  }
+
+  /** @param {vscode.WebviewPanel} panel @param {any} message */
+  failPngExport(panel, message) {
+    const pending = this.takePendingPngExport(panel, message.requestId);
+    if (!pending) return;
+    void vscode.window.showErrorMessage(`Falha ao renderizar o PNG: ${message.error || 'erro desconhecido'}`);
+  }
+
+  /** @param {vscode.WebviewPanel} panel @param {string} requestId */
+  takePendingPngExport(panel, requestId) {
+    const key = String(requestId ?? '');
+    const pending = this.pendingPngExports.get(key);
+    if (!pending || pending.panel !== panel) return undefined;
+    clearTimeout(pending.timeout);
+    this.pendingPngExports.delete(key);
+    return pending;
   }
 
   async validateActiveDocument() {

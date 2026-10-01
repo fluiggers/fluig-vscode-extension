@@ -35,14 +35,14 @@ test('validador detecta condição morta e mais de um fluxo padrão', () => {
   assert.ok(report.errors.some((item) => item.code === 'COND-006'));
 });
 
-test('validador recusa fluxo padrão fora de gateway exclusivo ou inclusivo', () => {
+test('validador alerta fluxo padrão fora de gateway exclusivo ou inclusivo sem bloquear', () => {
   const broken = fixture.replace(
     /(<bpmn2:SequenceFlow id="flow47"[^>]*)(\/>)/,
     '$1 defaultLink="true"$2'
   );
   const report = validateProcess(parseProcess(broken));
-  assert.equal(report.ok, false);
-  assert.ok(report.errors.some((item) => item.code === 'COND-007'));
+  assert.equal(report.ok, true);
+  assert.ok(report.warnings.some((item) => item.code === 'COND-007'));
 });
 
 test('validador sinaliza intermediate link sem receptor ou com destino incompatível', () => {

@@ -15,6 +15,8 @@ test('manifesto registra o editor de arquivos .process', () => {
   assert.equal(editor.priority, 'default');
   assert.ok(manifest.activationEvents.includes('onCommand:fluigBpmn.generateTranslations'));
   assert.ok(manifest.contributes.commands.some((item) => item.command === 'fluigBpmn.generateTranslations'));
+  assert.ok(manifest.activationEvents.includes('onCommand:fluigBpmn.exportPng'));
+  assert.ok(manifest.contributes.commands.some((item) => item.command === 'fluigBpmn.exportPng'));
   assert.ok(manifest.activationEvents.includes('onCommand:fluiggers-fluig-vscode-extension.newWorkflowProcess'));
   assert.ok(manifest.contributes.commands.some((item) => (
     item.command === 'fluiggers-fluig-vscode-extension.newWorkflowProcess'
@@ -23,5 +25,9 @@ test('manifesto registra o editor de arquivos .process', () => {
   assert.ok(manifest.contributes.menus['explorer/context'].some((item) => (
     item.command === 'fluiggers-fluig-vscode-extension.newWorkflowProcess'
     && item.when === 'explorerResourceIsFolder'
+  )));
+  assert.ok(manifest.contributes.menus['explorer/context'].some((item) => (
+    item.command === 'fluigBpmn.exportPng'
+    && item.when === 'resourceExtname == .process'
   )));
 });

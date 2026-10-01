@@ -1,7 +1,7 @@
 'use strict';
 
 const { decodeXml, descendants, encodeXmlAttribute, tokenizeXml, walk } = require('./xmlTokenizer');
-const { parseProcess } = require('./processModel');
+const { chopboxAnchor, parseProcess } = require('./processModel');
 const { validateProcess } = require('./processValidator');
 const { buildGatewayConditionXml, serializeTaskAssignmentConfiguration } = require('./gatewayConditions');
 const { supportsTaskAssignment } = require('./taskAssignment');
@@ -1165,8 +1165,8 @@ function createSequenceFlow(text, request) {
   if (sourceIndex < 0 || targetIndex < 0) {
     throw new Error('A conexão exige shapes Graphiti diretos no diagrama.');
   }
-  const sourceAnchor = sourceShape.node.children.find((node) => node.localName === 'anchors');
-  const targetAnchor = targetShape.node.children.find((node) => node.localName === 'anchors');
+  const { node: sourceAnchor, index: sourceAnchorIndex } = chopboxAnchor(sourceShape.node);
+  const { node: targetAnchor, index: targetAnchorIndex } = chopboxAnchor(targetShape.node);
   if (!sourceAnchor || !targetAnchor) throw new Error('Origem ou destino sem ChopboxAnchor compatível.');
 
   const visualConnections = model.diagram.children.filter((node) => node.localName === 'connections');
@@ -1184,8 +1184,8 @@ function createSequenceFlow(text, request) {
   const bendpoints = normalizeLayoutBendpoints(request?.bendpoints ?? [], flowId);
   const connectionXml = cloneRegularConnection(templateSource.text, template, {
     flowId,
-    start: `/0/@children.${sourceIndex}/@anchors.0`,
-    end: `/0/@children.${targetIndex}/@anchors.0`,
+    start: `/0/@children.${sourceIndex}/@anchors.${sourceAnchorIndex}`,
+    end: `/0/@children.${targetIndex}/@anchors.${targetAnchorIndex}`,
     bendpoints
   });
 
@@ -1318,7 +1318,7 @@ function reconnectSequenceFlow(text, request) {
     text,
     connection.node,
     endpoint === 'source' ? 'start' : 'end',
-    `/0/@children.${newShapeIndex}/@anchors.0`,
+    `/0/@children.${newShapeIndex}/@anchors.${chopboxAnchor(newShape.node).index}`,
     patches,
     { required: true }
   );
@@ -2975,14 +2975,8 @@ function createConnectedTask(text, request) {
   const diagramShapes = model.diagram.children.filter((node) => node.localName === 'children');
   const sourceIndex = diagramShapes.indexOf(sourceShape?.node);
   if (sourceIndex < 0) throw new Error('A origem precisa ter um shape Graphiti direto no diagrama.');
-  const sourceAnchor = sourceShape.node.children.find((node) => (
-    node.localName === 'anchors' && node.attributeMap['xsi:type']?.value === 'pi:ChopboxAnchor'
-  )) ?? sourceShape.node.children.find((node) => node.localName === 'anchors');
+  const { node: sourceAnchor, index: sourceAnchorIndex } = chopboxAnchor(sourceShape.node);
   if (!sourceAnchor) throw new Error('A origem não possui ChopboxAnchor compatível.');
-  const sourceAnchors = sourceShape.node.children.filter((node) => node.localName === 'anchors');
-  if (sourceAnchors.indexOf(sourceAnchor) !== 0) {
-    throw new Error('A origem usa uma âncora Graphiti incompatível com a criação segura.');
-  }
 
   const visualConnections = model.diagram.children.filter((node) => node.localName === 'connections');
   const connectionTemplateSource = resolveCreationTemplate(
@@ -3024,7 +3018,7 @@ function createConnectedTask(text, request) {
   const bendpoints = normalizeLayoutBendpoints(request?.bendpoints ?? [], flowId);
   const connectionXml = cloneRegularConnection(connectionTemplateSource.text, connectionTemplate, {
     flowId,
-    start: `/0/@children.${sourceIndex}/@anchors.0`,
+    start: `/0/@children.${sourceIndex}/@anchors.${sourceAnchorIndex}`,
     end: `${shapeRef}/@anchors.0`,
     bendpoints
   });
@@ -3088,14 +3082,8 @@ function createConnectedGateway(text, request) {
   const diagramShapes = model.diagram.children.filter((node) => node.localName === 'children');
   const sourceIndex = diagramShapes.indexOf(sourceShape?.node);
   if (sourceIndex < 0) throw new Error('A origem precisa ter um shape Graphiti direto no diagrama.');
-  const sourceAnchor = sourceShape.node.children.find((node) => (
-    node.localName === 'anchors' && node.attributeMap['xsi:type']?.value === 'pi:ChopboxAnchor'
-  )) ?? sourceShape.node.children.find((node) => node.localName === 'anchors');
+  const { node: sourceAnchor, index: sourceAnchorIndex } = chopboxAnchor(sourceShape.node);
   if (!sourceAnchor) throw new Error('A origem não possui ChopboxAnchor compatível.');
-  const sourceAnchors = sourceShape.node.children.filter((node) => node.localName === 'anchors');
-  if (sourceAnchors.indexOf(sourceAnchor) !== 0) {
-    throw new Error('A origem usa uma âncora Graphiti incompatível com a criação segura.');
-  }
 
   const visualConnections = model.diagram.children.filter((node) => node.localName === 'connections');
   const connectionTemplateSource = resolveCreationTemplate(
@@ -3136,7 +3124,7 @@ function createConnectedGateway(text, request) {
   const bendpoints = normalizeLayoutBendpoints(request?.bendpoints ?? [], flowId);
   const connectionXml = cloneRegularConnection(connectionTemplateSource.text, connectionTemplate, {
     flowId,
-    start: `/0/@children.${sourceIndex}/@anchors.0`,
+    start: `/0/@children.${sourceIndex}/@anchors.${sourceAnchorIndex}`,
     end: `${shapeRef}/@anchors.0`,
     bendpoints
   });
@@ -3200,14 +3188,8 @@ function createConnectedIntermediateEvent(text, request) {
   const diagramShapes = model.diagram.children.filter((node) => node.localName === 'children');
   const sourceIndex = diagramShapes.indexOf(sourceShape?.node);
   if (sourceIndex < 0) throw new Error('A origem precisa ter um shape Graphiti direto no diagrama.');
-  const sourceAnchor = sourceShape.node.children.find((node) => (
-    node.localName === 'anchors' && node.attributeMap['xsi:type']?.value === 'pi:ChopboxAnchor'
-  )) ?? sourceShape.node.children.find((node) => node.localName === 'anchors');
+  const { node: sourceAnchor, index: sourceAnchorIndex } = chopboxAnchor(sourceShape.node);
   if (!sourceAnchor) throw new Error('A origem não possui ChopboxAnchor compatível.');
-  const sourceAnchors = sourceShape.node.children.filter((node) => node.localName === 'anchors');
-  if (sourceAnchors.indexOf(sourceAnchor) !== 0) {
-    throw new Error('A origem usa uma âncora Graphiti incompatível com a criação segura.');
-  }
 
   const visualConnections = model.diagram.children.filter((node) => node.localName === 'connections');
   const connectionTemplateSource = resolveCreationTemplate(
@@ -3248,7 +3230,7 @@ function createConnectedIntermediateEvent(text, request) {
   const bendpoints = normalizeLayoutBendpoints(request?.bendpoints ?? [], flowId);
   const connectionXml = cloneRegularConnection(connectionTemplateSource.text, connectionTemplate, {
     flowId,
-    start: `/0/@children.${sourceIndex}/@anchors.0`,
+    start: `/0/@children.${sourceIndex}/@anchors.${sourceAnchorIndex}`,
     end: `${shapeRef}/@anchors.0`,
     bendpoints
   });
@@ -3313,14 +3295,8 @@ function createConnectedEndEvent(text, request) {
   const diagramShapes = model.diagram.children.filter((node) => node.localName === 'children');
   const sourceIndex = diagramShapes.indexOf(sourceShape?.node);
   if (sourceIndex < 0) throw new Error('A origem precisa ter um shape Graphiti direto no diagrama.');
-  const sourceAnchor = sourceShape.node.children.find((node) => (
-    node.localName === 'anchors' && node.attributeMap['xsi:type']?.value === 'pi:ChopboxAnchor'
-  )) ?? sourceShape.node.children.find((node) => node.localName === 'anchors');
+  const { node: sourceAnchor, index: sourceAnchorIndex } = chopboxAnchor(sourceShape.node);
   if (!sourceAnchor) throw new Error('A origem não possui ChopboxAnchor compatível.');
-  const sourceAnchors = sourceShape.node.children.filter((node) => node.localName === 'anchors');
-  if (sourceAnchors.indexOf(sourceAnchor) !== 0) {
-    throw new Error('A origem usa uma âncora Graphiti incompatível com a criação segura.');
-  }
 
   const visualConnections = model.diagram.children.filter((node) => node.localName === 'connections');
   const connectionTemplateSource = resolveCreationTemplate(
@@ -3361,7 +3337,7 @@ function createConnectedEndEvent(text, request) {
   const bendpoints = normalizeLayoutBendpoints(request?.bendpoints ?? [], flowId);
   const connectionXml = cloneRegularConnection(connectionTemplateSource.text, connectionTemplate, {
     flowId,
-    start: `/0/@children.${sourceIndex}/@anchors.0`,
+    start: `/0/@children.${sourceIndex}/@anchors.${sourceAnchorIndex}`,
     end: `${shapeRef}/@anchors.0`,
     bendpoints
   });
@@ -4094,10 +4070,7 @@ function patchReferenceListAttribute(text, node, name, reference, patches) {
 }
 
 function findChopboxAnchor(shapeNode) {
-  if (!shapeNode) return null;
-  const anchors = shapeNode.children.filter((node) => node.localName === 'anchors');
-  const chopbox = anchors.find((node) => node.attributeMap['xsi:type']?.value === 'pi:ChopboxAnchor') ?? anchors[0];
-  return anchors.indexOf(chopbox) === 0 ? chopbox : null;
+  return chopboxAnchor(shapeNode).node;
 }
 
 function isTrueAttribute(value) {

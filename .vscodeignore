@@ -17,3 +17,4 @@ src/**
 templates/**
 test/**
 webpack.config.js
+debug.log

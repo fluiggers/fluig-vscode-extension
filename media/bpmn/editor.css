@@ -68,8 +68,8 @@ button:disabled { cursor: default; opacity: .5; }
 .validation-list-button.has-errors { color: var(--vscode-testing-iconFailed, #e05252); border-color: color-mix(in srgb, var(--vscode-testing-iconFailed, #e05252) 65%, var(--panel-border)); }
 .validation-list-button.has-warnings:not(.has-errors) { color: var(--vscode-editorWarning-foreground, #cca700); border-color: color-mix(in srgb, var(--vscode-editorWarning-foreground, #cca700) 65%, var(--panel-border)); }
 
+.validation-dialog-overlay { position: fixed; z-index: 1000; inset: 0; display: grid; place-items: center; box-sizing: border-box; padding: 24px; background: #0008; }
 .validation-dialog { width: min(680px, calc(100vw - 48px)); max-height: min(720px, calc(100vh - 48px)); padding: 0; overflow: hidden; color: var(--vscode-foreground); background: var(--vscode-editorWidget-background, var(--surface-alt)); border: 1px solid var(--vscode-widget-border, var(--panel-border)); border-radius: 7px; box-shadow: 0 16px 48px #0009; }
-.validation-dialog::backdrop { background: #0008; }
 .validation-dialog-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; padding: 15px 16px 11px; border-bottom: 1px solid var(--panel-border); }
 .validation-dialog-header h2 { margin: 2px 0 0; font-size: 18px; }
 .validation-dialog-close { display: grid; place-items: center; width: 30px; height: 30px; padding: 0; border-color: transparent; background: transparent; font-size: 22px; line-height: 1; }
