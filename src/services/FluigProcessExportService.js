@@ -172,21 +172,43 @@ function containsFailure(result) {
     return /(?:^|[,;\s])ok=false(?:$|[,;\s])/i.test(String(result));
 }
 
+function isProcessVersionNotFoundMessage(value) {
+    const message = String(value)
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/\s+/g, " ")
+        .trim()
+        .toLowerCase();
+
+    return [
+        /\bprocess version (?:was )?not found\b/,
+        /\b(?:workflow )?process (?:was )?not found\b/,
+        /\bprocess(?: version)? (?:does not|doesn't) exist\b/,
+        /\bprocesso nao (?:foi )?encontrad[oa]\b/,
+        /\bversao (?:do |de )?processo nao (?:foi )?encontrad[oa]\b/,
+        /\bprocesso(?: de workflow)? nao existe\b/,
+    ].some(pattern => pattern.test(message));
+}
+
 function containsProcessVersionNotFound(value, seen = new Set()) {
     if (value === null || value === undefined) {
         return false;
     }
     if (typeof value !== "object") {
-        return /process version not found/i.test(String(value));
+        return isProcessVersionNotFoundMessage(value);
     }
     if (seen.has(value)) {
         return false;
     }
     seen.add(value);
-    if (value instanceof Error && /process version not found/i.test(value.message)) {
-        return true;
+
+    for (const property of Object.getOwnPropertyNames(value)) {
+        const descriptor = Object.getOwnPropertyDescriptor(value, property);
+        if (descriptor && "value" in descriptor && containsProcessVersionNotFound(descriptor.value, seen)) {
+            return true;
+        }
     }
-    return Object.values(value).some(item => containsProcessVersionNotFound(item, seen));
+    return false;
 }
 
 class NodeSoapGateway {

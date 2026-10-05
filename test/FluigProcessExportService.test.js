@@ -226,6 +226,30 @@ test("processo inexistente troca automaticamente de nova versao para novo proces
     assert.ok(gateway.calls.some(call => call.operation === "getAllProcessAvailableToExport"));
 });
 
+test("processo inexistente retornado em portugues tambem usa o modo de novo processo", async t => {
+    const files = fixture();
+    t.after(() => fs.rmSync(files.root, { recursive: true, force: true }));
+    const gateway = new FakeGateway();
+    gateway.invoke = async function (_client, operation, params) {
+        this.calls.push({ operation, params });
+        if (operation === "createWorkFlowProcessVersion") {
+            return "Processo n\u00e3o encontrado.";
+        }
+        if (operation === "getWorkFlowProcessVersion") {
+            return 1;
+        }
+        return "OK";
+    };
+    const service = new FluigProcessExportService(gateway);
+
+    const result = await service.export(server(), options(files, { dryRun: false }));
+
+    assert.equal(result.newProcess, true);
+    assert.equal(result.modeAdjusted, true);
+    const importCall = gateway.calls.find(call => call.operation === "importProcess");
+    assert.equal(importCall.params.newProcess, true);
+});
+
 test("reconhece o erro de versao inexistente sem confundir outras falhas SOAP", () => {
     assert.equal(
         containsProcessVersionNotFound({
@@ -234,7 +258,21 @@ test("reconhece o erro de versao inexistente sem confundir outras falhas SOAP", 
         }),
         true
     );
+    const soapError = new Error("Falha na chamada SOAP");
+    Object.defineProperty(soapError, "response", {
+        enumerable: false,
+        value: { body: "<result>Processo n\u00e3o encontrado.</result>" },
+    });
+    assert.equal(containsProcessVersionNotFound(soapError), true);
+    assert.equal(
+        containsProcessVersionNotFound(
+            'soapServer: Vers\u00e3o do Processo n\u00e3o encontrada Empresa 1 processo engineeringothercommercialdocuments: {"Exception":null}'
+        ),
+        true
+    );
+    assert.equal(containsProcessVersionNotFound("Workflow process does not exist"), true);
     assert.equal(containsProcessVersionNotFound(new Error("Access denied")), false);
+    assert.equal(containsProcessVersionNotFound("Processo sem permissao para nova versao"), false);
 });
 
 test("falha quando importProcess retorna ok=false", async t => {
