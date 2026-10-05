@@ -236,9 +236,10 @@ button:disabled { cursor: default; opacity: .5; }
 .process-version-field input[readonly] { color: var(--vscode-disabledForeground); background: var(--vscode-input-background); opacity: .85; }
 .process-version-options { display: grid; gap: 7px; }
 .process-version-apply { width: 100%; }
-.process-form { display: grid; gap: 10px; }
+.process-form { display: grid; gap: 10px; min-width: 0; }
+.process-form > * { min-width: 0; }
 .process-form-options { display: grid; gap: 7px; }
-.process-form-checkbox, .process-form-descriptor-option { display: flex; align-items: center; gap: 7px; font-size: 11px; }
+.process-form-checkbox, .process-form-descriptor-option { display: flex; align-items: center; min-width: 0; gap: 7px; overflow-wrap: anywhere; font-size: 11px; }
 .process-form-descriptors { display: grid; gap: 7px; padding: 8px; border: 1px solid var(--panel-border); }
 .process-form-descriptor-heading { display: flex; justify-content: space-between; gap: 8px; font-size: 11px; }
 .process-form-descriptor-count { color: var(--vscode-descriptionForeground); }
@@ -257,7 +258,7 @@ button:disabled { cursor: default; opacity: .5; }
 .process-form-remote-option[aria-selected="true"] { background: var(--vscode-list-inactiveSelectionBackground); }
 .process-form-remote-empty { padding: 7px; color: var(--vscode-descriptionForeground); font-size: 11px; }
 .process-form-empty { margin: 2px 0; color: var(--vscode-descriptionForeground); font-size: 11px; }
-.process-form-apply { width: 100%; }
+.process-form-apply { justify-self: stretch; width: 100%; min-width: 0; min-height: 30px; white-space: nowrap; }
 .process-attachment-security { display: grid; gap: 10px; }
 .process-attachment-security-mode { display: flex; flex-wrap: wrap; gap: 8px 16px; }
 .process-attachment-security-mode label { display: flex; align-items: center; font-size: 11px; }

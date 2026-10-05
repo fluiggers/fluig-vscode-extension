@@ -45,6 +45,13 @@ test('processo edita a categoria Versão com os campos canônicos do Eclipse', (
   assert.match(provider, /patchProcessVersion\(document\.getText\(\), elementId, configuration\)/);
 });
 
+test('botao de aplicar formulario mantem o tamanho padrao com campos longos', () => {
+  const styles = fs.readFileSync(path.join(__dirname, '..', '..', 'media', 'bpmn', 'editor.css'), 'utf8');
+  assert.match(styles, /\.process-form \{[^}]*min-width: 0;/);
+  assert.match(styles, /\.process-form > \* \{ min-width: 0; \}/);
+  assert.match(styles, /\.process-form-apply \{[^}]*width: 100%;[^}]*min-height: 30px;[^}]*white-space: nowrap;/);
+});
+
 test('processo controla segurança de anexos com mecanismos e seis permissões', () => {
   const source = fs.readFileSync(path.join(__dirname, '..', '..', 'media', 'bpmn', 'editor.js'), 'utf8');
   const styles = fs.readFileSync(path.join(__dirname, '..', '..', 'media', 'bpmn', 'editor.css'), 'utf8');
