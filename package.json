@@ -2,7 +2,7 @@
     "name": "fluiggers-fluig-vscode-extension",
     "displayName": "Fluig - Extensão para Desenvolvimento",
     "description": "Extensão para agilizar o desenvolvimento para o TOTVS Fluig no VS Code",
-    "version": "3.0.0-alpha",
+    "version": "3.0.1-alpha",
     "publisher": "Fluiggers",
     "activationEvents": [
         "workspaceContains:**/*.process",
@@ -10,6 +10,7 @@
         "onCommand:fluigBpmn.openText",
         "onCommand:fluigBpmn.validate",
         "onCommand:fluigBpmn.generateTranslations",
+        "onCommand:fluigBpmn.exportPng",
         "onCommand:fluiggers-fluig-vscode-extension.newWorkflowProcess"
     ],
     "icon": "images/icon.png",
@@ -282,6 +283,11 @@
                 "command": "fluigBpmn.generateTranslations",
                 "title": "Gerar arquivos de tradução",
                 "category": "Fluig BPMN"
+            },
+            {
+                "command": "fluigBpmn.exportPng",
+                "title": "Exportar diagrama como PNG",
+                "category": "Fluig BPMN"
             }
         ],
         "menus": {
@@ -432,21 +438,26 @@
                     "group": "1_Fluig4Workflow@5"
                 },
                 {
-                    "command": "fluiggers-fluig-vscode-extension.exportMechanism",
-                    "when": "resourcePath =~ /[\\/\\\\]mechanisms[\\/\\\\].+$/",
+                    "command": "fluigBpmn.exportPng",
+                    "when": "resourceExtname == .process",
                     "group": "1_Fluig4Workflow@6"
                 },
                 {
-                    "command": "fluiggers-fluig-vscode-extension.newMechanism",
+                    "command": "fluiggers-fluig-vscode-extension.exportMechanism",
+                    "when": "resourcePath =~ /[\\/\\\\]mechanisms[\\/\\\\].+$/",
                     "group": "1_Fluig4Workflow@7"
                 },
                 {
-                    "command": "fluiggers-fluig-vscode-extension.importManyMechanisms",
+                    "command": "fluiggers-fluig-vscode-extension.newMechanism",
                     "group": "1_Fluig4Workflow@8"
                 },
                 {
-                    "command": "fluiggers-fluig-vscode-extension.importMechanism",
+                    "command": "fluiggers-fluig-vscode-extension.importManyMechanisms",
                     "group": "1_Fluig4Workflow@9"
+                },
+                {
+                    "command": "fluiggers-fluig-vscode-extension.importMechanism",
+                    "group": "1_Fluig4Workflow@10"
                 },
                 {
                     "command": "fluiggers-fluig-vscode-extension.newWidget",

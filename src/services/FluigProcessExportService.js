@@ -172,6 +172,45 @@ function containsFailure(result) {
     return /(?:^|[,;\s])ok=false(?:$|[,;\s])/i.test(String(result));
 }
 
+function isProcessVersionNotFoundMessage(value) {
+    const message = String(value)
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/\s+/g, " ")
+        .trim()
+        .toLowerCase();
+
+    return [
+        /\bprocess version (?:was )?not found\b/,
+        /\b(?:workflow )?process (?:was )?not found\b/,
+        /\bprocess(?: version)? (?:does not|doesn't) exist\b/,
+        /\bprocesso nao (?:foi )?encontrad[oa]\b/,
+        /\bversao (?:do |de )?processo nao (?:foi )?encontrad[oa]\b/,
+        /\bprocesso(?: de workflow)? nao existe\b/,
+    ].some(pattern => pattern.test(message));
+}
+
+function containsProcessVersionNotFound(value, seen = new Set()) {
+    if (value === null || value === undefined) {
+        return false;
+    }
+    if (typeof value !== "object") {
+        return isProcessVersionNotFoundMessage(value);
+    }
+    if (seen.has(value)) {
+        return false;
+    }
+    seen.add(value);
+
+    for (const property of Object.getOwnPropertyNames(value)) {
+        const descriptor = Object.getOwnPropertyDescriptor(value, property);
+        if (descriptor && "value" in descriptor && containsProcessVersionNotFound(descriptor.value, seen)) {
+            return true;
+        }
+    }
+    return false;
+}
+
 class NodeSoapGateway {
     constructor(createClientAsync) {
         this.createClientAsync = createClientAsync || (async (...args) => {
@@ -293,21 +332,48 @@ class FluigProcessExportService {
         };
         const results = [{ name: "getToken", result: "TOKEN_REDACTED" }];
 
-        if (!prepared.newProcess) {
-            results.push({
-                name: "createWorkFlowProcessVersion",
-                result: await this.gateway.invoke(
+        let effectiveNewProcess = prepared.newProcess;
+        let modeAdjusted = false;
+        if (!effectiveNewProcess) {
+            try {
+                const createVersionResult = await this.gateway.invoke(
                     client,
                     "createWorkFlowProcessVersion",
                     common
-                ),
+                );
+                if (containsProcessVersionNotFound(createVersionResult)) {
+                    effectiveNewProcess = true;
+                    modeAdjusted = true;
+                } else {
+                    if (containsFailure(createVersionResult)) {
+                        throw new Error(
+                            `Falha ao criar nova versao do processo: ${JSON.stringify(createVersionResult)}`
+                        );
+                    }
+                    results.push({
+                        name: "createWorkFlowProcessVersion",
+                        result: createVersionResult,
+                    });
+                }
+            } catch (error) {
+                if (!containsProcessVersionNotFound(error)) {
+                    throw error;
+                }
+                effectiveNewProcess = true;
+                modeAdjusted = true;
+            }
+        }
+        if (modeAdjusted) {
+            results.push({
+                name: "detectProcessMode",
+                result: "PROCESS_NOT_FOUND; importing as new process",
             });
         }
 
         const importResult = await this.gateway.invoke(client, "importProcess", {
             ...common,
             attachments: { item: prepared.attachments },
-            newProcess: prepared.newProcess,
+            newProcess: effectiveNewProcess,
             overWrite: true,
             colleagueId: prepared.colleagueId,
         });
@@ -324,7 +390,7 @@ class FluigProcessExportService {
             results.push({ name: "releaseProcess", result: releaseResult });
         }
 
-        if (prepared.newProcess) {
+        if (effectiveNewProcess) {
             results.push({
                 name: "getAllProcessAvailableToExport",
                 result: await this.gateway.invoke(
@@ -355,6 +421,8 @@ class FluigProcessExportService {
             exportRequestsSent: true,
             processId: prepared.processId,
             version,
+            newProcess: effectiveNewProcess,
+            modeAdjusted,
             results,
         };
     }
@@ -369,6 +437,7 @@ module.exports = {
     assertGeneratedArtifactsFresh,
     buildAttachment,
     containsFailure,
+    containsProcessVersionNotFound,
     getXmlRoot,
     loadXmlArtifact,
     normalizeStudioText,

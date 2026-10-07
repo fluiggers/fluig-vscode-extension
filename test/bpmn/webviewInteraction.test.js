@@ -45,6 +45,13 @@ test('processo edita a categoria Versão com os campos canônicos do Eclipse', (
   assert.match(provider, /patchProcessVersion\(document\.getText\(\), elementId, configuration\)/);
 });
 
+test('botao de aplicar formulario mantem o tamanho padrao com campos longos', () => {
+  const styles = fs.readFileSync(path.join(__dirname, '..', '..', 'media', 'bpmn', 'editor.css'), 'utf8');
+  assert.match(styles, /\.process-form \{[^}]*min-width: 0;/);
+  assert.match(styles, /\.process-form > \* \{ min-width: 0; \}/);
+  assert.match(styles, /\.process-form-apply \{[^}]*width: 100%;[^}]*min-height: 30px;[^}]*white-space: nowrap;/);
+});
+
 test('processo controla segurança de anexos com mecanismos e seis permissões', () => {
   const source = fs.readFileSync(path.join(__dirname, '..', '..', 'media', 'bpmn', 'editor.js'), 'utf8');
   const styles = fs.readFileSync(path.join(__dirname, '..', '..', 'media', 'bpmn', 'editor.css'), 'utf8');
@@ -333,13 +340,20 @@ test('toolbar exibe erros agrupados por elemento e permite navegar ao item', () 
   const source = fs.readFileSync(path.join(__dirname, '..', '..', 'media', 'bpmn', 'editor.js'), 'utf8');
   const styles = fs.readFileSync(path.join(__dirname, '..', '..', 'media', 'bpmn', 'editor.css'), 'utf8');
   assert.match(html, /id="showErrors"[^>]*>Erros \(0\)<\/button>/);
-  assert.match(html, /id="validationDialog"/);
+  assert.match(html, /id="validationDialog" class="validation-dialog-overlay hidden" role="dialog" aria-modal="true"/);
   assert.match(source, /function validationProblemGroups\(data\)/);
   assert.match(source, /element\.configurationIssues/);
   assert.match(source, /data\.validation\?\.errors/);
+  assert.match(source, /showErrorsButton\.disabled = !data\?\.supported/);
+  assert.match(source, /Nenhum erro ou aviso encontrado\./);
   assert.match(source, /function createValidationProblemGroup\(group\)/);
+  assert.match(source, /function findConnection\(id\) \{ return state\.connectionById\.get\(id\); \}/);
   assert.match(source, /focusDiagramElement\(group\.elementId\)/);
-  assert.match(styles, /\.validation-dialog::backdrop/);
+  assert.match(source, /function openValidationProblems\(\)/);
+  assert.match(source, /validationDialog\.classList\.remove\('hidden'\)/);
+  assert.match(source, /function closeValidationProblems\(\)/);
+  assert.match(source, /Não foi possível montar a lista de erros\./);
+  assert.match(styles, /\.validation-dialog-overlay/);
   assert.match(styles, /\.validation-problem-group/);
 });
 
@@ -402,6 +416,24 @@ test('canvas oferece zoom centralizado pelo cursor com Ctrl e roda do mouse', ()
   assert.match(source, /diagram\.style\.width = `\$\{width\}px`/);
   assert.match(source, /viewport\.removeAttribute\('transform'\)/);
   assert.doesNotMatch(styles, /#diagram \{[^}]*min-width: 100%/);
+});
+
+test('toolbar e comando exportam o diagrama completo como PNG', () => {
+  const html = fs.readFileSync(path.join(__dirname, '..', '..', 'src', 'bpmn', 'webviewHtml.ts'), 'utf8');
+  const source = fs.readFileSync(path.join(__dirname, '..', '..', 'media', 'bpmn', 'editor.js'), 'utf8');
+  const provider = fs.readFileSync(path.join(__dirname, '..', '..', 'src', 'bpmn', 'FluigProcessEditorProvider.ts'), 'utf8');
+  const extension = fs.readFileSync(path.join(__dirname, '..', '..', 'src', 'extensions', 'BpmnEditorExtension.ts'), 'utf8');
+
+  assert.match(html, /id="exportPng"/);
+  assert.match(html, /img-src \$\{webview\.cspSource\} data: blob:/);
+  assert.match(source, /type: 'exportPng'/);
+  assert.match(source, /function renderPng\(message\)/);
+  assert.match(source, /canvas\.toBlob/);
+  assert.match(source, /type: 'pngExportReady'/);
+  assert.match(provider, /showSaveDialog/);
+  assert.match(provider, /renderProcessImageSvg\(document\.getText\(\)\)/);
+  assert.match(provider, /vscode\.workspace\.fs\.writeFile\(pending\.destination, png\)/);
+  assert.match(extension, /"fluigBpmn\.exportPng"/);
 });
 
 test('editor permite escolher e persistir uma cor de fundo com grade contrastante', () => {

@@ -305,7 +305,11 @@ function elementConfigurationIssues(element, businessById = new Map()) {
   } else if (['BpmnTask', 'BpmnSubProcess', 'BpmnIntermediateEvent', 'BpmnGateway'].includes(element.tag)) {
     // Link events connect through linkId: throw link (36) has no outgoing flow, catch link (42) no incoming.
     const isLinkEvent = element.tag === 'BpmnIntermediateEvent';
-    if (!incoming.length && !(isLinkEvent && element.type === '42')) issues.push('Elemento sem fluxo de entrada.');
+    // Boundary error events are entered implicitly when their attached service task fails.
+    const hasImplicitErrorEntry = isAttachedErrorEvent(element, businessById);
+    if (!incoming.length && !(isLinkEvent && element.type === '42') && !hasImplicitErrorEntry) {
+      issues.push('Elemento sem fluxo de entrada.');
+    }
     if (!outgoing.length && !(isLinkEvent && element.type === '36')) issues.push('Elemento sem fluxo de saída.');
   }
   if (element.tag === 'BpmnIntermediateEvent' && element.type === '36') {
@@ -319,6 +323,17 @@ function elementConfigurationIssues(element, businessById = new Map()) {
   }
   if (element.tag === 'BpmnGateway') issues.push(...gatewayConfigurationIssues(element));
   return issues;
+}
+
+function isAttachedErrorEvent(element, businessById) {
+  if (element.tag !== 'BpmnIntermediateEvent' || element.type !== '43') return false;
+  const parentTaskId = String(element.attributes?.parentTask ?? '').trim();
+  const parentTask = businessById.get(parentTaskId);
+  const parentActivityId = String(parentTask?.id ?? '').match(/(\d+)$/)?.[1] ?? '';
+  return parentTask?.tag === 'BpmnTask'
+    && parentTask.type === '82'
+    && splitReferences(parentTask.attributes?.attachedEvents).includes(element.id)
+    && String(element.attributes?.sequenceAttached ?? '').trim() === parentActivityId;
 }
 
 function isDocumentaryAssociation(flow, businessById) {

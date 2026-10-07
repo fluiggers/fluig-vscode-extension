@@ -68,8 +68,8 @@ button:disabled { cursor: default; opacity: .5; }
 .validation-list-button.has-errors { color: var(--vscode-testing-iconFailed, #e05252); border-color: color-mix(in srgb, var(--vscode-testing-iconFailed, #e05252) 65%, var(--panel-border)); }
 .validation-list-button.has-warnings:not(.has-errors) { color: var(--vscode-editorWarning-foreground, #cca700); border-color: color-mix(in srgb, var(--vscode-editorWarning-foreground, #cca700) 65%, var(--panel-border)); }
 
+.validation-dialog-overlay { position: fixed; z-index: 1000; inset: 0; display: grid; place-items: center; box-sizing: border-box; padding: 24px; background: #0008; }
 .validation-dialog { width: min(680px, calc(100vw - 48px)); max-height: min(720px, calc(100vh - 48px)); padding: 0; overflow: hidden; color: var(--vscode-foreground); background: var(--vscode-editorWidget-background, var(--surface-alt)); border: 1px solid var(--vscode-widget-border, var(--panel-border)); border-radius: 7px; box-shadow: 0 16px 48px #0009; }
-.validation-dialog::backdrop { background: #0008; }
 .validation-dialog-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; padding: 15px 16px 11px; border-bottom: 1px solid var(--panel-border); }
 .validation-dialog-header h2 { margin: 2px 0 0; font-size: 18px; }
 .validation-dialog-close { display: grid; place-items: center; width: 30px; height: 30px; padding: 0; border-color: transparent; background: transparent; font-size: 22px; line-height: 1; }
@@ -236,9 +236,10 @@ button:disabled { cursor: default; opacity: .5; }
 .process-version-field input[readonly] { color: var(--vscode-disabledForeground); background: var(--vscode-input-background); opacity: .85; }
 .process-version-options { display: grid; gap: 7px; }
 .process-version-apply { width: 100%; }
-.process-form { display: grid; gap: 10px; }
+.process-form { display: grid; gap: 10px; min-width: 0; }
+.process-form > * { min-width: 0; }
 .process-form-options { display: grid; gap: 7px; }
-.process-form-checkbox, .process-form-descriptor-option { display: flex; align-items: center; gap: 7px; font-size: 11px; }
+.process-form-checkbox, .process-form-descriptor-option { display: flex; align-items: center; min-width: 0; gap: 7px; overflow-wrap: anywhere; font-size: 11px; }
 .process-form-descriptors { display: grid; gap: 7px; padding: 8px; border: 1px solid var(--panel-border); }
 .process-form-descriptor-heading { display: flex; justify-content: space-between; gap: 8px; font-size: 11px; }
 .process-form-descriptor-count { color: var(--vscode-descriptionForeground); }
@@ -257,7 +258,7 @@ button:disabled { cursor: default; opacity: .5; }
 .process-form-remote-option[aria-selected="true"] { background: var(--vscode-list-inactiveSelectionBackground); }
 .process-form-remote-empty { padding: 7px; color: var(--vscode-descriptionForeground); font-size: 11px; }
 .process-form-empty { margin: 2px 0; color: var(--vscode-descriptionForeground); font-size: 11px; }
-.process-form-apply { width: 100%; }
+.process-form-apply { justify-self: stretch; width: 100%; min-width: 0; min-height: 30px; white-space: nowrap; }
 .process-attachment-security { display: grid; gap: 10px; }
 .process-attachment-security-mode { display: flex; flex-wrap: wrap; gap: 8px 16px; }
 .process-attachment-security-mode label { display: flex; align-items: center; font-size: 11px; }

@@ -124,6 +124,7 @@
     const message = event.data;
     if (message.type === 'model') renderModel(message.data);
     if (message.type === 'toast') showToast(message.message);
+    if (message.type === 'renderPng') void renderPng(message);
     if (message.type === 'layoutComplete') {
       state.layoutCommitPending = false;
       updateAlignmentButtons();
@@ -277,11 +278,12 @@
   routeFlowsButton.addEventListener('click', adjustFlows);
   document.getElementById('generateTranslations').addEventListener('click', () => vscode.postMessage({ type: 'generateTranslations' }));
   showErrorsButton.addEventListener('click', showValidationProblems);
-  document.getElementById('closeValidationDialog').addEventListener('click', () => validationDialog.close());
+  document.getElementById('closeValidationDialog').addEventListener('click', closeValidationProblems);
   validationDialog.addEventListener('click', (event) => {
-    if (event.target === validationDialog) validationDialog.close();
+    if (event.target === validationDialog) closeValidationProblems();
   });
   document.getElementById('validate').addEventListener('click', () => vscode.postMessage({ type: 'validate' }));
+  document.getElementById('exportPng').addEventListener('click', () => vscode.postMessage({ type: 'exportPng' }));
   document.getElementById('openText').addEventListener('click', () => vscode.postMessage({ type: 'openText' }));
   document.getElementById('search').addEventListener('input', filterDiagram);
   paletteToggle.addEventListener('click', () => setPaletteCollapsed(!state.paletteCollapsed));
@@ -324,7 +326,7 @@
 
   function renderModel(data) {
     if (state.routeAdjustment) state.routeAdjustment.cancelled = true;
-    if (validationDialog.open) validationDialog.close();
+    if (isValidationProblemsOpen()) closeValidationProblems();
     closeTaskConversionMenu();
     closeTaskCreationMenu();
     cancelTaskPlacement(false);
@@ -365,6 +367,79 @@
       ? state.selectedIds
       : Array.isArray(saved.selectedIds) ? saved.selectedIds : saved.selectedId ? [saved.selectedId] : [];
     setSelection(previousSelection.filter((id) => findElement(id)), false);
+  }
+
+  async function renderPng(message) {
+    const requestId = String(message.requestId ?? '');
+    let objectUrl = '';
+    try {
+      if (!requestId || typeof message.svg !== 'string' || !message.svg.includes('<svg')) {
+        throw new Error('Conteudo SVG invalido.');
+      }
+      const parsed = new DOMParser().parseFromString(message.svg, 'image/svg+xml');
+      if (parsed.querySelector('parsererror')) throw new Error('O SVG gerado nao pode ser interpretado.');
+      const root = parsed.documentElement;
+      const sourceWidth = Number(root.getAttribute('width'));
+      const sourceHeight = Number(root.getAttribute('height'));
+      if (!(sourceWidth > 0) || !(sourceHeight > 0)) throw new Error('O SVG nao possui dimensoes validas.');
+
+      const preferredScale = Math.max(1, Number(message.preferredScale) || 1);
+      const maxDimension = Math.max(1, Number(message.maxDimension) || 16384);
+      const maxPixels = Math.max(1, Number(message.maxPixels) || 67108864);
+      const scale = Math.max(0.01, Math.min(
+        preferredScale,
+        maxDimension / sourceWidth,
+        maxDimension / sourceHeight,
+        Math.sqrt(maxPixels / (sourceWidth * sourceHeight))
+      ));
+      const width = Math.max(1, Math.floor(sourceWidth * scale));
+      const height = Math.max(1, Math.floor(sourceHeight * scale));
+      objectUrl = URL.createObjectURL(new Blob([message.svg], { type: 'image/svg+xml;charset=utf-8' }));
+      const image = await loadImage(objectUrl);
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const context = canvas.getContext('2d');
+      if (!context) throw new Error('Canvas 2D indisponivel.');
+      context.drawImage(image, 0, 0, width, height);
+      const png = await new Promise((resolve, reject) => {
+        canvas.toBlob((blob) => blob ? resolve(blob) : reject(new Error('Falha ao codificar o PNG.')), 'image/png');
+      });
+      const dataUrl = await blobDataUrl(png);
+      vscode.postMessage({
+        type: 'pngExportReady',
+        requestId,
+        base64: dataUrl.slice(dataUrl.indexOf(',') + 1),
+        width,
+        height
+      });
+    } catch (error) {
+      vscode.postMessage({
+        type: 'pngExportFailed',
+        requestId,
+        error: error?.message || String(error)
+      });
+    } finally {
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+    }
+  }
+
+  function loadImage(url) {
+    return new Promise((resolve, reject) => {
+      const image = new Image();
+      image.onload = () => resolve(image);
+      image.onerror = () => reject(new Error('Falha ao rasterizar o SVG.'));
+      image.src = url;
+    });
+  }
+
+  function blobDataUrl(blob) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result ?? ''));
+      reader.onerror = () => reject(reader.error || new Error('Falha ao ler o PNG gerado.'));
+      reader.readAsDataURL(blob);
+    });
   }
 
   function hydrateCachedRemoteFormFields(data) {
@@ -3080,6 +3155,11 @@
   }
 
   function handleKeyDown(event) {
+    if (event.key === 'Escape' && isValidationProblemsOpen()) {
+      event.preventDefault();
+      closeValidationProblems();
+      return;
+    }
     if (event.key === 'Escape' && cancelFlowEditInteraction()) {
       event.preventDefault();
       showToast('Ajuste manual do fluxo cancelado.');
@@ -7352,25 +7432,52 @@
     showErrorsButton.title = errors || warnings
       ? `Exibir ${errors} erro(s) e ${warnings} aviso(s), agrupados por elemento`
       : 'Nenhum erro ou aviso encontrado';
-    showErrorsButton.disabled = !groups.length;
+    // Keep the list available even when it is empty so the user receives explicit feedback
+    // instead of a toolbar button that appears to have stopped responding.
+    showErrorsButton.disabled = !data?.supported;
     showErrorsButton.classList.toggle('has-errors', errors > 0);
     showErrorsButton.classList.toggle('has-warnings', warnings > 0);
   }
 
   function showValidationProblems() {
-    const groups = validationProblemGroups(state.data);
-    validationProblemList.replaceChildren();
-    const errorCount = groups.reduce((total, group) => total + group.items.filter((item) => item.severity === 'error').length, 0);
-    const warningCount = groups.reduce((total, group) => total + group.items.filter((item) => item.severity === 'warning').length, 0);
-    validationDialogSummary.textContent = `${groups.length} elemento(s) · ${errorCount} erro(s) · ${warningCount} aviso(s)`;
-    if (!groups.length) {
-      const empty = document.createElement('div');
-      empty.className = 'validation-problem-empty';
-      empty.textContent = 'Nenhum erro ou aviso encontrado.';
-      validationProblemList.append(empty);
+    openValidationProblems();
+    try {
+      const groups = validationProblemGroups(state.data);
+      validationProblemList.replaceChildren();
+      const errorCount = groups.reduce((total, group) => total + group.items.filter((item) => item.severity === 'error').length, 0);
+      const warningCount = groups.reduce((total, group) => total + group.items.filter((item) => item.severity === 'warning').length, 0);
+      validationDialogSummary.textContent = `${groups.length} elemento(s) · ${errorCount} erro(s) · ${warningCount} aviso(s)`;
+      if (!groups.length) {
+        const empty = document.createElement('div');
+        empty.className = 'validation-problem-empty';
+        empty.textContent = 'Nenhum erro ou aviso encontrado.';
+        validationProblemList.append(empty);
+      }
+      for (const group of groups) validationProblemList.append(createValidationProblemGroup(group));
+    } catch (error) {
+      validationProblemList.replaceChildren();
+      validationDialogSummary.textContent = 'Não foi possível montar a lista de erros.';
+      const failure = document.createElement('div');
+      failure.className = 'validation-problem-empty error';
+      failure.textContent = error?.message || String(error);
+      validationProblemList.append(failure);
     }
-    for (const group of groups) validationProblemList.append(createValidationProblemGroup(group));
-    if (!validationDialog.open) validationDialog.showModal();
+  }
+
+  function isValidationProblemsOpen() {
+    return !validationDialog.classList.contains('hidden');
+  }
+
+  function openValidationProblems() {
+    if (isValidationProblemsOpen()) return;
+    validationDialog.classList.remove('hidden');
+    document.getElementById('closeValidationDialog').focus();
+  }
+
+  function closeValidationProblems() {
+    if (!isValidationProblemsOpen()) return;
+    validationDialog.classList.add('hidden');
+    showErrorsButton.focus();
   }
 
   function validationProblemGroups(data) {
@@ -7426,7 +7533,7 @@
     target.disabled = !navigable;
     target.title = navigable ? 'Selecionar e centralizar este elemento' : 'Não há representação visual para este item';
     if (navigable) target.addEventListener('click', () => {
-      validationDialog.close();
+      closeValidationProblems();
       focusDiagramElement(group.elementId);
     });
     const items = document.createElement('ul');
@@ -7537,6 +7644,7 @@
 
   function findElement(id) { return state.elementById.get(id); }
   function findShape(id) { return state.shapeById.get(id); }
+  function findConnection(id) { return state.connectionById.get(id); }
   function shapeLayer(id) { const tag = findElement(id)?.tag; return tag === 'BpmnPool' ? 0 : tag === 'BpmnSwimLane' || tag === 'BpmnGroup' ? 1 : 2; }
   function shapeClass(element) {
     const typeClass = element.type ? `type-${element.type}` : '';

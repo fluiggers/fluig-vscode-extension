@@ -11,10 +11,6 @@ const {
     processImagePathForProcess,
 } = require("./workflowProcessPath");
 
-interface ExportChoice extends vscode.QuickPickItem {
-    newProcess: boolean;
-}
-
 interface ReleaseChoice extends vscode.QuickPickItem {
     release: boolean;
 }
@@ -28,6 +24,7 @@ interface PreparedExport {
         ecm30Path: string;
         svgPath?: string;
         newProcess: boolean;
+        automaticMode: boolean;
         release: boolean;
     };
     plan: any;
@@ -90,7 +87,8 @@ export class WorkflowProcessExportService {
             );
 
             vscode.window.showInformationMessage(
-                `Processo ${result.processId} exportado. Versão retornada: ${result.version}.`
+                `Processo ${result.processId} exportado como ${result.newProcess ? "novo processo" : "nova versão"}. ` +
+                `Versão retornada: ${result.version}.`
             );
         } catch (error: any) {
             vscode.window.showErrorMessage(error?.message || String(error));
@@ -108,25 +106,6 @@ export class WorkflowProcessExportService {
 
         const server = await ServerService.getSelect();
         if (!server) {
-            return;
-        }
-
-        const exportChoice = await vscode.window.showQuickPick<ExportChoice>(
-            [
-                {
-                    label: "Nova versão",
-                    description: "O processo já existe no servidor Fluig.",
-                    newProcess: false,
-                },
-                {
-                    label: "Novo processo",
-                    description: "O código do processo ainda não existe no servidor.",
-                    newProcess: true,
-                },
-            ],
-            { placeHolder: "Selecione o tipo de exportação" }
-        );
-        if (!exportChoice) {
             return;
         }
 
@@ -161,7 +140,8 @@ export class WorkflowProcessExportService {
             processPath: selectedUri.fsPath,
             ecm30Path,
             svgPath,
-            newProcess: exportChoice.newProcess,
+            newProcess: false,
+            automaticMode: true,
             release: releaseChoice.release,
         };
         const service = new fluigProcessExportService();
@@ -198,7 +178,9 @@ export class WorkflowProcessExportService {
     }
 
     private static formatPlan(prepared: PreparedExport): string {
-        const mode = prepared.options.newProcess ? "novo processo" : "nova versão";
+        const mode = prepared.options.automaticMode
+            ? "automático (nova versão; se o código não existir, novo processo)"
+            : prepared.options.newProcess ? "novo processo" : "nova versão";
         const release = prepared.options.release ? "sim" : "não";
         const operations = prepared.plan.steps
             .map((step: any) => `${step.order}. ${step.name}`)
