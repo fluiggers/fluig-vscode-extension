@@ -10,6 +10,7 @@ no avanço do desenvolvimento, abrindo issues no repositório.
 É necessário ter o Eclipse instalado juntamente com o seu plugin do Fluig Studio, e então indicar os caminhos dos plugins
 e do Java na configuração da extensão.
 
+- Alinha o aviso de fluxo padrão (COND-007) ao Fluig Studio: deixa de alertar fluxo padrão saindo de início, tarefas, subprocessos, link e gateways exclusivo, inclusivo e complexo, e mantém o alerta nos tipos que o Studio bloqueia.
 - Permite excluir pools e raias pela lixeira, painel de propriedades, tecla Delete ou selecao multipla, preservando os elementos do fluxo e redistribuindo as raias restantes.
 - Adiciona o botão `Erros`, com lista de problemas agrupada por elemento e navegação direta para o item no diagrama.
 - Permite excluir em lote os elementos selecionados, incluindo fluxos incidentes e scripts pertencentes à seleção, com backup e validação estrutural.
