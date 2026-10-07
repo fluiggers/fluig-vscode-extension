@@ -6,7 +6,12 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { parseProcess } = require('../../src/bpmn/processModel');
 const { patchGatewayBranches } = require('../../src/bpmn/processPatcher');
-const { gatewayBranchDefinitions, parseGatewayConditions } = require('../../src/bpmn/gatewayConditions');
+const {
+  gatewayBranchDefinitions,
+  parseAssignmentController,
+  parseGatewayConditions,
+  serializeTaskAssignmentConfiguration
+} = require('../../src/bpmn/gatewayConditions');
 
 const fixture = fs.readFileSync(
   path.join(__dirname, 'fixtures', 'project', 'workflow', 'diagrams', 'toexportbpmnteste.process'),
@@ -418,4 +423,101 @@ test('recusa regra avançada inválida e protege payload de classe desconhecida'
   assert.equal(editor.conditions[0].editable, false);
   assert.match(editor.conditions[0].issue, /estrutura desconhecida/);
   assert.throws(() => patchGatewayBranches(unknown, 'exclusivegateway59', { defaultFlowId: '', conditions: [] }), /não pode ser removida/);
+});
+
+const PRESERVED_ROLE = [
+  '<org.eclipse.bpmn2.impl.AssignmentControllerRole>',
+  '      <roleId>gestores&amp;diretoria</roleId>',
+  '      <mechanismName>Papel</mechanismName>',
+  '    </org.eclipse.bpmn2.impl.AssignmentControllerRole>'
+].join('\n');
+
+const STUDIO_ASSOCIATED = [
+  '<org.eclipse.bpmn2.impl.AssignmentControllerAssociated>',
+  '  <type>AND</type>',
+  '  <controllers class="list">',
+  '    <org.eclipse.bpmn2.impl.AssignmentControllerColleague>',
+  '      <colleagueId>daniel.sales</colleagueId>',
+  '      <mechanismName>Usuário</mechanismName>',
+  '    </org.eclipse.bpmn2.impl.AssignmentControllerColleague>',
+  `    ${PRESERVED_ROLE}`,
+  '  </controllers>',
+  '  <mechanismName>Associado</mechanismName>',
+  '</org.eclipse.bpmn2.impl.AssignmentControllerAssociated>'
+].join('\n');
+
+test('Associado preserva o conteúdo dos controllers que a aba não edita', () => {
+  const configuration = parseAssignmentController(STUDIO_ASSOCIATED);
+  assert.deepEqual(configuration.controllers, [
+    { kind: 'colleague', value: 'daniel.sales' },
+    { kind: 'raw', mechanism: 'Papel', xml: PRESERVED_ROLE }
+  ]);
+  const xml = serializeTaskAssignmentConfiguration('Associado', configuration);
+  assert.ok(xml.includes(PRESERVED_ROLE));
+  assert.deepEqual(parseAssignmentController(xml).controllers, configuration.controllers);
+});
+
+test('Associado remove o controller preservado quando o usuário o exclui', () => {
+  const configuration = parseAssignmentController(STUDIO_ASSOCIATED);
+  const xml = serializeTaskAssignmentConfiguration('Associado', {
+    ...configuration,
+    controllers: configuration.controllers.filter((item) => item.kind !== 'raw')
+  });
+  assert.equal(xml.includes('AssignmentControllerRole'), false);
+  assert.ok(xml.includes('<colleagueId>daniel.sales</colleagueId>'));
+});
+
+test('Associado recusa controller preservado que não seja um único AssignmentController', () => {
+  for (const xml of [
+    '</controllers><x>',
+    '<org.eclipse.bpmn2.impl.AssignmentControllerRole>',
+    '',
+    '<org.eclipse.bpmn2.impl.AssignmentControllerRole></controllers><evil/><controllers></org.eclipse.bpmn2.impl.AssignmentControllerRole>',
+    '<org.eclipse.bpmn2.impl.AssignmentControllerRole><roleId>a</roleId></org.eclipse.bpmn2.impl.AssignmentControllerColleague><x/></org.eclipse.bpmn2.impl.AssignmentControllerRole>'
+  ]) {
+    assert.throws(
+      () => serializeTaskAssignmentConfiguration('Associado', {
+        associationType: 'OR',
+        controllers: [{ kind: 'raw', mechanism: 'Papel', xml }]
+      }),
+      /Controller preservado inválido/
+    );
+  }
+});
+
+test('Associado mantém o controller preservado estável ao regravar a condição do gateway', () => {
+  const branch = (sourceIndex, mechanismConfiguration) => ({
+    defaultFlowId: '',
+    conditions: [{
+      sourceIndex, order: 1, expression: 'true', targetId: 'intermediateevent61',
+      mechanism: 'Associado', mechanismConfiguration
+    }]
+  });
+  const configurationOf = (text) => parseGatewayConditions(
+    parseProcess(text).elements.find((item) => item.id === 'exclusivegateway59').attributes.condition
+  ).conditions[0].mechanismConfiguration;
+  const created = patchGatewayBranches(fixture, 'exclusivegateway59', branch('', {
+    associationType: 'OR',
+    controllers: [{ kind: 'colleague', value: 'daniel.sales' }, { kind: 'raw', mechanism: 'Papel', xml: PRESERVED_ROLE }]
+  }));
+  const first = configurationOf(created.text);
+  assert.deepEqual(first.controllers[1], { kind: 'raw', mechanism: 'Papel', xml: PRESERVED_ROLE });
+  const toggled = patchGatewayBranches(created.text, 'exclusivegateway59', branch(0, { ...first, associationType: 'AND' }));
+  const back = patchGatewayBranches(toggled.text, 'exclusivegateway59', branch(0, { ...configurationOf(toggled.text), associationType: 'OR' }));
+  assert.equal(back.text, created.text);
+});
+
+test('Associado aceita os blocos planos que o Fluig Studio grava para mecanismos aninhados', () => {
+  const blocks = [
+    '<org.eclipse.bpmn2.impl.AssignmentControllerFormField>\n      <formField>aprovador</formField>\n      <mechanismName>Campo Formulário</mechanismName>\n    </org.eclipse.bpmn2.impl.AssignmentControllerFormField>',
+    '<org.eclipse.bpmn2.impl.AssignmentControllerExecutorMechanism>\n      <idNode>task5</idNode>\n      <returns>1</returns>\n      <mechanismName>Executor Atividade</mechanismName>\n    </org.eclipse.bpmn2.impl.AssignmentControllerExecutorMechanism>',
+    '<org.eclipse.bpmn2.impl.AssignmentControllerColleagueGroup>\n      <colleagueId>1</colleagueId>\n      <onlyWorkGroup>true</onlyWorkGroup>\n      <includeCommunityGroups>false</includeCommunityGroups>\n      <mechanismName>Grupos Colaborador</mechanismName>\n    </org.eclipse.bpmn2.impl.AssignmentControllerColleagueGroup>'
+  ];
+  for (const xml of blocks) {
+    const serialized = serializeTaskAssignmentConfiguration('Associado', {
+      associationType: 'OR',
+      controllers: [{ kind: 'raw', mechanism: 'x', xml }]
+    });
+    assert.ok(serialized.includes(xml));
+  }
 });

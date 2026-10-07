@@ -386,6 +386,7 @@ button:disabled { cursor: default; opacity: .5; }
 .gateway-association-list { display: grid; gap: 6px; }
 .gateway-association-row { display: grid; grid-template-columns: minmax(92px, .7fr) minmax(120px, 1fr) auto; gap: 6px; align-items: center; }
 .gateway-association-row .gateway-association-remove, .gateway-association-add { padding: 5px 8px; }
+.gateway-association-preserved { grid-column: 1 / 3; }
 .gateway-condition-warning { color: var(--vscode-editorWarning-foreground, #cca700); }
 .gateway-condition-empty { color: var(--muted); }
 .gateway-advanced-rules { display: grid; gap: 8px; padding: 8px; border-left: 2px solid var(--vscode-focusBorder); background: color-mix(in srgb, var(--surface) 82%, transparent); }
