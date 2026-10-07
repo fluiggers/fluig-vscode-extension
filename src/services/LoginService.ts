@@ -93,7 +93,10 @@ export class LoginService {
 
     private static async tryAuthenticate(server: ServerDTO) {
         const loginUrl = `${UtilsService.getHost(server)}/portal/api/servlet/login.do`;
-        const loginData = `j_username=${server.username}&j_password=${server.password}`;
+        const loginData = new URLSearchParams([
+            ['j_username', server.username],
+            ['j_password', server.password],
+        ]).toString();
 
         const response = await fetch(loginUrl, {
             method: 'POST',
