@@ -1,5 +1,10 @@
 # Change Log
 
+## 3.0.1-alpha
+
+- Corrige o erro de validação equivocada do tratar erro nos casos de atividade "Capturar Erro".
+- Codifica usuário e senha no login por formulário, permitindo senhas com `&`, `+`, `%` e `=`.
+
 ## 3.0.0-alpha
 
 Adiciona, como experimental, o editor de Diagrama de Processo, além de permitir exportar o processo para o servidor Fluig.
