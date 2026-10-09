@@ -945,3 +945,14 @@ test('evento intermediate link exibe o seletor Link no painel geral', () => {
   assert.match(source, /canvasScroller\.scrollTo\(\{/);
   assert.match(styles, /\.link-navigation-controls \{ display: grid; gap: 6px; \}/);
 });
+
+test('aba Associado lê e mostra controllers preservados sem descartá-los', () => {
+  const source = fs.readFileSync(path.join(__dirname, '..', '..', 'media', 'bpmn', 'editor.js'), 'utf8');
+  assert.match(source, /function readAssociationControllers\(root\)/);
+  assert.equal((source.match(/readAssociationControllers\(/g) ?? []).length, 4); // definição + 3 leitores
+  assert.match(source, /association\.dataset\.kind === 'raw'/);
+  assert.match(source, /row\.dataset\.rawXml = controller\.xml/);
+  const styles = fs.readFileSync(path.join(__dirname, '..', '..', 'media', 'bpmn', 'editor.css'), 'utf8');
+  assert.match(styles, /\.gateway-association-preserved\s*\{[^}]*grid-column:\s*1\s*\/\s*3/);
+  assert.doesNotMatch(source, /querySelectorAll\('\.gateway-association-row'\)\]\.map\(\(association\) => \(\{\s*kind: association\.querySelector/);
+});

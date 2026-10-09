@@ -6445,6 +6445,21 @@
   function createGatewayAssociationRow(controller, editor) {
     const row = document.createElement('div');
     row.className = 'gateway-association-row';
+    if (controller?.kind === 'raw') {
+      row.dataset.kind = 'raw';
+      row.dataset.mechanism = controller.mechanism ?? '';
+      row.dataset.rawXml = controller.xml ?? '';
+      const label = document.createElement('span');
+      label.className = 'gateway-association-preserved';
+      label.textContent = `${controller.mechanism || 'Mecanismo'} (preservado; edição ainda não suportada)`;
+      const removePreserved = document.createElement('button');
+      removePreserved.type = 'button';
+      removePreserved.className = 'gateway-association-remove';
+      removePreserved.textContent = 'Remover';
+      removePreserved.addEventListener('click', () => row.remove());
+      row.append(label, removePreserved);
+      return row;
+    }
     const kind = document.createElement('select');
     kind.className = 'gateway-association-kind';
     for (const item of [
@@ -6587,6 +6602,17 @@
     return label;
   }
 
+  function readAssociationControllers(root) {
+    return [...root.querySelectorAll('.gateway-association-row')].map((association) => (
+      association.dataset.kind === 'raw'
+        ? { kind: 'raw', mechanism: association.dataset.mechanism, xml: association.dataset.rawXml }
+        : {
+          kind: association.querySelector('.gateway-association-kind').value,
+          value: association.querySelector('.gateway-association-value').value
+        }
+    ));
+  }
+
   function readGatewayMechanismConfiguration(row) {
     const mechanismSelect = row.querySelector('.gateway-mechanism-select');
     const selection = mechanismSelect.value;
@@ -6598,10 +6624,7 @@
       result[input.dataset.configKey] = input.type === 'checkbox' ? input.checked : input.value;
     });
     if (kind === 'associated') {
-      result.controllers = [...row.querySelectorAll('.gateway-association-row')].map((association) => ({
-        kind: association.querySelector('.gateway-association-kind').value,
-        value: association.querySelector('.gateway-association-value').value
-      }));
+      result.controllers = readAssociationControllers(row);
     }
     return result;
   }
@@ -6621,10 +6644,7 @@
       result[input.dataset.configKey] = input.type === 'checkbox' ? input.checked : input.value;
     });
     if (kind === 'associated') {
-      result.controllers = [...section.querySelectorAll('.gateway-association-row')].map((association) => ({
-        kind: association.querySelector('.gateway-association-kind').value,
-        value: association.querySelector('.gateway-association-value').value
-      }));
+      result.controllers = readAssociationControllers(section);
     }
     return result;
   }
@@ -6892,10 +6912,7 @@
       result[input.dataset.configKey] = input.type === 'checkbox' ? input.checked : input.value;
     });
     if (kind === 'associated') {
-      result.controllers = [...row.querySelectorAll('.gateway-association-row')].map((association) => ({
-        kind: association.querySelector('.gateway-association-kind').value,
-        value: association.querySelector('.gateway-association-value').value
-      }));
+      result.controllers = readAssociationControllers(row);
     }
     return result;
   }

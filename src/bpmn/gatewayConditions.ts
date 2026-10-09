@@ -572,15 +572,34 @@ function sameMechanismConfiguration(mechanism, left, right) {
   return keys.every((key) => String(left[key] ?? '') === String(right[key] ?? ''));
 }
 
+// Só blocos planos (filhos com texto simples), como o Fluig Studio grava: impede injetar tags no XStream.
+const PRESERVED_CONTROLLER = /^<(org\.eclipse\.bpmn2\.impl\.AssignmentController(?!Associated)\w+)>(?:\s*<([A-Za-z]\w*)>[^<]*<\/\2>)*\s*<\/\1>$/;
+
 function parseAssociatedControllers(raw) {
   const controllers = [];
-  const pattern = /<org\.eclipse\.bpmn2\.impl\.AssignmentController(Colleague|Group)>([\s\S]*?)<\/org\.eclipse\.bpmn2\.impl\.AssignmentController\1>/g;
-  for (const match of String(raw).matchAll(pattern)) {
-    const kind = match[1] === 'Group' ? 'group' : 'colleague';
-    const value = decodeXml(tagValue(match[2], kind === 'group' ? 'groupId' : 'colleagueId')).trim();
-    controllers.push({ kind, value });
+  const pattern = /<(org\.eclipse\.bpmn2\.impl\.AssignmentController(?!Associated)(\w+))>([\s\S]*?)<\/\1>/g;
+  for (const [xml, , suffix, body] of String(raw).matchAll(pattern)) {
+    if (suffix === 'Colleague' || suffix === 'Group') {
+      const kind = suffix === 'Group' ? 'group' : 'colleague';
+      const value = decodeXml(tagValue(body, kind === 'group' ? 'groupId' : 'colleagueId')).trim();
+      controllers.push({ kind, value });
+    } else {
+      // A aba ainda não edita estes mecanismos: o conteúdo é preservado (indentação normalizada).
+      controllers.push({ kind: 'raw', mechanism: decodeXml(tagValue(body, 'mechanismName')).trim(), xml: canonicalPreservedXml(xml) });
+    }
   }
   return controllers;
+}
+
+// Reindenta o bloco preservado na profundidade usada pelo serializador (fechamento com 4 espaços,
+// filhos relativos a ele), para não acumular a indentação do lugar de onde foi lido.
+function canonicalPreservedXml(xml) {
+  const [first, ...rest] = xml.split('\n');
+  if (!rest.length) {
+    return xml;
+  }
+  const base = rest[rest.length - 1].match(/^[ \t]*/)[0];
+  return [first, ...rest.map((line) => `    ${line.startsWith(base) ? line.slice(base.length) : line.trimStart()}`)].join('\n');
 }
 
 function serializeAssociatedConfiguration(config, mechanism) {
@@ -593,6 +612,14 @@ function serializeAssociatedConfiguration(config, mechanism) {
     '  <controllers class="list">'
   ];
   for (const controller of controllers) {
+    if (controller?.kind === 'raw') {
+      const xml = String(controller.xml ?? '');
+      if (!PRESERVED_CONTROLLER.test(xml)) {
+        throw new Error(`Controller preservado inválido no mecanismo ${mechanism}.`);
+      }
+      lines.push(`    ${xml}`);
+      continue;
+    }
     const kind = controller?.kind === 'group' ? 'group' : 'colleague';
     const value = requiredValue(controller?.value, mechanism);
     const classSuffix = kind === 'group' ? 'AssignmentControllerGroup' : 'AssignmentControllerColleague';
@@ -616,10 +643,9 @@ function serializeAssociatedConfiguration(config, mechanism) {
 function normalizedAssociation(configuration) {
   const type = configuration?.associationType === 'AND' ? 'AND' : 'OR';
   const controllers = Array.isArray(configuration?.controllers)
-    ? configuration.controllers.map((item) => ({
-      kind: item?.kind === 'group' ? 'group' : 'colleague',
-      value: String(item?.value ?? '')
-    }))
+    ? configuration.controllers.map((item) => (item?.kind === 'raw'
+      ? { kind: 'raw', xml: String(item.xml ?? '') }
+      : { kind: item?.kind === 'group' ? 'group' : 'colleague', value: String(item?.value ?? '') }))
     : [];
   return JSON.stringify({ type, controllers });
 }
