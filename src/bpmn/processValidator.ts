@@ -3,6 +3,20 @@
 const { attr, chopboxAnchor } = require('./processModel');
 const { parseGatewayConditions } = require('./gatewayConditions');
 
+// Tipos que o Fluig Studio proíbe como origem de fluxo padrão: intermediários (exceto link 36/42),
+// finais, inícios 12-16, gateways 122-124/126/127 e loops 140-142.
+const DEFAULT_LINK_BLOCKED_TYPES = new Set([
+  12, 13, 14, 15, 16,
+  30, 31, 32, 33, 34, 35, 37, 38, 39, 40, 41, 43,
+  60, 61, 62, 63, 64, 65, 66, 67, 68,
+  122, 123, 124, 126, 127,
+  140, 141, 142
+]);
+
+function forbidsDefaultFlow(type) {
+  return DEFAULT_LINK_BLOCKED_TYPES.has(Number(type));
+}
+
 function validateProcess(model) {
   const findings = [];
   if (!model.supported) {
@@ -34,9 +48,8 @@ function validateProcess(model) {
     if (target && !splitRefs(target.attributes.incoming).includes(flow.id)) {
       add(findings, 'error', 'TRIPLA-004', `${target.id}.incoming não contém ${flow.id}.`, flow.id);
     }
-    if (['true', '1'].includes(flow.attributes.defaultLink)
-      && !(source?.tag === 'BpmnGateway' && ['120', '121'].includes(String(source.type)))) {
-      add(findings, 'warning', 'COND-007', `${flow.id} é padrão, mas sua origem não é um gateway exclusivo ou inclusivo.`, flow.id);
+    if (['true', '1'].includes(flow.attributes.defaultLink) && source && forbidsDefaultFlow(source.type)) {
+      add(findings, 'warning', 'COND-007', `Fluxo padrão ${flow.id} sai de ${source.id}, cujo tipo (${source.type}) o Fluig Studio não aceita como origem de fluxo padrão.`, flow.id);
     }
     if (!flow.connection) add(findings, 'error', 'LINK-001', `Fluxo ${flow.id} não possui conexão visual.`, flow.id);
     const visualLabel = attr(flow.connection?.labelNode, 'value');
@@ -157,4 +170,4 @@ function result(findings) {
   return { ok: errors.length === 0, errors, warnings, infos, findings };
 }
 
-module.exports = { validateProcess };
+module.exports = { forbidsDefaultFlow, validateProcess };
