@@ -163,7 +163,7 @@ export class FormService {
     /**
      * Realiza a importação de um formulário específico
      */
-     public static async import() {
+     public static async import(resourceUri?: Uri) {
         const server = await ServerService.getSelect();
 
         if (!server) {
@@ -176,7 +176,7 @@ export class FormService {
             return;
         }
 
-        let folderUri = Uri.joinPath(UtilsService.getWorkspaceUri(), 'forms', form.documentDescription);
+        let folderUri = Uri.joinPath(await UtilsService.getProjectUri(resourceUri), 'forms', form.documentDescription);
 
         const fileNames = await FormService.getFileNames(server, form.documentId);
 
@@ -197,13 +197,13 @@ export class FormService {
             workspace.fs.writeFile(Uri.joinPath(folderUri, event.eventId + ".js"), Buffer.from(event.eventDescription, "utf-8"));
         }
 
-        window.showInformationMessage("O formulário foi importado!");
+        window.showInformationMessage(`O formulário foi importado em ${workspace.asRelativePath(Uri.joinPath(folderUri, ".."))}!`);
     }
 
     /**
      * Realiza a importação de vários formulários
      */
-     public static async importMany() {
+     public static async importMany(resourceUri?: Uri) {
         const server = await ServerService.getSelect();
 
         if (!server) {
@@ -216,7 +216,7 @@ export class FormService {
             return;
         }
 
-        const workspaceFolderUri = UtilsService.getWorkspaceUri();
+        const workspaceFolderUri = await UtilsService.getProjectUri(resourceUri);
 
         const results = await window.withProgress(
             {
@@ -263,7 +263,7 @@ export class FormService {
             }
         );
 
-        window.showInformationMessage(`${results.length} formulários foram importados.`);
+        window.showInformationMessage(`${results.length} formulários foram importados em ${workspace.asRelativePath(Uri.joinPath(workspaceFolderUri, 'forms'))}.`);
     }
 
     public static async export(context: ExtensionContext, fileUri: Uri) {

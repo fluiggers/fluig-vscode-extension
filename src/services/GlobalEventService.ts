@@ -108,7 +108,7 @@ export class GlobalEventService {
     /**
      * Realiza a importação de um evento global
      */
-    public static async import() {
+    public static async import(resourceUri?: Uri) {
         const server = await ServerService.getSelect();
 
         if (!server) {
@@ -122,6 +122,7 @@ export class GlobalEventService {
         }
 
         GlobalEventService.saveFile(
+            await UtilsService.getProjectUri(resourceUri),
             event.globalEventPK.eventId,
             event.eventDescription
         );
@@ -130,7 +131,7 @@ export class GlobalEventService {
     /**
      * Realiza a importação de vários eventos globais
      */
-    public static async importMany() {
+    public static async importMany(resourceUri?: Uri) {
         const server = await ServerService.getSelect();
 
         if (!server) {
@@ -143,6 +144,7 @@ export class GlobalEventService {
             return;
         }
 
+        const projectUri = await UtilsService.getProjectUri(resourceUri);
         const results = await window.withProgress(
             {
                 location: ProgressLocation.Notification,
@@ -157,6 +159,7 @@ export class GlobalEventService {
 
                 return Promise.all(eventList.map(async event => {
                     GlobalEventService.saveFile(
+                        projectUri,
                         event.globalEventPK.eventId,
                         event.eventDescription,
                         false
@@ -168,7 +171,7 @@ export class GlobalEventService {
             }
         );
 
-        window.showInformationMessage(`${results.length} Eventos Globais foram importados.`);
+        window.showInformationMessage(`${results.length} Eventos Globais foram importados em ${workspace.asRelativePath(Uri.joinPath(projectUri, "events"))}.`);
     }
 
     public static async export(fileUri: Uri) {
@@ -253,8 +256,8 @@ export class GlobalEventService {
     /**
      * Criar arquivo de evento global
      */
-     public static async saveFile(name: string, content: string, openFile: boolean = true) {
-        const uri = Uri.joinPath(UtilsService.getWorkspaceUri(), "events", name + ".js");
+     public static async saveFile(projectUri: Uri, name: string, content: string, openFile: boolean = true) {
+        const uri = Uri.joinPath(projectUri, "events", name + ".js");
 
         await workspace.fs.writeFile(
             uri,
@@ -263,7 +266,7 @@ export class GlobalEventService {
 
         if (openFile) {
             window.showTextDocument(uri);
-            window.showInformationMessage(`Evento global ${name} importado com sucesso!`);
+            window.showInformationMessage(`Evento global ${name} importado em ${workspace.asRelativePath(uri)}!`);
         }
     }
 }

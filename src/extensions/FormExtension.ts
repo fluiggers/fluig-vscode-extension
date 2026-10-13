@@ -213,7 +213,7 @@ export class FormExtension {
     /**
      * Cria um Formulário
      */
-    private static async createForm() {
+    private static async createForm(resourceUri?: vscode.Uri) {
         let formName: string = await vscode.window.showInputBox({
             prompt: "Qual o nome do Formulário (sem espaços e sem caracteres especiais)?",
             placeHolder: "NomeFormulario"
@@ -225,7 +225,7 @@ export class FormExtension {
 
         const formFileName = formName + ".html";
         const formUri = vscode.Uri.joinPath(
-            UtilsService.getWorkspaceUri(),
+            await UtilsService.getProjectUri(resourceUri),
             "forms",
             formName,
             formFileName

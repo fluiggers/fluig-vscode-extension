@@ -38,7 +38,7 @@ export class DatasetExtension {
     /**
      * Cria um Dataset
      */
-    private static async createDataset() {
+    private static async createDataset(resourceUri?: vscode.Uri) {
         let dataset: string = await vscode.window.showInputBox({
             prompt: "Qual o nome do Dataset (sem espaços e sem caracteres especiais)?",
             placeHolder: "ds_nome_dataset"
@@ -52,7 +52,7 @@ export class DatasetExtension {
             dataset += ".js";
         }
 
-        const datasetUri = vscode.Uri.joinPath(UtilsService.getWorkspaceUri(), "datasets", dataset);
+        const datasetUri = vscode.Uri.joinPath(await UtilsService.getProjectUri(resourceUri), "datasets", dataset);
 
         try {
             // Se Dataset já existe carrega o arquivo no editor
@@ -101,8 +101,8 @@ export class DatasetExtension {
      * Se não tiver pasta selecionada entende-se que é pra exportar todos os
      * datasets do workspace.
      */
-    private static exportDatasetFolder(folderUri: vscode.Uri) {
-        const datasetsUri = folderUri ? folderUri : vscode.Uri.joinPath(UtilsService.getWorkspaceUri(), "datasets");
+    private static async exportDatasetFolder(folderUri: vscode.Uri) {
+        const datasetsUri = folderUri ? folderUri : vscode.Uri.joinPath(await UtilsService.getProjectUri(), "datasets");
         DatasetService.exportFromFolder(datasetsUri);
     }
 }
