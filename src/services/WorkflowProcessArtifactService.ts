@@ -60,7 +60,8 @@ export class WorkflowProcessArtifactService {
         }
     }
 
-    public static async ensureGenerated(processUri: vscode.Uri): Promise<void> {
+    /** Com serverVersion (exportação), regenera sempre: o ECM30 do save usa fluiggers.fluigRuntimeVersion. */
+    public static async ensureGenerated(processUri: vscode.Uri, serverVersion?: string): Promise<void> {
         if (!isWorkflowDiagramProcessPath(processUri.fsPath)) {
             throw new Error("O arquivo .process deve estar diretamente em workflow/diagrams.");
         }
@@ -73,23 +74,25 @@ export class WorkflowProcessArtifactService {
             await running;
         }
 
-        const outputUris = [
-            vscode.Uri.file(ecm30PathForProcess(processUri.fsPath)),
-            vscode.Uri.file(processImagePathForProcess(processUri.fsPath)),
-        ];
-        try {
-            const [processStat, ...outputStats] = await Promise.all([
-                vscode.workspace.fs.stat(processUri),
-                ...outputUris.map(outputUri => vscode.workspace.fs.stat(outputUri)),
-            ]);
-            if (outputStats.every(outputStat => outputStat.mtime + 1000 >= processStat.mtime)) {
-                return;
+        if (!serverVersion) {
+            const outputUris = [
+                vscode.Uri.file(ecm30PathForProcess(processUri.fsPath)),
+                vscode.Uri.file(processImagePathForProcess(processUri.fsPath)),
+            ];
+            try {
+                const [processStat, ...outputStats] = await Promise.all([
+                    vscode.workspace.fs.stat(processUri),
+                    ...outputUris.map(outputUri => vscode.workspace.fs.stat(outputUri)),
+                ]);
+                if (outputStats.every(outputStat => outputStat.mtime + 1000 >= processStat.mtime)) {
+                    return;
+                }
+            } catch (_error) {
+                // Ausente ou desatualizado: a geração abaixo produzirá os artefatos.
             }
-        } catch (_error) {
-            // Ausente ou desatualizado: a geração abaixo produzirá os artefatos.
         }
 
-        const operation = WorkflowProcessArtifactService.generateForUri(processUri, false);
+        const operation = WorkflowProcessArtifactService.generateForUri(processUri, false, serverVersion);
         WorkflowProcessArtifactService.running.set(key, operation);
         try {
             await operation;
@@ -190,7 +193,7 @@ export class WorkflowProcessArtifactService {
         }
     }
 
-    private static async generateForUri(uri: vscode.Uri, interactive: boolean): Promise<any> {
+    private static async generateForUri(uri: vscode.Uri, interactive: boolean, serverVersion?: string): Promise<any> {
         if (!isWorkflowDiagramProcessPath(uri.fsPath)) {
             throw new Error("O arquivo .process deve estar diretamente em workflow/diagrams.");
         }
@@ -256,7 +259,7 @@ export class WorkflowProcessArtifactService {
             javaExecutable: resolveJavaExecutable({
                 configuredPath: configuration.get<string>("javaPath", ""),
             }),
-            serverVersion: configuration.get<string>("fluigRuntimeVersion", "1.8.2"),
+            serverVersion: serverVersion || configuration.get<string>("fluigRuntimeVersion", "1.8.2"),
         });
 
         const generated: any = interactive
