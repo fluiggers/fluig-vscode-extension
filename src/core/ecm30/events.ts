@@ -30,7 +30,7 @@ export function readEcm30Events(processPath: string): Ecm30Event[] {
       events.set(eventId, readText(path.join(scripts, name)));
     }
   }
-  // Literal sobrescreve script de mesmo eventId (ex.: <base>.POR_LITERALS.js) — observado em orcameto (NOTAS.md).
+  // Literal sobrescreve script de mesmo eventId (ex.: <base>.POR_LITERALS.js) — regra observada na saída do Studio.
   for (const [locale, eventId] of LITERALS) {
     const file = path.join(workflow, 'literals', `${base}_${locale}.properties`);
     if (fs.existsSync(file)) {

@@ -30,7 +30,7 @@ function seq(id: string): number {
   return parseInt(match[1], 10);
 }
 
-// Textos fixos de instruction por tipo (02 §6.4; textos completos observados nos goldens — NOTAS.md). Espaço final é do Studio.
+// Textos fixos de instruction por tipo (02 §6.4; textos completos observados nos goldens). Espaço final é do Studio.
 const INSTRUCTION = new Map<number, string>([
   [10, 'Atividade inicial do processo'],
   [11, 'Atividade de inicio por mensagem. Aguardando envio do sinal '],
@@ -480,7 +480,7 @@ export function generateEcm30(input: Ecm30Input, serverVersion?: string): Ecm30R
     return {
       tag: 'ProcessStateService', companyId: 1, processId: pid, version: 1, sequence: seq(e.id), attempts: int(a.executionAttempts),
       sucessFullMessage: str(a.executionSucessfulMessage), serviceName: str(a.serviceName),
-      frequency: int(a.frequency) || 1, // 0 → 1 (observado nos goldens; NOTAS.md)
+      frequency: int(a.frequency) || 1, // 0 → 1 (observado nos goldens)
       frequencyType: int(a.frequencyType),
     };
   });

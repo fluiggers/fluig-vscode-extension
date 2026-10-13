@@ -3,6 +3,7 @@ import * as path from "path";
 import * as vscode from "vscode";
 import { readEcm30Events } from "../core/ecm30/events";
 import { generateEcm30 } from "../core/ecm30/generate";
+import { parseFluigVersion } from "../core/fluig-client/version";
 
 const {
     writeEcm30Artifact,
@@ -204,13 +205,17 @@ export class WorkflowProcessArtifactService {
         const processId = path.basename(uri.fsPath, ".process");
         const processText = fs.readFileSync(uri.fsPath, "utf8");
         // No save não há servidor: vale fluiggers.fluigRuntimeVersion; vazio = versão desconhecida (todos os campos).
-        const version = serverVersion
-            || vscode.workspace.getConfiguration("fluiggers").get<string>("fluigRuntimeVersion", "1.8.2")
-            || undefined;
+        const raw = serverVersion
+            || vscode.workspace.getConfiguration("fluiggers").get<string>("fluigRuntimeVersion", "1.8.2");
+        // Texto livre ("v1.8.2", "1.8", "abc"): só x.y.z vale; senão gera como versão desconhecida.
+        const version = raw ? parseFluigVersion(raw) : undefined;
         const generated = generateEcm30(
             { processText, baseName: processId, events: readEcm30Events(uri.fsPath) },
             version
         );
+        if (raw && !version) {
+            generated.warnings.push(`fluiggers.fluigRuntimeVersion ("${raw}") não é uma versão x.y.z; gerado como versão desconhecida.`);
+        }
 
         const written = writeEcm30Artifact(ecm30PathForProcess(uri.fsPath), Buffer.from(generated.xml, "utf8"));
         // The process image is always generated with the ECM30: Fluig needs it to open the flow drawing.
