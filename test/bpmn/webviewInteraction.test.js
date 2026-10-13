@@ -201,6 +201,7 @@ test('evento isolado ou conectado pode ser excluído com verificação cross-arq
   assert.match(source, /type: 'deleteIsolatedEvent', elementId: element\.id/);
   assert.match(provider, /applyIsolatedEventDeletion\(document, panel, message\.elementId\)/);
   assert.match(provider, /findProjectNodeReferences\(document, preview\.elementId, preview\.activityCode\)/);
+  assert.match(provider, /referenceScanFilter\(processId, cardIndex, formFolders\)/);
   assert.match(provider, /resolveConditionalEventScript\(document, preview\.elementId\)/);
   assert.match(provider, /referencesOutsideLinkedScript/);
   assert.match(provider, /createRelatedFileBackup\(vscode, document, currentLinkedScript\.uri\)/);

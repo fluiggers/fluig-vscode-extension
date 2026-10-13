@@ -2,6 +2,7 @@
 
 ## 3.0.1-alpha
 
+- Limita a busca de referências na exclusão de elementos aos scripts do próprio processo e aos eventos do formulário vinculado, que antes bloqueava a exclusão por causa de formulários de outros processos do workspace.
 - Corrige o erro de validação equivocada do tratar erro nos casos de atividade "Capturar Erro".
 - Codifica usuário e senha no login por formulário, permitindo senhas com `&`, `+`, `%` e `=`.
 - Preserva, no mecanismo "Atribuição por Associação", os mecanismos aninhados que a aba ainda não edita (Papel, Campo Formulário, Executor, Grupos Colaborador), que antes eram descartados ao salvar.
