@@ -2,6 +2,8 @@
 
 ## 3.0.1-alpha
 
+- Adiciona o comando "Novo Projeto Fluig" (clique direito numa pasta, botão na aba Fluig ou paleta), que cria a estrutura de pastas do Fluig Studio, um processo inicial e o formulário `form_<projeto>` já vinculado.
+- "Novo Diagrama de Processo" passa a abrir com uma pool (nome da pasta do projeto), uma raia e início → atividade → fim ligados.
 - Os comandos "Novo ...", as importações do servidor e as exportações de formulário, widget e eventos de processo passam a usar o projeto Fluig da pasta clicada ou do arquivo aberto (a primeira pasta acima com `.project` ou `workflow/`), em vez de sempre a raiz do workspace; num workspace com vários projetos cada arquivo vai para o projeto certo.
 - Corrige a criação de pool e raia em diagrama ainda sem shapes, que não registrava o container no `pictogramLinks` e depois impedia excluí-lo ("O pictogramLinks nao referencia unicamente o shape"); arquivos já afetados voltam a permitir a exclusão.
 - Corrige o erro de validação equivocada do tratar erro nos casos de atividade "Capturar Erro".

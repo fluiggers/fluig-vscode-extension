@@ -7,6 +7,7 @@ import { WorkflowService } from '../services/WorkflowService';
 import { WorkflowProcessExportService } from '../services/WorkflowProcessExportService';
 import { WorkflowProcessArtifactService } from '../services/WorkflowProcessArtifactService';
 import { WorkflowProcessScaffoldService } from '../services/WorkflowProcessScaffoldService';
+import { FluigProjectService } from '../services/FluigProjectService';
 
 export class WorkflowExtension {
 
@@ -15,6 +16,10 @@ export class WorkflowExtension {
         context.subscriptions.push(vscode.commands.registerCommand(
             "fluiggers-fluig-vscode-extension.newWorkflowProcess",
             (folderUri?: vscode.Uri) => WorkflowProcessScaffoldService.create(context, folderUri)
+        ));
+        context.subscriptions.push(vscode.commands.registerCommand(
+            "fluiggers-fluig-vscode-extension.newFluigProject",
+            (folderUri?: vscode.Uri) => FluigProjectService.create(context, folderUri)
         ));
         context.subscriptions.push(vscode.commands.registerCommand(
             "fluiggers-fluig-vscode-extension.newWorkflowEvent",
