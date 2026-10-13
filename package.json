@@ -701,7 +701,8 @@
         "pretest": "npm run test-compile && npm run lint",
         "lint": "eslint src --ext ts",
         "test": "node ./out/test/runTest.js",
-        "test:process-export": "node --test test/FluigProcessExportService.test.js",
+        "test:process-export": "node --import tsx --test test/FluigProcessExportService.test.js",
+        "test:core": "node --import tsx --test test/core/*.test.js",
         "test:ecm30-generation": "node --test test/Ecm30GenerationService.test.js",
         "test:bpmn": "node --import tsx --require ./test/bpmn/stableProcessFixture.js --test test/bpmn/*.test.js"
     },
