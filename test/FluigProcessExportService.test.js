@@ -7,8 +7,10 @@ const path = require("node:path");
 const test = require("node:test");
 
 const {
+    FetchSoapGateway,
     FluigProcessExportService,
     SOAP_ACTIONS,
+    buildAttachment,
     loadXmlArtifact,
     normalizeStudioText,
     assertGeneratedArtifactsFresh,
@@ -358,4 +360,78 @@ test("aceita artefatos gerados depois do process", t => {
     assert.doesNotThrow(() => (
         assertGeneratedArtifactsFresh(files.processPath, files.ecm30Path, files.svgPath)
     ));
+});
+
+function soapEnvelopeResponse(inner, status = 200) {
+    return new Response(
+        '<S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/"><S:Body>' + inner + "</S:Body></S:Envelope>",
+        { status, headers: { "Content-Type": "text/xml; charset=utf-8" } }
+    );
+}
+
+test("gateway SOAP posta nos endpoints fixos e trata o Fault de processo inexistente como processo novo", async t => {
+    const files = fixture();
+    t.after(() => fs.rmSync(files.root, { recursive: true, force: true }));
+    const requests = [];
+    const fetchImpl = async (url, init) => {
+        const operation = /<ns:(\w+) /.exec(init.body)[1];
+        requests.push({ url, operation, action: new Headers(init.headers).get("SOAPAction"), body: init.body });
+        if (operation === "getToken") {
+            return soapEnvelopeResponse("<ns2:getTokenResponse xmlns:ns2=\"x\"><result>TOKEN_TESTE</result></ns2:getTokenResponse>");
+        }
+        if (operation === "createWorkFlowProcessVersion") {
+            return soapEnvelopeResponse("<S:Fault><faultcode>S:Server</faultcode><faultstring>Processo não encontrado</faultstring></S:Fault>", 500);
+        }
+        if (operation === "getWorkFlowProcessVersion") {
+            return soapEnvelopeResponse("<r><result>1</result></r>");
+        }
+        if (operation === "getAllProcessAvailableToExport") {
+            return soapEnvelopeResponse("<r><result><item><processId>PROC_TESTE</processId></item></result></r>");
+        }
+        return soapEnvelopeResponse("<r><result>ok=true</result></r>");
+    };
+    const service = new FluigProcessExportService(new FetchSoapGateway(fetchImpl));
+
+    const result = await service.export(server(), options(files, { dryRun: false }));
+
+    assert.equal(result.newProcess, true);
+    assert.equal(result.modeAdjusted, true);
+    assert.equal(result.version, 1);
+    assert.deepEqual(requests.map(request => request.url), [
+        "http://fluig.example:8080/webdesk/TokenService",
+        ...Array(5).fill("http://fluig.example:8080/webdesk/WorkflowEngineService"),
+    ]);
+    assert.deepEqual(requests.map(request => request.operation), [
+        "getToken",
+        "createWorkFlowProcessVersion",
+        "importProcess",
+        "releaseProcess",
+        "getAllProcessAvailableToExport",
+        "getWorkFlowProcessVersion",
+    ]);
+    assert.equal(requests.find(request => request.operation === "releaseProcess").action, '"relaseProcess"');
+    const importBody = requests.find(request => request.operation === "importProcess").body;
+    assert.match(importBody, /<username>TOKEN_TESTE<\/username><password><\/password><companyId>1<\/companyId><processId>PROC_TESTE<\/processId><attachments><item><fileName>PROC_TESTE\.ecm30\.xml<\/fileName>/);
+    assert.match(importBody, /<\/attachments><newProcess>true<\/newProcess><overWrite>true<\/overWrite><colleagueId>user\.001<\/colleagueId>/);
+});
+
+test("gateway SOAP propaga o Fault do importProcess com a mensagem do servidor", async t => {
+    const files = fixture();
+    t.after(() => fs.rmSync(files.root, { recursive: true, force: true }));
+    const fetchImpl = async (_url, init) => {
+        const operation = /<ns:(\w+) /.exec(init.body)[1];
+        if (operation === "importProcess") {
+            return soapEnvelopeResponse("<S:Fault><faultstring>Formulário inválido</faultstring></S:Fault>", 500);
+        }
+        return soapEnvelopeResponse("<r><result>TOKEN_TESTE</result></r>");
+    };
+    const service = new FluigProcessExportService(new FetchSoapGateway(fetchImpl));
+
+    await assert.rejects(service.export(server(), options(files, { dryRun: false })), /Formulário inválido/);
+});
+
+test("anexo segue a ordem de elementos do servidor (attach antes de fileName)", () => {
+    const artifact = { fileName: "a.svg", content: Buffer.from("<svg/>") };
+    assert.deepEqual(Object.keys(buildAttachment(artifact, false, true)), ["attach", "fileName", "fileSize", "filecontent", "principal"]);
+    assert.deepEqual(Object.keys(buildAttachment(artifact, true, false)), ["fileName", "fileSize", "filecontent", "principal"]);
 });

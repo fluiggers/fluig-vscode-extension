@@ -5,11 +5,7 @@ const path = require("node:path");
 const crypto = require("node:crypto");
 const { TextDecoder } = require("node:util");
 const sax = require("sax");
-
-const SERVICE_PATHS = Object.freeze({
-    tokenWsdl: "/webdesk/TokenService?wsdl",
-    workflowWsdl: "/webdesk/WorkflowEngineService?wsdl",
-});
+const { TOKEN_NAMESPACE, WORKFLOW_NAMESPACE, soapCall } = require("../core/fluig-client/soap");
 
 const SOAP_ACTIONS = Object.freeze({
     getToken: "getToken",
@@ -142,24 +138,14 @@ function assertGeneratedArtifactsFresh(processPath, ecm30Path, svgPath) {
 }
 
 function buildAttachment(artifact, principal, attach) {
-    const attachment = {
+    // Mesma ordem de elementos do Attachment do servidor: attach vem antes de fileName.
+    return {
+        ...(attach ? { attach: true } : {}),
         fileName: artifact.fileName,
         fileSize: 0,
         filecontent: artifact.content.toString("base64"),
         principal,
     };
-    if (attach) {
-        attachment.attach = true;
-    }
-    return attachment;
-}
-
-function unwrapResult(response) {
-    const payload = Array.isArray(response) ? response[0] : response;
-    if (payload && Object.prototype.hasOwnProperty.call(payload, "result")) {
-        return payload.result;
-    }
-    return payload;
 }
 
 function containsFailure(result) {
@@ -211,41 +197,42 @@ function containsProcessVersionNotFound(value, seen = new Set()) {
     return false;
 }
 
-class NodeSoapGateway {
-    constructor(createClientAsync) {
-        this.createClientAsync = createClientAsync || (async (...args) => {
-            const soap = require("soap");
-            return soap.createClientAsync(...args);
-        });
-    }
-
-    async createClient(wsdlUrl) {
-        return this.createClientAsync(wsdlUrl, {
-            disableCache: true,
-            handleNilAsNull: true,
-        });
+// POST direto nos endpoints fixos (core/fluig-client/soap), sem baixar o WSDL a cada chamada.
+class FetchSoapGateway {
+    constructor(fetchImpl) {
+        this.fetchImpl = fetchImpl;
     }
 
     async getToken(baseUrl, login, password) {
-        const client = await this.createClient(baseUrl + SERVICE_PATHS.tokenWsdl);
-        return unwrapResult(await client.getTokenAsync({ login, password }));
+        return soapCall({
+            baseUrl,
+            service: "TokenService",
+            namespace: TOKEN_NAMESPACE,
+            operation: "getToken",
+            parts: { login, password },
+            fetchImpl: this.fetchImpl,
+        });
     }
 
     async createWorkflowClient(baseUrl) {
-        return this.createClient(baseUrl + SERVICE_PATHS.workflowWsdl);
+        return { baseUrl };
     }
 
     async invoke(client, operation, params) {
-        const method = client[`${operation}Async`];
-        if (typeof method !== "function") {
-            throw new Error(`Operacao ${operation} nao encontrada no WSDL.`);
-        }
-        return unwrapResult(await method.call(client, params));
+        return soapCall({
+            baseUrl: client.baseUrl,
+            service: "WorkflowEngineService",
+            namespace: WORKFLOW_NAMESPACE,
+            operation,
+            soapAction: SOAP_ACTIONS[operation],
+            parts: params,
+            fetchImpl: this.fetchImpl,
+        });
     }
 }
 
 class FluigProcessExportService {
-    constructor(gateway = new NodeSoapGateway()) {
+    constructor(gateway = new FetchSoapGateway()) {
         this.gateway = gateway;
     }
 
@@ -431,9 +418,8 @@ class FluigProcessExportService {
 module.exports = {
     ARTIFACT_TIMESTAMP_TOLERANCE_MS,
     FluigProcessExportService,
-    NodeSoapGateway,
+    FetchSoapGateway,
     SOAP_ACTIONS,
-    SERVICE_PATHS,
     assertGeneratedArtifactsFresh,
     buildAttachment,
     containsFailure,
@@ -441,5 +427,4 @@ module.exports = {
     getXmlRoot,
     loadXmlArtifact,
     normalizeStudioText,
-    unwrapResult,
 };
