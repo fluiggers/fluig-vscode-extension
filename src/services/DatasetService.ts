@@ -208,14 +208,11 @@ export class DatasetService {
 
             window.showTextDocument(Uri.file(targetPath));
             window.showInformationMessage(
-                `Dataset ${datasetId} atualizado com sucesso!`
+                `Dataset ${datasetId} atualizado em ${workspace.asRelativePath(Uri.file(targetPath))}!`
             );
         } else {
             // Se não achar nenhum arquivo ou achar mais de um, vai ser salvo na pasta padrão ./datasets
             DatasetService.saveFile(datasetFolderUri, datasetId, dataset.datasetImpl);
-            window.showInformationMessage(
-                `Dataset ${datasetId} importado com sucesso!`
-            );
         }
     }
 
@@ -285,7 +282,7 @@ export class DatasetService {
         );
 
         window.showInformationMessage(
-            `${results.length} datasets foram importados.`
+            `${results.length} datasets foram importados em ${workspace.asRelativePath(datasetFolderUri)}.`
         );
     }
 

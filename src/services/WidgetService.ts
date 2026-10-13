@@ -326,9 +326,7 @@ export class WidgetService {
             );
 
             window.showInformationMessage(
-                results.length > 1
-                ? `${results.length} widgets foram importadas.`
-                : "1 widget foi importada."
+                `${results.length} widget(s) importada(s) em ${workspace.asRelativePath(Uri.joinPath(projectUri, "wcm", "widget"))}.`
             );
         } catch (error: any) {
             window.showErrorMessage(error.message || error);
