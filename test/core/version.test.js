@@ -3,7 +3,7 @@
 const assert = require("node:assert/strict");
 const test = require("node:test");
 
-const { VERSION_PATH, fetchFluigVersion, parseFluigVersion } = require("../../src/core/fluig-client/version");
+const { VERSION_PATH, detectFluigVersion, fetchFluigVersion, parseFluigVersion } = require("../../src/core/fluig-client/version");
 
 test("extrai x.y.z dos formatos possíveis da resposta", () => {
     assert.equal(parseFluigVersion('"Fluig 1.8.2-231211"'), "1.8.2");
@@ -38,4 +38,19 @@ test("HTTP de erro, corpo sem versão e falha de rede viram erro com o motivo", 
         throw new TypeError("fetch failed");
     };
     await assert.rejects(fetchFluigVersion("https://f", "", offline), /fetch failed/);
+});
+
+test("detecção faz o login e consulta a versão com os cookies dele", async () => {
+    const fetchImpl = async (_url, init) => new Response(
+        new Headers(init.headers).get("Cookie") === "JSESSIONID=xyz" ? '"Fluig 1.8.2"' : "<html/>",
+        { status: 200 }
+    );
+    assert.equal(await detectFluigVersion("https://f", async () => "JSESSIONID=xyz", 1000, fetchImpl), "1.8.2");
+});
+
+test("login que não responde não trava a exportação", async () => {
+    const neverLogs = () => new Promise(() => {});
+    const started = Date.now();
+    await assert.rejects(detectFluigVersion("https://f", neverLogs, 50), /login no Fluig não respondeu em 0.05 s/);
+    assert.ok(Date.now() - started < 1000);
 });

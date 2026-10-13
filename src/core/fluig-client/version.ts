@@ -29,3 +29,22 @@ export async function fetchFluigVersion(baseUrl: string, cookies: string, fetchI
     }
     return version;
 }
+
+/** Login + consulta. O login (LoginService) não tem timeout próprio: sem este limite, um servidor travado prende a exportação. */
+export async function detectFluigVersion(
+    baseUrl: string,
+    login: () => Promise<string>,
+    timeoutMs = 20_000,
+    fetchImpl: typeof fetch = fetch
+): Promise<string> {
+    let timer: NodeJS.Timeout | undefined;
+    const timeout = new Promise<never>((_resolve, reject) => {
+        timer = setTimeout(() => reject(new Error(`o login no Fluig não respondeu em ${timeoutMs / 1000} s`)), timeoutMs);
+    });
+    try {
+        const cookies = await Promise.race([login(), timeout]);
+        return await fetchFluigVersion(baseUrl, cookies, fetchImpl);
+    } finally {
+        clearTimeout(timer);
+    }
+}

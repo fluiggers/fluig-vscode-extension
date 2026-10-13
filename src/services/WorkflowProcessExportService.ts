@@ -1,6 +1,6 @@
 import * as path from "path";
 import * as vscode from "vscode";
-import { fetchFluigVersion } from "../core/fluig-client/version";
+import { detectFluigVersion } from "../core/fluig-client/version";
 import { ServerDTO } from "../models/ServerDTO";
 import { LoginService } from "./LoginService";
 import { ServerService } from "./ServerService";
@@ -140,8 +140,19 @@ export class WorkflowProcessExportService {
 
         const processId = path.basename(selectedUri.fsPath, ".process");
         const diagramsFolder = path.dirname(selectedUri.fsPath);
-        const fluigVersion = await WorkflowProcessExportService.detectVersion(server);
-        await WorkflowProcessArtifactService.ensureGenerated(selectedUri, fluigVersion.value);
+        // Login, versão e geração levam alguns segundos: sem aviso, o usuário repete o comando e exporta duas vezes.
+        const fluigVersion = await vscode.window.withProgress(
+            {
+                location: vscode.ProgressLocation.Notification,
+                title: `Preparando exportação de ${processId}`,
+                cancellable: false,
+            },
+            async () => {
+                const version = await WorkflowProcessExportService.detectVersion(server);
+                await WorkflowProcessArtifactService.ensureGenerated(selectedUri, version.value);
+                return version;
+            }
+        );
         const ecm30Path = ecm30PathForProcess(selectedUri.fsPath);
         const svgPath = processImagePathForProcess(selectedUri.fsPath);
         await vscode.workspace.fs.stat(vscode.Uri.file(ecm30Path));
@@ -173,8 +184,8 @@ export class WorkflowProcessExportService {
             return { value: configured, detected: false, reason: "servidor com login pelo navegador" };
         }
         try {
-            const cookies = await LoginService.loginAndGetCookies(server);
-            return { value: await fetchFluigVersion(UtilsService.getHost(server), cookies), detected: true };
+            const value = await detectFluigVersion(UtilsService.getHost(server), () => LoginService.loginAndGetCookies(server));
+            return { value, detected: true };
         } catch (error: any) {
             return { value: configured, detected: false, reason: error?.message || String(error) };
         }
