@@ -126,17 +126,24 @@ export async function soapCall(options: SoapCallOptions): Promise<SoapResult> {
     const fetchImpl = options.fetchImpl ?? fetch;
     const url = `${options.baseUrl.replace(/\/+$/, "")}/webdesk/${options.service}`;
     const timeoutMs = options.timeoutMs ?? DEFAULT_TIMEOUT_MS;
+    const init: RequestInit = {
+        method: "POST",
+        headers: [
+            ["Content-Type", "text/xml; charset=utf-8"],
+            ["SOAPAction", `"${options.soapAction ?? options.operation}"`],
+        ],
+        body: soapEnvelope(options.namespace, options.operation, options.parts),
+        signal: AbortSignal.timeout(timeoutMs),
+        redirect: "manual",
+    };
     let response: Response;
     try {
-        response = await fetchImpl(url, {
-            method: "POST",
-            headers: [
-                ["Content-Type", "text/xml; charset=utf-8"],
-                ["SOAPAction", `"${options.soapAction ?? options.operation}"`],
-            ],
-            body: soapEnvelope(options.namespace, options.operation, options.parts),
-            signal: AbortSignal.timeout(timeoutMs),
-        });
+        response = await fetchImpl(url, init);
+        // Servidor cadastrado em http e redirecionado para https: o redirect automático trocaria o POST por GET.
+        const location = response.headers.get("location");
+        if (response.status >= 300 && response.status < 400 && location) {
+            response = await fetchImpl(new URL(location, url).toString(), init);
+        }
     } catch (error: any) {
         if (error?.name === "TimeoutError") {
             throw new FluigSoapError(`${options.operation}: o Fluig não respondeu em ${timeoutMs / 1000} s.`, 0);

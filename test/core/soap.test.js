@@ -123,3 +123,15 @@ test("timeout e falha de rede viram mensagens claras", async () => {
     };
     await assert.rejects(call(offline), /não foi possível conectar a https:\/\/fluig\.example\/webdesk\/WorkflowEngineService \(fetch failed\)/);
 });
+
+test("redirecionamento (servidor em http que manda para https) repete o POST no novo endereço", async () => {
+    const { fetchImpl, requests } = recordingFetch((url) => url.startsWith("http://")
+        ? new Response(null, { status: 301, headers: { Location: "https://fluig.example/webdesk/WorkflowEngineService" } })
+        : soapResponse(200, "<r><result>7</result></r>"));
+    assert.equal(await call(fetchImpl, { baseUrl: "http://fluig.example" }), "7");
+    assert.deepEqual(requests.map(request => [request.url, request.init.method, request.init.redirect]), [
+        ["http://fluig.example/webdesk/WorkflowEngineService", "POST", "manual"],
+        ["https://fluig.example/webdesk/WorkflowEngineService", "POST", "manual"],
+    ]);
+    assert.match(requests[1].init.body, /<ns:getWorkFlowProcessVersion /);
+});
