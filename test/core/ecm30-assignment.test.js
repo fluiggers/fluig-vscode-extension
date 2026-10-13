@@ -21,6 +21,11 @@ test("converte os mecanismos de atribuição para a configuração do servidor",
         "<AssignmentController><GroupsOf>u1</GroupsOf><OnlyWorkGroup>ON</OnlyWorkGroup><IncludeCommunityGroups>OFF</IncludeCommunityGroups></AssignmentController>");
 });
 
+test("Grupo sem groupId gera configuração vazia (02 §3.3)", () => {
+    assert.equal(convertAssignment(controller("Group", "<mechanismName>Grupo</mechanismName>"), seqOf), "");
+    assert.equal(convertAssignment(controller("PoolGroup", "<mechanismName>Pool Grupo</mechanismName>"), seqOf), "");
+});
+
 test("Executor Atividade usa a sequence do nó e grava null quando o nó não existe", () => {
     assert.equal(convertAssignment(controller("ExecutorMechanism", "<idNode>task5</idNode><returns>1</returns>"), seqOf),
         "<AssignmentController><BaseActivity>5</BaseActivity><Returns>Last</Returns></AssignmentController>");

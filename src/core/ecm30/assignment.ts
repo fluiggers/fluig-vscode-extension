@@ -43,8 +43,11 @@ export function convertAssignment(ctrl: Xs | null, seqOf: (id: string) => number
   const wrap = (body: string) => `<AssignmentController>${body}</AssignmentController>`;
   switch (ctrl.cls.replace(/^.*\.AssignmentController/, '')) {
     case 'Group':
-    case 'PoolGroup':
-      return wrap(`<Group>${f('groupId') ?? ''}</Group>`);
+    case 'PoolGroup': {
+      // 02 §3.3: string vazia quando groupId é null.
+      const groupId = f('groupId');
+      return groupId === null ? '' : wrap(`<Group>${groupId}</Group>`);
+    }
     case 'Role':
     case 'PoolRole':
       return wrap(`<Role>${f('roleId') ?? ''}</Role>`);
