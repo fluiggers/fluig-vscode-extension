@@ -2,6 +2,7 @@
 
 ## 3.0.1-alpha
 
+- Gera o `ecm30.xml` do processo em TypeScript, sem Fluig Studio, Eclipse ou Java, idêntico ao do Studio em todas as versões (1.4.4 a 2.0.0 e servidor de versão desconhecida); a exportação lista os avisos do gerador (campos que a versão do servidor ignora, formulário local).
 - Exporta processos chamando o SOAP do Fluig direto no endereço do servidor, sem baixar o WSDL, o que evita falhas atrás de proxy reverso ou SSL terminado.
 - Detecta a versão do Fluig do servidor de destino na exportação e gera o ECM30 para ela; se a versão não for detectada, usa `fluiggers.fluigRuntimeVersion` e avisa na confirmação.
 - Corrige o erro de validação equivocada do tratar erro nos casos de atividade "Capturar Erro".
