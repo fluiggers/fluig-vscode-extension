@@ -31,3 +31,27 @@ test('comandos Novo e importações gravam no projeto do recurso clicado ou do e
     for (const pattern of patterns) assert.match(source, pattern, `${file}: ${pattern}`);
   }
 });
+
+function sources(directory) {
+  return fs.readdirSync(path.join(root, directory), { withFileTypes: true }).flatMap((entry) => {
+    const relative = `${directory}/${entry.name}`;
+    if (entry.isDirectory()) return sources(relative);
+    return /\.(ts|js)$/.test(entry.name) ? [relative] : [];
+  });
+}
+
+test('exports e eventos de formulário usam a pasta real do artefato', () => {
+  assert.match(read('src/services/FormService.ts'), /artifactFolderPath\(fileUri\.path, "forms"\)/);
+  assert.match(read('src/extensions/FormExtension.ts'), /artifactFolderPath\(folderUri\.path, "forms"\)/);
+  assert.match(read('src/services/WidgetService.ts'), /artifactFolderPath\(fileUri\.path, "widget"\)/);
+  assert.match(read('src/services/WorkflowService.ts'), /getEventsToUpdate\(processId, Uri\.joinPath\(eventUri, "\.\."\)\)/);
+});
+
+test('só servidores, bibliotecas de tipos e o próprio UtilsService usam a raiz do workspace', () => {
+  const users = sources('src').filter((file) => read(file).includes('getWorkspaceUri()')).sort();
+  assert.deepEqual(users, [
+    'src/extensions/LibraryExtension.ts',
+    'src/services/ServerService.ts',
+    'src/services/UtilsService.ts'
+  ]);
+});

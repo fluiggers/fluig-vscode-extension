@@ -12,6 +12,8 @@ import { AttachmentDTO } from "../models/AttachmentDTO";
 import { GlobalStorageService } from "./GlobalStorageService";
 import { LoginService } from "./LoginService";
 
+const { artifactFolderPath } = require("./projectRoot");
+
 export class FormService {
 
     private static getUri(server: ServerDTO): string {
@@ -297,7 +299,7 @@ export class FormService {
             return;
         }
 
-        const formFolder = Uri.joinPath(UtilsService.getWorkspaceUri(), 'forms', formFolderName).fsPath;
+        const formFolder = fileUri.with({ path: artifactFolderPath(fileUri.path, "forms") }).fsPath;
         const isEvent = /[/\\]events$/;
 
         for (let attachmentPath of glob.sync(`${formFolder}/**/*.*`, {

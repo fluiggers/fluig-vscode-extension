@@ -10,6 +10,8 @@ import {LoginService} from "./LoginService";
 import { ServerDTO } from "../models/ServerDTO";
 import { WidgetFluiggersDTO } from "../models/WidgetFluiggersDTO";
 
+const { artifactFolderPath } = require("./projectRoot");
+
 export class WidgetService {
     /**
      * Create Widget
@@ -124,12 +126,7 @@ export class WidgetService {
 
         const widgetName: string = fileUri.path.replace(/.*\/widget\/([^/]+).*/, "$1");
 
-        const widgetUri = Uri.joinPath(
-            UtilsService.getWorkspaceUri(),
-            "wcm",
-            "widget",
-            widgetName
-        );
+        const widgetUri = fileUri.with({ path: artifactFolderPath(fileUri.path, "widget") });
 
         const zipStream = new JSZip();
         zipStream.folder("WEB-INF");

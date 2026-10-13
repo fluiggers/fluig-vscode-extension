@@ -2,6 +2,7 @@
 
 ## 3.0.1-alpha
 
+- Os comandos "Novo ...", as importações do servidor e as exportações de formulário, widget e eventos de processo passam a usar o projeto Fluig da pasta clicada ou do arquivo aberto (a primeira pasta acima com `.project` ou `workflow/`), em vez de sempre a raiz do workspace; num workspace com vários projetos cada arquivo vai para o projeto certo.
 - Corrige o erro de validação equivocada do tratar erro nos casos de atividade "Capturar Erro".
 - Codifica usuário e senha no login por formulário, permitindo senhas com `&`, `+`, `%` e `=`.
 - Preserva, no mecanismo "Atribuição por Associação", os mecanismos aninhados que a aba ainda não edita (Papel, Campo Formulário, Executor, Grupos Colaborador), que antes eram descartados ao salvar.
