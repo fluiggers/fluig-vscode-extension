@@ -5,5 +5,3 @@ node_modules
 *.vsix
 .idea/
 .validation-cache/
-runtime/java/
-runtime/fluig-studio/
