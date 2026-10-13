@@ -22,6 +22,8 @@ interface FluigVersionChoice {
     value: string;
     detected: boolean;
     reason?: string;
+    /** false: sem o conversor do Fluig Studio, vai o ECM30 do último save. */
+    regenerated?: boolean;
 }
 
 interface PreparedExport {
@@ -149,8 +151,8 @@ export class WorkflowProcessExportService {
             },
             async () => {
                 const version = await WorkflowProcessExportService.detectVersion(server);
-                await WorkflowProcessArtifactService.ensureGenerated(selectedUri, version.value);
-                return version;
+                const regenerated = await WorkflowProcessArtifactService.ensureGenerated(selectedUri, version.value);
+                return { ...version, regenerated };
             }
         );
         const ecm30Path = ecm30PathForProcess(selectedUri.fsPath);
@@ -220,9 +222,12 @@ export class WorkflowProcessExportService {
             ? "automático (nova versão; se o código não existir, novo processo)"
             : prepared.options.newProcess ? "novo processo" : "nova versão";
         const release = prepared.options.release ? "sim" : "não";
-        const version = prepared.fluigVersion.detected
+        const detected = prepared.fluigVersion.detected
             ? prepared.fluigVersion.value
             : `${prepared.fluigVersion.value} (versão não detectada: ${prepared.fluigVersion.reason}; usando fluiggers.fluigRuntimeVersion)`;
+        const version = prepared.fluigVersion.regenerated === false
+            ? `${detected}; ECM30 do último save mantido (conversor do Fluig Studio não encontrado em fluiggers.eclipsePluginsPath)`
+            : detected;
         const operations = prepared.plan.steps
             .map((step: any) => `${step.order}. ${step.name}`)
             .join("\n");

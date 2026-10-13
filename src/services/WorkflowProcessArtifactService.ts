@@ -60,8 +60,12 @@ export class WorkflowProcessArtifactService {
         }
     }
 
-    /** Com serverVersion (exportação), regenera sempre: o ECM30 do save usa fluiggers.fluigRuntimeVersion. */
-    public static async ensureGenerated(processUri: vscode.Uri, serverVersion?: string): Promise<void> {
+    /**
+     * Com serverVersion (exportação), regenera para essa versão, porque o ECM30 do save usa
+     * fluiggers.fluigRuntimeVersion. Sem o conversor do Fluig Studio, mantém o ECM30 do save (se atualizado).
+     * Devolve true quando gerou para serverVersion.
+     */
+    public static async ensureGenerated(processUri: vscode.Uri, serverVersion?: string): Promise<boolean> {
         if (!isWorkflowDiagramProcessPath(processUri.fsPath)) {
             throw new Error("O arquivo .process deve estar diretamente em workflow/diagrams.");
         }
@@ -74,7 +78,10 @@ export class WorkflowProcessArtifactService {
             await running;
         }
 
-        if (!serverVersion) {
+        const forVersion = serverVersion && WorkflowProcessArtifactService.findPluginsDirectory()
+            ? serverVersion
+            : undefined;
+        if (!forVersion) {
             const outputUris = [
                 vscode.Uri.file(ecm30PathForProcess(processUri.fsPath)),
                 vscode.Uri.file(processImagePathForProcess(processUri.fsPath)),
@@ -85,14 +92,14 @@ export class WorkflowProcessArtifactService {
                     ...outputUris.map(outputUri => vscode.workspace.fs.stat(outputUri)),
                 ]);
                 if (outputStats.every(outputStat => outputStat.mtime + 1000 >= processStat.mtime)) {
-                    return;
+                    return false;
                 }
             } catch (_error) {
                 // Ausente ou desatualizado: a geração abaixo produzirá os artefatos.
             }
         }
 
-        const operation = WorkflowProcessArtifactService.generateForUri(processUri, false, serverVersion);
+        const operation = WorkflowProcessArtifactService.generateForUri(processUri, false, forVersion);
         WorkflowProcessArtifactService.running.set(key, operation);
         try {
             await operation;
@@ -103,6 +110,7 @@ export class WorkflowProcessArtifactService {
                 WorkflowProcessArtifactService.scheduleAutomaticGeneration(processUri);
             }
         }
+        return Boolean(forVersion);
     }
 
     /** Cancels the pending automatic generation and waits for a running one, so the .process can be renamed safely. */
@@ -193,6 +201,23 @@ export class WorkflowProcessArtifactService {
         }
     }
 
+    private static bundledPluginsPath(): string {
+        return vscode.Uri.joinPath(
+            WorkflowProcessArtifactService.context.extensionUri,
+            "runtime",
+            "fluig-studio",
+            "plugins"
+        ).fsPath;
+    }
+
+    private static findPluginsDirectory(): string | undefined {
+        return findEclipsePluginsDirectory({
+            configuredPath: vscode.workspace.getConfiguration("fluiggers").get<string>("eclipsePluginsPath", ""),
+            bundledPath: WorkflowProcessArtifactService.bundledPluginsPath(),
+            homeDirectory: os.homedir(),
+        });
+    }
+
     private static async generateForUri(uri: vscode.Uri, interactive: boolean, serverVersion?: string): Promise<any> {
         if (!isWorkflowDiagramProcessPath(uri.fsPath)) {
             throw new Error("O arquivo .process deve estar diretamente em workflow/diagrams.");
@@ -200,17 +225,8 @@ export class WorkflowProcessArtifactService {
 
         const configuration = vscode.workspace.getConfiguration("fluiggers");
         const extensionDirectory = WorkflowProcessArtifactService.context.extensionUri.fsPath;
-        const bundledPluginsPath = vscode.Uri.joinPath(
-            WorkflowProcessArtifactService.context.extensionUri,
-            "runtime",
-            "fluig-studio",
-            "plugins"
-        ).fsPath;
-        let pluginsDirectory = findEclipsePluginsDirectory({
-            configuredPath: configuration.get<string>("eclipsePluginsPath", ""),
-            bundledPath: bundledPluginsPath,
-            homeDirectory: os.homedir(),
-        });
+        const bundledPluginsPath = WorkflowProcessArtifactService.bundledPluginsPath();
+        let pluginsDirectory = WorkflowProcessArtifactService.findPluginsDirectory();
 
         if (!pluginsDirectory && interactive) {
             const selected = await vscode.window.showOpenDialog({
