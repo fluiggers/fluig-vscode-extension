@@ -12,7 +12,8 @@ const {
   createIsolatedNode,
   createPool,
   createSequenceFlow,
-  createSwimLane
+  createSwimLane,
+  deleteDiagramContainer
 } = require('../../src/bpmn/processPatcher.ts');
 
 const fixturePath = path.join(__dirname, 'fixtures', 'toexportbpmnteste.process.gz.b64');
@@ -96,4 +97,25 @@ test('cria pool e raia independente em processo sem shapes', () => {
   assert.equal(lane.validation.ok, true);
   assert.equal(pool.model.elements.some((item) => item.tag === 'BpmnPool'), true);
   assert.equal(lane.model.elements.some((item) => item.tag === 'BpmnSwimLane'), true);
+});
+
+test('pool e raias criadas em processo sem shapes entram no pictogramLinks e podem ser excluidas', () => {
+  const links = (model) => String(model.diagram.attributeMap.pictogramLinks?.value ?? '').split(/\s+/).filter(Boolean);
+  const empty = emptyDiagram(templateText);
+  assert.equal(parseProcess(empty).diagram.attributeMap.pictogramLinks, undefined);
+
+  const pool = createPool(empty, { x: 40, y: 40, templateText });
+  assert.deepEqual(links(pool.model), ['/0/@children.0/@link']);
+  const first = createSwimLane(pool.text, { poolId: pool.elementId, templateText });
+  const second = createSwimLane(first.text, { poolId: pool.elementId, templateText });
+  assert.deepEqual(links(second.model).sort(), [
+    '/0/@children.0/@children.0/@link',
+    '/0/@children.0/@children.1/@link',
+    '/0/@children.0/@link'
+  ]);
+
+  const removed = deleteDiagramContainer(second.text, first.elementId);
+  assert.equal(removed.validation.ok, true);
+  assert.equal(removed.model.elements.some((item) => item.id === first.elementId), false);
+  assert.equal(deleteDiagramContainer(second.text, pool.elementId).validation.ok, true);
 });

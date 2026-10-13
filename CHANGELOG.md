@@ -2,6 +2,7 @@
 
 ## 3.0.1-alpha
 
+- Corrige a criação de pool e raia em diagrama ainda sem shapes, que não registrava o container no `pictogramLinks` e depois impedia excluí-lo ("O pictogramLinks nao referencia unicamente o shape"); arquivos já afetados voltam a permitir a exclusão.
 - Corrige o erro de validação equivocada do tratar erro nos casos de atividade "Capturar Erro".
 - Codifica usuário e senha no login por formulário, permitindo senhas com `&`, `+`, `%` e `=`.
 - Preserva, no mecanismo "Atribuição por Associação", os mecanismos aninhados que a aba ainda não edita (Papel, Campo Formulário, Executor, Grupos Colaborador), que antes eram descartados ao salvar.
