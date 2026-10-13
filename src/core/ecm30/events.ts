@@ -15,7 +15,7 @@ function readText(file: string): string {
   } catch {
     text = bytes.toString('latin1');
   }
-  return text.startsWith('﻿') ? text.slice(1) : text;
+  return text.startsWith('\uFEFF') ? text.slice(1) : text;
 }
 
 /** `workflow/diagrams/<base>.process` → eventos de `workflow/scripts` e `workflow/literals`, ordenados por eventId. */

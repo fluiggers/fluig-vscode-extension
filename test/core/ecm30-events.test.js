@@ -21,7 +21,7 @@ function project(t, files) {
 test("lê scripts e literais do processo, ordenados por eventId, com o conteúdo exato", t => {
     const processPath = project(t, {
         "diagrams/proc.process": "",
-        "scripts/proc.beforeTaskSave.js": "﻿function beforeTaskSave() {\r\n}\r\n",
+        "scripts/proc.beforeTaskSave.js": "\uFEFFfunction beforeTaskSave() {\r\n}\r\n",
         "scripts/proc.afterProcessFinish.js": "var a = \"Conclusão\";",
         "scripts/outro.afterProcessFinish.js": "ignorado",
         "literals/proc_pt_BR.properties": "titulo=Solicitação\n",
