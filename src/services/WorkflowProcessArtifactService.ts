@@ -59,8 +59,9 @@ export class WorkflowProcessArtifactService {
     }
 
     /**
-     * Com serverVersion (exportação), regenera sempre para essa versão, porque o ECM30 do save usa
-     * fluiggers.fluigRuntimeVersion. Devolve os avisos da geração (vazio se nada foi gerado).
+     * Com serverVersion definido (exportação, inclusive "" = versão desconhecida), regenera sempre, porque o
+     * ECM30 do save usa fluiggers.fluigRuntimeVersion. Sem serverVersion e com os artefatos atualizados, não
+     * gera e devolve []. Caso contrário, devolve os avisos da geração.
      */
     public static async ensureGenerated(processUri: vscode.Uri, serverVersion?: string): Promise<string[]> {
         if (!isWorkflowDiagramProcessPath(processUri.fsPath)) {
@@ -75,7 +76,7 @@ export class WorkflowProcessArtifactService {
             await running;
         }
 
-        if (!serverVersion) {
+        if (serverVersion === undefined) {
             const outputUris = [
                 vscode.Uri.file(ecm30PathForProcess(processUri.fsPath)),
                 vscode.Uri.file(processImagePathForProcess(processUri.fsPath)),

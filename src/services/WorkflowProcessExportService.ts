@@ -223,8 +223,8 @@ export class WorkflowProcessExportService {
             : prepared.options.newProcess ? "novo processo" : "nova versão";
         const release = prepared.options.release ? "sim" : "não";
         const version = prepared.fluigVersion.detected
-            ? prepared.fluigVersion.value
-            : `${prepared.fluigVersion.value} (versão não detectada: ${prepared.fluigVersion.reason}; usando fluiggers.fluigRuntimeVersion)`;
+            ? prepared.fluigVersion.value || "desconhecida"
+            : `${prepared.fluigVersion.value || "desconhecida"} (versão não detectada: ${prepared.fluigVersion.reason}; usando fluiggers.fluigRuntimeVersion)`;
         const warnings = prepared.fluigVersion.warnings?.length
             ? ["", "Avisos do ECM30:", ...prepared.fluigVersion.warnings.map(warning => `- ${warning}`)]
             : [];
