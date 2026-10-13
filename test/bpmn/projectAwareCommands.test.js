@@ -55,3 +55,12 @@ test('só servidores, bibliotecas de tipos e o próprio UtilsService usam a raiz
     'src/services/UtilsService.ts'
   ]);
 });
+
+test('importações de dataset e widget dizem em que pasta os arquivos ficaram', () => {
+  const datasets = read('src/services/DatasetService.ts');
+  assert.match(datasets, /atualizado em \$\{workspace\.asRelativePath\(Uri\.file\(targetPath\)\)\}/);
+  assert.match(datasets, /datasets foram importados em \$\{workspace\.asRelativePath\(datasetFolderUri\)\}/);
+  assert.doesNotMatch(datasets, /importado com sucesso!/);
+  const widgets = read('src/services/WidgetService.ts');
+  assert.match(widgets, /importada\(s\) em \$\{workspace\.asRelativePath\(Uri\.joinPath\(projectUri, "wcm", "widget"\)\)\}/);
+});
