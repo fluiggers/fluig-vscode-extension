@@ -12,6 +12,8 @@ import { AttachmentDTO } from "../models/AttachmentDTO";
 import { GlobalStorageService } from "./GlobalStorageService";
 import { LoginService } from "./LoginService";
 
+const { artifactFolderPath } = require("./projectRoot");
+
 export class FormService {
 
     private static getUri(server: ServerDTO): string {
@@ -163,7 +165,7 @@ export class FormService {
     /**
      * Realiza a importação de um formulário específico
      */
-     public static async import() {
+     public static async import(resourceUri?: Uri) {
         const server = await ServerService.getSelect();
 
         if (!server) {
@@ -176,7 +178,7 @@ export class FormService {
             return;
         }
 
-        let folderUri = Uri.joinPath(UtilsService.getWorkspaceUri(), 'forms', form.documentDescription);
+        let folderUri = Uri.joinPath(await UtilsService.getProjectUri(resourceUri), 'forms', form.documentDescription);
 
         const fileNames = await FormService.getFileNames(server, form.documentId);
 
@@ -197,13 +199,13 @@ export class FormService {
             workspace.fs.writeFile(Uri.joinPath(folderUri, event.eventId + ".js"), Buffer.from(event.eventDescription, "utf-8"));
         }
 
-        window.showInformationMessage("O formulário foi importado!");
+        window.showInformationMessage(`O formulário foi importado em ${workspace.asRelativePath(Uri.joinPath(folderUri, ".."))}!`);
     }
 
     /**
      * Realiza a importação de vários formulários
      */
-     public static async importMany() {
+     public static async importMany(resourceUri?: Uri) {
         const server = await ServerService.getSelect();
 
         if (!server) {
@@ -216,7 +218,7 @@ export class FormService {
             return;
         }
 
-        const workspaceFolderUri = UtilsService.getWorkspaceUri();
+        const workspaceFolderUri = await UtilsService.getProjectUri(resourceUri);
 
         const results = await window.withProgress(
             {
@@ -263,7 +265,7 @@ export class FormService {
             }
         );
 
-        window.showInformationMessage(`${results.length} formulários foram importados.`);
+        window.showInformationMessage(`${results.length} formulários foram importados em ${workspace.asRelativePath(Uri.joinPath(workspaceFolderUri, 'forms'))}.`);
     }
 
     public static async export(context: ExtensionContext, fileUri: Uri) {
@@ -297,7 +299,7 @@ export class FormService {
             return;
         }
 
-        const formFolder = Uri.joinPath(UtilsService.getWorkspaceUri(), 'forms', formFolderName).fsPath;
+        const formFolder = fileUri.with({ path: artifactFolderPath(fileUri.path, "forms") }).fsPath;
         const isEvent = /[/\\]events$/;
 
         for (let attachmentPath of glob.sync(`${formFolder}/**/*.*`, {

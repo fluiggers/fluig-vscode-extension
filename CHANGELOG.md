@@ -2,10 +2,13 @@
 
 ## 3.0.1-alpha
 
+- Adiciona o comando "Novo Projeto Fluig" (clique direito numa pasta, botão na aba Fluig ou paleta), que cria a estrutura de pastas do Fluig Studio, um processo inicial e o formulário `form_<projeto>` já vinculado.
+- "Novo Diagrama de Processo" passa a abrir com uma pool (nome da pasta do projeto), uma raia e início → atividade → fim ligados.
+- Os comandos "Novo ...", as importações do servidor e as exportações de formulário, widget e eventos de processo passam a usar o projeto Fluig da pasta clicada ou do arquivo aberto (a primeira pasta acima com `.project` ou `workflow/`), em vez de sempre a raiz do workspace; num workspace com vários projetos cada arquivo vai para o projeto certo.
+- Corrige a criação de pool e raia em diagrama ainda sem shapes, que não registrava o container no `pictogramLinks` e depois impedia excluí-lo ("O pictogramLinks nao referencia unicamente o shape"); arquivos já afetados voltam a permitir a exclusão.
 - Exporta processos chamando o SOAP do Fluig direto no endereço do servidor, sem baixar o WSDL, o que evita falhas atrás de proxy reverso ou SSL terminado.
 - Detecta a versão do Fluig do servidor de destino na exportação e gera o ECM30 para ela; se a versão não for detectada, usa `fluiggers.fluigRuntimeVersion` e avisa na confirmação.
 - Limita a busca de referências na exclusão de elementos aos scripts do próprio processo e aos eventos do formulário vinculado, que antes bloqueava a exclusão por causa de formulários de outros processos do workspace.
-- Corrige a criação de pool e raia em diagrama ainda sem shapes, que não registrava o container no `pictogramLinks` e depois impedia excluí-lo ("O pictogramLinks nao referencia unicamente o shape"); arquivos já afetados voltam a permitir a exclusão.
 - Corrige automaticamente, ao abrir o `.process`, o nome do diagrama diferente do código do processo (FMT-002), que deixava o editor somente leitura.
 - Corrige o erro de validação equivocada do tratar erro nos casos de atividade "Capturar Erro".
 - Codifica usuário e senha no login por formulário, permitindo senhas com `&`, `+`, `%` e `=`.

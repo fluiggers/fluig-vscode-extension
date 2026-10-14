@@ -2,6 +2,8 @@ import * as vscode from 'vscode';
 import { ServerDTO } from '../models/ServerDTO';
 import { LoginService } from './LoginService';
 
+const { findProjectRoot } = require('./projectRoot');
+
 export class UtilsService {
     public static generateRandomID() {
         return Math.random().toString(36).substring(2, 15) + Date.now().toString(36) + Math.random().toString(36).substring(2, 15);
@@ -15,6 +17,33 @@ export class UtilsService {
             throw new Error("É necessário estar em Workspace / Diretório.");
         }
         return vscode.workspace.workspaceFolders[0].uri;
+    }
+
+    /**
+     * Retorna a raiz do projeto Fluig do recurso clicado, do editor ativo ou, sem eles, da primeira pasta do
+     * workspace. Projeto = primeira pasta acima com `.project` ou `workflow/`; sem marcador, a pasta do workspace.
+     */
+    public static async getProjectUri(resourceUri?: vscode.Uri): Promise<vscode.Uri> {
+        const input = vscode.window.tabGroups.activeTabGroup.activeTab?.input;
+        const editorUri = input instanceof vscode.TabInputText || input instanceof vscode.TabInputCustom
+            ? input.uri
+            : undefined;
+        const start = [resourceUri, editorUri].find((uri) => (
+            uri instanceof vscode.Uri && uri.scheme === "file" && vscode.workspace.getWorkspaceFolder(uri)
+        ));
+        const workspaceFolder = start && vscode.workspace.getWorkspaceFolder(start);
+        if (!start || !workspaceFolder) {
+            return UtilsService.getWorkspaceUri();
+        }
+        const root: string = await findProjectRoot(start.fsPath, workspaceFolder.uri.fsPath, async (candidate: string) => {
+            try {
+                const stat = await vscode.workspace.fs.stat(vscode.Uri.file(candidate));
+                return (stat.type & vscode.FileType.Directory) !== 0 ? "directory" : "file";
+            } catch {
+                return undefined;
+            }
+        });
+        return vscode.Uri.file(root);
     }
 
     public static getHost(server: ServerDTO): string {

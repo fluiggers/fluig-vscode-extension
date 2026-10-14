@@ -10,11 +10,13 @@ import {LoginService} from "./LoginService";
 import { ServerDTO } from "../models/ServerDTO";
 import { WidgetFluiggersDTO } from "../models/WidgetFluiggersDTO";
 
+const { artifactFolderPath } = require("./projectRoot");
+
 export class WidgetService {
     /**
      * Create Widget
      */
-    public static async create() {
+    public static async create(resourceUri?: Uri) {
         const widgetName: string = await window.showInputBox({
             prompt: "Qual o nome do Widget (sem espaços e sem caracteres especiais)?",
             placeHolder: "NomeWidget"
@@ -25,9 +27,10 @@ export class WidgetService {
         }
 
         const widgetFileName = "view.ftl";
+        const projectUri = await UtilsService.getProjectUri(resourceUri);
 
         const widgetUriFile = Uri.joinPath(
-            UtilsService.getWorkspaceUri(),
+            projectUri,
             "wcm",
             "widget",
             widgetName,
@@ -48,7 +51,7 @@ export class WidgetService {
         const propertiesLanguages = ["en_US", "es", "pt_BR"];
 
         const widgetUri = Uri.joinPath(
-            UtilsService.getWorkspaceUri(),
+            projectUri,
             "wcm",
             "widget",
             widgetName
@@ -123,12 +126,7 @@ export class WidgetService {
 
         const widgetName: string = fileUri.path.replace(/.*\/widget\/([^/]+).*/, "$1");
 
-        const widgetUri = Uri.joinPath(
-            UtilsService.getWorkspaceUri(),
-            "wcm",
-            "widget",
-            widgetName
-        );
+        const widgetUri = fileUri.with({ path: artifactFolderPath(fileUri.path, "widget") });
 
         const zipStream = new JSZip();
         zipStream.folder("WEB-INF");
@@ -260,7 +258,7 @@ export class WidgetService {
     /**
      * Importa as wigets indicadas selecionadas
      */
-    public static async import() {
+    public static async import(resourceUri?: Uri) {
         try {
             const server = await ServerService.getSelect();
 
@@ -274,6 +272,7 @@ export class WidgetService {
                 return;
             }
 
+            const projectUri = await UtilsService.getProjectUri(resourceUri);
             const results = await window.withProgress(
                 {
                     location: ProgressLocation.Notification,
@@ -290,7 +289,7 @@ export class WidgetService {
                         try {
                             const zipFile = await JSZip.loadAsync(await WidgetService.downloadWidgetFile(server, widget.filename));
 
-                            const widgetUri = Uri.joinPath(UtilsService.getWorkspaceUri(), "wcm", "widget", widget.code);
+                            const widgetUri = Uri.joinPath(projectUri, "wcm", "widget", widget.code);
 
                             try {
                                 await workspace.fs.delete(widgetUri, { recursive: true, useTrash: true });
@@ -327,9 +326,7 @@ export class WidgetService {
             );
 
             window.showInformationMessage(
-                results.length > 1
-                ? `${results.length} widgets foram importadas.`
-                : "1 widget foi importada."
+                `${results.length} widget(s) importada(s) em ${workspace.asRelativePath(Uri.joinPath(projectUri, "wcm", "widget"))}.`
             );
         } catch (error: any) {
             window.showErrorMessage(error.message || error);
