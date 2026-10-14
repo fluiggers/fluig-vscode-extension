@@ -59,7 +59,7 @@ export class WorkflowService {
         const selectedEventsToUpdate = [];
 
         if (updateMultipleChoice.value) {
-            selectedEventsToUpdate.push(...await WorkflowService.getEventsToUpdate(processId))
+            selectedEventsToUpdate.push(...await WorkflowService.getEventsToUpdate(processId, Uri.joinPath(eventUri, "..")))
 
             if (!selectedEventsToUpdate.length) {
                 return;
@@ -122,8 +122,7 @@ export class WorkflowService {
         }
     }
 
-    public static async getEventsToUpdate(processId: string) {
-        const eventsFolderUri = Uri.joinPath(UtilsService.getWorkspaceUri(), "workflow", "scripts");
+    public static async getEventsToUpdate(processId: string, eventsFolderUri: Uri) {
 
         const allEvents = glob.sync(`${eventsFolderUri.fsPath}/${processId}.*.js`).map(path => {
             return {
