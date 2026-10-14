@@ -2,6 +2,7 @@
 
 ## 3.0.1-alpha
 
+- Corrige a criação de pool e raia em diagrama ainda sem shapes, que não registrava o container no `pictogramLinks` e depois impedia excluí-lo ("O pictogramLinks nao referencia unicamente o shape"); arquivos já afetados voltam a permitir a exclusão.
 - Corrige automaticamente, ao abrir o `.process`, o nome do diagrama diferente do código do processo (FMT-002), que deixava o editor somente leitura.
 - Corrige o erro de validação equivocada do tratar erro nos casos de atividade "Capturar Erro".
 - Codifica usuário e senha no login por formulário, permitindo senhas com `&`, `+`, `%` e `=`.
