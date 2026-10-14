@@ -5,7 +5,8 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const { parseProcess } = require('../../src/bpmn/processModel');
-const { patchProcessGeneral, patchProcessIdentity, patchProcess } = require('../../src/bpmn/processPatcher');
+const { patchDiagramName, patchProcessGeneral, patchProcessIdentity, patchProcess } = require('../../src/bpmn/processPatcher');
+const { validateProcess } = require('../../src/bpmn/processValidator');
 const { processGeneralDefinition } = require('../../src/bpmn/processGeneral');
 const { triggerScriptConditionFileName } = require('../../src/bpmn/eventTrigger');
 
@@ -292,4 +293,42 @@ test('não permite mais editar a descrição do processo pelo editor genérico',
     () => patchProcess(fixture, 'toexportbpmnteste', { name: 'Duplicado' }),
     /não pode ser editada/
   );
+});
+
+test('FMT-002: iguala Diagram@name ao codigo do processo sem tocar no resto', () => {
+  const divergent = fixture.replace(/(<pi:Diagram [^>]*?\bname=")toexportbpmnteste"/, '$1nome_antigo"');
+  assert.ok(validateProcess(parseProcess(divergent)).errors.some((item) => item.code === 'FMT-002'));
+
+  const result = patchDiagramName(divergent);
+
+  assert.equal(result.changed, true);
+  assert.equal(result.code, 'toexportbpmnteste');
+  assert.equal(result.patches.length, 1);
+  assert.equal(result.text, fixture);
+  assert.equal(validateProcess(parseProcess(result.text)).ok, true);
+  assert.equal(patchDiagramName(result.text).changed, false);
+});
+
+test('FMT-002: insere Diagram@name quando o atributo nao existe', () => {
+  const missing = fixture.replace(/(<pi:Diagram [^>]*?) name="toexportbpmnteste"/, '$1');
+  assert.equal(parseProcess(missing).diagram.attributeMap.name, undefined);
+
+  const result = patchDiagramName(missing);
+
+  assert.equal(result.changed, true);
+  assert.equal(parseProcess(result.text).diagram.attributeMap.name.value, 'toexportbpmnteste');
+  assert.equal(validateProcess(parseProcess(result.text)).ok, true);
+});
+
+test('FMT-002: o editor corrige o Diagram@name ao abrir o processo', () => {
+  const provider = fs.readFileSync(path.join(__dirname, '..', '..', 'src', 'bpmn', 'FluigProcessEditorProvider.ts'), 'utf8');
+  assert.match(provider, /void this\.fixDiagramName\(document\);/);
+  assert.match(provider, /async fixDiagramName\(document\) \{[\s\S]*?patchDiagramName\(document\.getText\(\)\)[\s\S]*?ensureBackup[\s\S]*?applyEdit/);
+});
+
+test('FMT-002: dois paineis do mesmo documento nao aplicam a correcao ao mesmo tempo', () => {
+  const provider = fs.readFileSync(path.join(__dirname, '..', '..', 'src', 'bpmn', 'FluigProcessEditorProvider.ts'), 'utf8');
+  assert.match(provider, /this\.diagramNameFixes = new Set\(\);/);
+  assert.match(provider, /async fixDiagramName\(document\) \{\s*const key = document\.uri\.toString\(\);\s*if \(this\.diagramNameFixes\.has\(key\)\) \{\s*return;\s*\}\s*this\.diagramNameFixes\.add\(key\);/);
+  assert.match(provider, /\} finally \{\s*this\.diagramNameFixes\.delete\(key\);\s*\}/);
 });
