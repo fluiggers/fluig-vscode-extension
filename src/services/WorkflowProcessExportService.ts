@@ -1,5 +1,8 @@
 import * as path from "path";
 import * as vscode from "vscode";
+import { detectFluigVersion } from "../core/fluig-client/version";
+import { ServerDTO } from "../models/ServerDTO";
+import { LoginService } from "./LoginService";
 import { ServerService } from "./ServerService";
 import { UtilsService } from "./UtilsService";
 import { WorkflowProcessArtifactService } from "./WorkflowProcessArtifactService";
@@ -15,9 +18,18 @@ interface ReleaseChoice extends vscode.QuickPickItem {
     release: boolean;
 }
 
+interface FluigVersionChoice {
+    value: string;
+    detected: boolean;
+    reason?: string;
+    /** false: sem o conversor do Fluig Studio, vai o ECM30 do último save. */
+    regenerated?: boolean;
+}
+
 interface PreparedExport {
     service: any;
     server: any;
+    fluigVersion: FluigVersionChoice;
     options: {
         processId: string;
         processPath: string;
@@ -40,7 +52,7 @@ export class WorkflowProcessExportService {
 
             const document = await vscode.workspace.openTextDocument({
                 language: "json",
-                content: JSON.stringify(prepared.plan, null, 2),
+                content: JSON.stringify({ fluigVersion: prepared.fluigVersion, ...prepared.plan }, null, 2),
             });
             await vscode.window.showTextDocument(document, { preview: false });
         } catch (error: any) {
@@ -130,7 +142,19 @@ export class WorkflowProcessExportService {
 
         const processId = path.basename(selectedUri.fsPath, ".process");
         const diagramsFolder = path.dirname(selectedUri.fsPath);
-        await WorkflowProcessArtifactService.ensureGenerated(selectedUri);
+        // Login, versão e geração levam alguns segundos: sem aviso, o usuário repete o comando e exporta duas vezes.
+        const fluigVersion = await vscode.window.withProgress(
+            {
+                location: vscode.ProgressLocation.Notification,
+                title: `Preparando exportação de ${processId}`,
+                cancellable: false,
+            },
+            async () => {
+                const version = await WorkflowProcessExportService.detectVersion(server);
+                const regenerated = await WorkflowProcessArtifactService.ensureGenerated(selectedUri, version.value);
+                return { ...version, regenerated };
+            }
+        );
         const ecm30Path = ecm30PathForProcess(selectedUri.fsPath);
         const svgPath = processImagePathForProcess(selectedUri.fsPath);
         await vscode.workspace.fs.stat(vscode.Uri.file(ecm30Path));
@@ -150,7 +174,23 @@ export class WorkflowProcessExportService {
             { ...options, dryRun: true }
         );
 
-        return { service, server, options, plan };
+        return { service, server, fluigVersion, options, plan };
+    }
+
+    private static async detectVersion(server: ServerDTO): Promise<FluigVersionChoice> {
+        const configured = vscode.workspace
+            .getConfiguration("fluiggers")
+            .get<string>("fluigRuntimeVersion", "1.8.2");
+        if (server.hasBrowser) {
+            // O export de processo exige usuário e senha; não abre o navegador só para ler a versão.
+            return { value: configured, detected: false, reason: "servidor com login pelo navegador" };
+        }
+        try {
+            const value = await detectFluigVersion(UtilsService.getHost(server), () => LoginService.loginAndGetCookies(server));
+            return { value, detected: true };
+        } catch (error: any) {
+            return { value: configured, detected: false, reason: error?.message || String(error) };
+        }
     }
 
     private static resolveProcessUri(processUri?: vscode.Uri): vscode.Uri | undefined {
@@ -182,6 +222,12 @@ export class WorkflowProcessExportService {
             ? "automático (nova versão; se o código não existir, novo processo)"
             : prepared.options.newProcess ? "novo processo" : "nova versão";
         const release = prepared.options.release ? "sim" : "não";
+        const detected = prepared.fluigVersion.detected
+            ? prepared.fluigVersion.value
+            : `${prepared.fluigVersion.value} (versão não detectada: ${prepared.fluigVersion.reason}; usando fluiggers.fluigRuntimeVersion)`;
+        const version = prepared.fluigVersion.regenerated === false
+            ? `${detected}; ECM30 do último save mantido (conversor do Fluig Studio não encontrado em fluiggers.eclipsePluginsPath)`
+            : detected;
         const operations = prepared.plan.steps
             .map((step: any) => `${step.order}. ${step.name}`)
             .join("\n");
@@ -192,6 +238,7 @@ export class WorkflowProcessExportService {
         return [
             `Destino: ${UtilsService.getHost(prepared.server)}`,
             `Empresa: ${prepared.server.companyId}`,
+            `Fluig: ${version}`,
             `Modo: ${mode}`,
             `Liberar: ${release}`,
             "",

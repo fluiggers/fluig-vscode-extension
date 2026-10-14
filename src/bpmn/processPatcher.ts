@@ -339,6 +339,19 @@ function patchScriptReferences(text, model, currentCode, requestedCode, patches)
   }
 }
 
+// FMT-002: o codigo do processo e o BpmnProcess@id; o Diagram@name so acompanha esse codigo
+// (como o Studio cria) e nao vai para o ECM30, entao igualar nao muda o processo.
+function patchDiagramName(text) {
+  const model = parseProcess(text);
+  const code = model.process?.id;
+  if (!model.diagram || !code || model.diagram.attributeMap.name?.value === code) {
+    return { text, changed: false, code, patches: [] };
+  }
+  const patches = [];
+  patchAttribute(text, model.diagram, 'name', code, patches, { required: true });
+  return { text: applyPatches(text, patches), changed: true, code, patches };
+}
+
 function patchProcessIdentity(text, expectedCode, requestedCode) {
   const model = parseProcess(text);
   const beforeValidation = validateProcess(model);
@@ -4614,6 +4627,7 @@ module.exports = {
   patchProcessForm,
   patchProcessAttachmentSecurity,
   patchProcessGeneral,
+  patchDiagramName,
   patchProcessIdentity,
   patchProcessVersion,
   patchProcessManager,

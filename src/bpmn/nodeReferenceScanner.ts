@@ -13,6 +13,24 @@ function projectRootForProcessPath(filePath) {
   return path.dirname(workflow);
 }
 
+/**
+ * Arquivos que podem citar estados do processo: os scripts dele (<processo>.*.js) e os eventos
+ * do formulário vinculado pelo cardIndex ("1234", "1234 - nome" ou "nome"). Sem cardIndex
+ * nenhum formulário roda no processo; cardIndex sem pasta correspondente mantém todos.
+ */
+function referenceScanFilter(processId, cardIndex, formFolders) {
+  const index = String(cardIndex ?? '').trim();
+  const id = index.match(/^(\d+)(?: - |$)/)?.[1];
+  const name = index.replace(/^\d+ - /, '');
+  const linked = formFolders.filter((folder) => folder.replace(/^\d+ - /, '') === name
+    || (id && folder.startsWith(`${id} - `)));
+  const forms = new Set(!index ? [] : linked.length ? linked : formFolders);
+  return (relativePath) => {
+    const parts = String(relativePath).split(/[\\/]/);
+    return parts[0] === 'workflow' ? parts[parts.length - 1].startsWith(`${processId}.`) : forms.has(parts[1]);
+  };
+}
+
 function findLikelyNodeReferences(text, elementId, activityCode) {
   const id = String(elementId ?? '');
   const code = String(activityCode ?? '');
@@ -43,4 +61,4 @@ function escapeRegExp(value) {
   return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-module.exports = { findLikelyNodeReferences, projectRootForProcessPath };
+module.exports = { findLikelyNodeReferences, projectRootForProcessPath, referenceScanFilter };
