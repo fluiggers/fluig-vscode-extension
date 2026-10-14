@@ -3,7 +3,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const path = require('node:path');
-const { findLikelyNodeReferences, projectRootForProcessPath } = require('../../src/bpmn/nodeReferenceScanner');
+const { findLikelyNodeReferences, projectRootForProcessPath, referenceScanFilter } = require('../../src/bpmn/nodeReferenceScanner');
 
 test('localiza raiz do projeto a partir de workflow/diagrams', () => {
   const project = path.resolve('C:\\workspace\\projeto');
@@ -38,4 +38,21 @@ test('artefato usa somente o id exato e não trata seu sufixo como WKNumState', 
   ].join('\n');
   const findings = findLikelyNodeReferences(text, 'databasetask37', '');
   assert.deepEqual(findings, [{ kind: 'id', line: 2, excerpt: 'var visual = "databasetask37";' }]);
+});
+
+test('verifica só os scripts do próprio processo', () => {
+  const relevant = referenceScanFilter('pagamento', '', []);
+  assert.equal(relevant('workflow/scripts/pagamento.beforeTaskSave.js'), true);
+  assert.equal(relevant('workflow/scripts/chamados.beforeTaskSave.js'), false);
+  assert.equal(relevant('workflow/scripts/pagamentoAntigo.beforeTaskSave.js'), false);
+});
+
+test('verifica só os eventos do formulário vinculado pelo cardIndex', () => {
+  const folders = ['1234 - form_compras', 'form_viagem2', 'reembolso'];
+  const event = (folder) => `forms/${folder}/events/displayFields.js`;
+  assert.deepEqual(folders.filter((folder) => referenceScanFilter('p', '', folders)(event(folder))), []);
+  assert.deepEqual(folders.filter((folder) => referenceScanFilter('p', '1234', folders)(event(folder))), ['1234 - form_compras']);
+  assert.deepEqual(folders.filter((folder) => referenceScanFilter('p', '5678 - form_viagem2', folders)(event(folder))), ['form_viagem2']);
+  assert.deepEqual(folders.filter((folder) => referenceScanFilter('p', 'reembolso', folders)(event(folder))), ['reembolso']);
+  assert.deepEqual(folders.filter((folder) => referenceScanFilter('p', '555', folders)(event(folder))), folders);
 });
