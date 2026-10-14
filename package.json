@@ -655,7 +655,7 @@
                     },
                     "fluiggers.fluigRuntimeVersion": {
                         "type": "string",
-                        "description": "Versao de compatibilidade do runtime Fluig usada pelo conversor ECM30",
+                        "description": "Versao do Fluig usada pelo conversor ECM30 ao salvar e, na exportacao, quando nao for possivel detectar a versao do servidor",
                         "default": "1.8.2",
                         "scope": "machine"
                     },
@@ -701,8 +701,9 @@
         "pretest": "npm run test-compile && npm run lint",
         "lint": "eslint src --ext ts",
         "test": "node ./out/test/runTest.js",
-        "test:process-export": "node --test test/FluigProcessExportService.test.js",
-        "test:ecm30-generation": "node --test test/Ecm30GenerationService.test.js",
+        "test:process-export": "node --import tsx --test test/FluigProcessExportService.test.js",
+        "test:core": "node --import tsx --test test/core/*.test.js",
+        "test:ecm30-generation": "node --import tsx --test test/Ecm30GenerationService.test.js",
         "test:bpmn": "node --import tsx --require ./test/bpmn/stableProcessFixture.js --test test/bpmn/*.test.js"
     },
     "devDependencies": {
