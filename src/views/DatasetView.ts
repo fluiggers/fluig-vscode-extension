@@ -38,7 +38,7 @@ export class DatasetView {
             select2Js: this.currentPanel?.webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'libs', 'select2.min.js')),
             datatablesCss: this.currentPanel?.webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'libs', 'datatables.min.css')),
             datatablesJs: this.currentPanel?.webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'libs', 'datatables.min.js')),
-            html5SortableJs: this.currentPanel?.webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'libs', 'html5sortable.min.js')),
+            constraintsJs: this.currentPanel?.webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'views', 'dataset', 'constraints.js')),
             themeCss: this.currentPanel?.webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'css', 'theme.css')),
             datasetCss: this.currentPanel?.webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'views', 'dataset', 'dataset.css')),
             datasetJs: this.currentPanel?.webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'views', 'dataset', 'dataset.js')),

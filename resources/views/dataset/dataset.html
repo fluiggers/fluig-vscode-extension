@@ -14,110 +14,78 @@
 </head>
     <body class="container-fluid">
         <h1>${d.serverName}: Consultar Dataset</h1>
-        <div class="row">
-            <div class="col-md-8 p-2">
+
+        <div class="toolbar">
+            <div class="toolbar-dataset">
                 <select class="form-control" id="dataset" style="width: 100%;">
                     <option value=""></option>
                 </select>
             </div>
-            <div class="col-md-4">
-                <button class="btn btn-primary mt-2 mb-2" id="consultarDataset">Consultar</button>
-                <button type="button" class="btn btn-secondary mt-2 mb-2" data-bs-toggle="modal" data-bs-target="#modalConfigFiltro">Configurar Parâmetros</button>
-            </div>
+            <label class="toolbar-limit" title="Quantidade máxima de registros (sqlLimit). Vazio = sem limite.">
+                Limite
+                <input type="number" class="form-control form-control-sm" id="limit" value="100" min="0">
+            </label>
+            <button class="btn btn-primary" id="consultarDataset">Consultar</button>
+            <span id="resultInfo" class="result-info"></span>
         </div>
 
-        <table id="tbResultDataset" class="table table-striped table-sm table-bordered"></table>
-
-        <!-- Inicio Modal Constraints-->
-        <div class="modal fade" id="modalConfigFiltro" tabindex="-1" role="dialog" aria-hidden="true">
-            <div class="modal-dialog modal-xl" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h3 class="modal-title">Parâmetros da Consulta</h3>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <ul class="nav nav-tabs">
-                            <li class="nav-item">
-                                <a class="nav-link active" data-bs-toggle="tab" href="#tabConstraints" role="tab" aria-controls="tabConstraints" aria-selected="true">
-                                    Constraints
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" data-bs-toggle="tab" href="#tabFields" role="tab" aria-controls="tabFields" aria-selected="true">
-                                    Campos
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" data-bs-toggle="tab" href="#tabOrders" role="tab" aria-controls="tabOrders" aria-selected="true">
-                                    Ordem
-                                </a>
-                            </li>
-                        </ul>
-                        <div class="tab-content">
-                            <div id="tabConstraints" class="tab-pane fade show active" role="tabpanel" aria-labelledby="tabConstraints">
-                                <div class="table-responsive">
-                                    <table class="table table-hover table-sm">
-                                        <thead>
-                                            <tr>
-                                                <th scope="col" width="30%">Coluna</th>
-                                                <th scope="col" width="15%">Valor inicial</th>
-                                                <th scope="col" width="15%">Valor final</th>
-                                                <th scope="col" width="15%">Tipo</th>
-                                                <th scope="col" width="15%" colspan="2">Usa 'like'</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="constraints">
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-12 text-end">
-                                        <button type="button" id="addConstraint" class="btn btn-secondary">Adicionar</button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div id="tabFields" class="tab-pane fade" role="tabpanel" aria-labelledby="tabFields">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <p class="text-center mt-3"><strong>Campos do Dataset</strong></p>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <p class="text-center mt-3"><strong>Campos a Exibir</strong></p>
-                                    </div>
-                                </div>
-                                <div class="selecionarCampos">
-                                    <ul id="fieldsToSelect" class="list-sortable"></ul>
-                                    <ul id="fieldsSelected" class="list-sortable"></ul>
-                                </div>
-                            </div>
-                            <div id="tabOrders" class="tab-pane fade" role="tabpanel" aria-labelledby="tabOrders">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <p class="text-center mt-3"><strong>Campos do Dataset</strong></p>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <p class="text-center mt-3"><strong>Ordem</strong></p>
-                                    </div>
-                                </div>
-                                <div class="selecionarCampos">
-                                    <ul id="fieldsToOrder" class="list-sortable"></ul>
-                                    <ul id="fieldsOrdered" class="list-sortable"></ul>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <dic class="col-md-12">
-                                <button type="button" id="atualizaConsulta" class="btn btn-primary" data-bs-dismiss="modal" aria-label="Close">
-                                    Atualizar Consulta
-                                </button>
-                            </dic>
-                        </div>
-                    </div>
+        <div class="query-panel">
+            <details open>
+                <summary>Filtros <span id="filterCount" class="badge-count"></span></summary>
+                <div class="filter-mode" role="radiogroup" aria-label="Combinação dos filtros">
+                    <label><input type="radio" name="filterMode" value="all" checked> Todos os filtros (E)</label>
+                    <label><input type="radio" name="filterMode" value="any"> Qualquer um (OU)</label>
                 </div>
-            </div>
+                <div id="filters"></div>
+                <button type="button" id="addFilter" class="btn btn-sm btn-secondary">+ filtro</button>
+            </details>
+
+            <details>
+                <summary>Colunas e ordem</summary>
+                <p id="columnsHint" class="hint">Consulte o dataset uma vez para listar as colunas.</p>
+                <div class="columns-tools">
+                    <input type="search" id="columnSearch" class="form-control form-control-sm" placeholder="Buscar coluna">
+                    <button type="button" id="columnsAll" class="btn btn-sm btn-secondary">Todas</button>
+                    <button type="button" id="columnsNone" class="btn btn-sm btn-secondary">Nenhuma</button>
+                </div>
+                <div id="columns" class="columns-list"></div>
+                <div class="order">
+                    <label>
+                        Ordenar por
+                        <select id="orderField" class="form-select form-select-sm">
+                            <option value="">(sem ordem)</option>
+                        </select>
+                    </label>
+                    <label><input type="checkbox" id="orderDesc"> decrescente</label>
+                </div>
+            </details>
         </div>
+
+        <div class="view-switch btn-group btn-group-sm" role="group" aria-label="Visualização">
+            <input type="radio" class="btn-check" name="view" id="viewTable" value="table" checked>
+            <label class="btn btn-outline-secondary" for="viewTable">Tabela</label>
+            <input type="radio" class="btn-check" name="view" id="viewJson" value="json">
+            <label class="btn btn-outline-secondary" for="viewJson">JSON</label>
+        </div>
+
+        <div class="result-layout">
+            <div class="result-main">
+                <div id="tableView">
+                    <table id="tbResultDataset" class="table table-sm table-bordered table-hover"></table>
+                </div>
+                <pre id="jsonView" class="json-view" hidden></pre>
+            </div>
+            <aside id="recordDetail" class="record-detail" hidden>
+                <div class="record-detail-header">
+                    <strong>Registro</strong>
+                    <button type="button" id="copyRecord" class="btn btn-sm btn-secondary">Copiar JSON</button>
+                    <button type="button" id="closeRecord" class="btn-close" aria-label="Fechar"></button>
+                </div>
+                <dl id="recordFields"></dl>
+            </aside>
+        </div>
+
+        <datalist id="columnsList"></datalist>
 
         <div class="modal" id="loading" tabindex="-1" role="dialog" aria-modal="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
@@ -134,7 +102,7 @@
         <script src="${d.bootstrapJs}"></script>
         <script src="${d.select2Js}"></script>
         <script src="${d.datatablesJs}"></script>
-        <script src="${d.html5SortableJs}"></script>
+        <script src="${d.constraintsJs}"></script>
         <script src="${d.datasetJs}"></script>
     </body>
 </html>
