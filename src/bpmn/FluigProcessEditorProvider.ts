@@ -61,7 +61,7 @@ const { discoverServerCatalog, resolveServerConfiguration } = require('./serverC
 const { RemoteFormCatalogService } = require('./remoteFormCatalog');
 const { discoverMechanismCatalog } = require('./mechanismCatalog');
 const { discoverUserCatalog } = require('./userCatalog');
-const { findLikelyNodeReferences, projectRootForProcessPath } = require('./nodeReferenceScanner');
+const { findLikelyNodeReferences, projectRootForProcessPath, referenceScanFilter } = require('./nodeReferenceScanner');
 const { triggerScriptConditionFileName } = require('./eventTrigger');
 const { buildTranslationPlan, LOCALES, validateTranslationPlan } = require('./translationService');
 const { TranslationPreviewProvider } = require('./translationPreviewProvider');
@@ -2695,6 +2695,17 @@ class FluigProcessEditorProvider {
     const projectRoot = projectRootForProcessPath(document.uri.fsPath);
     if (!projectRoot) throw new Error('Não foi possível localizar a raiz do projeto a partir de workflow/diagrams.');
     const rootUri = vscode.Uri.file(projectRoot);
+    const processId = path.basename(document.uri.fsPath, path.extname(document.uri.fsPath));
+    const cardIndex = parseProcess(document.getText()).process?.attributes?.cardIndex;
+    let formFolders = [];
+    try {
+      formFolders = (await vscode.workspace.fs.readDirectory(vscode.Uri.joinPath(rootUri, 'forms')))
+        .filter(([, type]) => type === vscode.FileType.Directory)
+        .map(([name]) => name);
+    } catch {
+      formFolders = [];
+    }
+    const relevant = referenceScanFilter(processId, cardIndex, formFolders);
     const patterns = [
       'workflow/scripts/**/*.js',
       'forms/**/events/**/*.js'
@@ -2702,7 +2713,7 @@ class FluigProcessEditorProvider {
     const uris = new Map();
     for (const pattern of patterns) {
       for (const uri of await vscode.workspace.findFiles(new vscode.RelativePattern(rootUri, pattern), '**/{node_modules,.git}/**')) {
-        uris.set(uri.toString(), uri);
+        if (relevant(path.relative(projectRoot, uri.fsPath))) uris.set(uri.toString(), uri);
       }
     }
     const findings = [];
