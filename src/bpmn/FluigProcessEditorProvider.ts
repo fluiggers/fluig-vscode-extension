@@ -43,6 +43,7 @@ const {
   patchLayout,
   patchProcessForm,
   patchProcessAttachmentSecurity,
+  patchDiagramName,
   patchProcessGeneral,
   patchProcessIdentity,
   patchProcessVersion,
@@ -97,6 +98,8 @@ class FluigProcessEditorProvider {
     this.pendingProcessRenames = new Map();
     /** @type {Set<string>} */
     this.processSaveRefactors = new Set();
+    /** @type {Set<string>} documentos com a correcao do FMT-002 em andamento */
+    this.diagramNameFixes = new Set();
     /** @type {Promise<string>|undefined} */
     this.creationTemplateTextPromise = undefined;
     context.subscriptions.push(
@@ -345,6 +348,7 @@ class FluigProcessEditorProvider {
         void this.applyAttachedErrorEventCreation(document, panel, message.errorEvent);
       }
     });
+    void this.fixDiagramName(document);
     panel.onDidDispose(() => {
       changeSubscription.dispose();
       const remainingPanels = this.panels.get(documentKey);
@@ -359,6 +363,50 @@ class FluigProcessEditorProvider {
         this.pendingPngExports.delete(requestId);
       }
     });
+  }
+
+  /**
+   * FMT-002 trava a edicao quando Diagram@name diverge do codigo do processo (BpmnProcess@id).
+   * O Diagram@name nao vai para o ECM30, entao o editor o corrige ao abrir e deixa o usuario salvar.
+   * Uma correcao por documento: dois paineis abrindo juntos (layout dividido restaurado) aplicariam
+   * offsets calculados sobre o mesmo texto antigo.
+   * @param {vscode.TextDocument} document
+   */
+  async fixDiagramName(document) {
+    const key = document.uri.toString();
+    if (this.diagramNameFixes.has(key)) {
+      return;
+    }
+    this.diagramNameFixes.add(key);
+    try {
+      let result;
+      try {
+        result = patchDiagramName(document.getText());
+      } catch {
+        return; // XML ilegivel: o sendModel ja mostra a falha de leitura.
+      }
+      if (!result.changed) {
+        return;
+      }
+      await this.backupService.ensureBackup(vscode, document);
+      const edit = new vscode.WorkspaceEdit();
+      for (const patch of result.patches) {
+        edit.replace(
+          document.uri,
+          new vscode.Range(document.positionAt(patch.start), document.positionAt(patch.end)),
+          patch.value
+        );
+      }
+      if (await vscode.workspace.applyEdit(edit)) {
+        void vscode.window.showInformationMessage(
+          `Fluig BPMN: o nome do diagrama foi ajustado para o código do processo (${result.code}). Salve o arquivo para manter a correção.`
+        );
+      }
+    } catch (error) {
+      void vscode.window.showWarningMessage(`Fluig BPMN: não foi possível ajustar o nome do diagrama: ${error.message}`);
+    } finally {
+      this.diagramNameFixes.delete(key);
+    }
   }
 
   /**
