@@ -43,6 +43,7 @@ const {
   patchLayout,
   patchProcessForm,
   patchProcessAttachmentSecurity,
+  patchDiagramName,
   patchProcessGeneral,
   patchProcessIdentity,
   patchProcessVersion,
@@ -60,7 +61,7 @@ const { discoverServerCatalog, resolveServerConfiguration } = require('./serverC
 const { RemoteFormCatalogService } = require('./remoteFormCatalog');
 const { discoverMechanismCatalog } = require('./mechanismCatalog');
 const { discoverUserCatalog } = require('./userCatalog');
-const { findLikelyNodeReferences, projectRootForProcessPath } = require('./nodeReferenceScanner');
+const { findLikelyNodeReferences, projectRootForProcessPath, referenceScanFilter } = require('./nodeReferenceScanner');
 const { triggerScriptConditionFileName } = require('./eventTrigger');
 const { buildTranslationPlan, LOCALES, validateTranslationPlan } = require('./translationService');
 const { TranslationPreviewProvider } = require('./translationPreviewProvider');
@@ -97,6 +98,8 @@ class FluigProcessEditorProvider {
     this.pendingProcessRenames = new Map();
     /** @type {Set<string>} */
     this.processSaveRefactors = new Set();
+    /** @type {Set<string>} documentos com a correcao do FMT-002 em andamento */
+    this.diagramNameFixes = new Set();
     /** @type {Promise<string>|undefined} */
     this.creationTemplateTextPromise = undefined;
     context.subscriptions.push(
@@ -345,6 +348,7 @@ class FluigProcessEditorProvider {
         void this.applyAttachedErrorEventCreation(document, panel, message.errorEvent);
       }
     });
+    void this.fixDiagramName(document);
     panel.onDidDispose(() => {
       changeSubscription.dispose();
       const remainingPanels = this.panels.get(documentKey);
@@ -359,6 +363,50 @@ class FluigProcessEditorProvider {
         this.pendingPngExports.delete(requestId);
       }
     });
+  }
+
+  /**
+   * FMT-002 trava a edicao quando Diagram@name diverge do codigo do processo (BpmnProcess@id).
+   * O Diagram@name nao vai para o ECM30, entao o editor o corrige ao abrir e deixa o usuario salvar.
+   * Uma correcao por documento: dois paineis abrindo juntos (layout dividido restaurado) aplicariam
+   * offsets calculados sobre o mesmo texto antigo.
+   * @param {vscode.TextDocument} document
+   */
+  async fixDiagramName(document) {
+    const key = document.uri.toString();
+    if (this.diagramNameFixes.has(key)) {
+      return;
+    }
+    this.diagramNameFixes.add(key);
+    try {
+      let result;
+      try {
+        result = patchDiagramName(document.getText());
+      } catch {
+        return; // XML ilegivel: o sendModel ja mostra a falha de leitura.
+      }
+      if (!result.changed) {
+        return;
+      }
+      await this.backupService.ensureBackup(vscode, document);
+      const edit = new vscode.WorkspaceEdit();
+      for (const patch of result.patches) {
+        edit.replace(
+          document.uri,
+          new vscode.Range(document.positionAt(patch.start), document.positionAt(patch.end)),
+          patch.value
+        );
+      }
+      if (await vscode.workspace.applyEdit(edit)) {
+        void vscode.window.showInformationMessage(
+          `Fluig BPMN: o nome do diagrama foi ajustado para o código do processo (${result.code}). Salve o arquivo para manter a correção.`
+        );
+      }
+    } catch (error) {
+      void vscode.window.showWarningMessage(`Fluig BPMN: não foi possível ajustar o nome do diagrama: ${error.message}`);
+    } finally {
+      this.diagramNameFixes.delete(key);
+    }
   }
 
   /**
@@ -2647,6 +2695,17 @@ class FluigProcessEditorProvider {
     const projectRoot = projectRootForProcessPath(document.uri.fsPath);
     if (!projectRoot) throw new Error('Não foi possível localizar a raiz do projeto a partir de workflow/diagrams.');
     const rootUri = vscode.Uri.file(projectRoot);
+    const processId = path.basename(document.uri.fsPath, path.extname(document.uri.fsPath));
+    const cardIndex = parseProcess(document.getText()).process?.attributes?.cardIndex;
+    let formFolders = [];
+    try {
+      formFolders = (await vscode.workspace.fs.readDirectory(vscode.Uri.joinPath(rootUri, 'forms')))
+        .filter(([, type]) => type === vscode.FileType.Directory)
+        .map(([name]) => name);
+    } catch {
+      formFolders = [];
+    }
+    const relevant = referenceScanFilter(processId, cardIndex, formFolders);
     const patterns = [
       'workflow/scripts/**/*.js',
       'forms/**/events/**/*.js'
@@ -2654,7 +2713,7 @@ class FluigProcessEditorProvider {
     const uris = new Map();
     for (const pattern of patterns) {
       for (const uri of await vscode.workspace.findFiles(new vscode.RelativePattern(rootUri, pattern), '**/{node_modules,.git}/**')) {
-        uris.set(uri.toString(), uri);
+        if (relevant(path.relative(projectRoot, uri.fsPath))) uris.set(uri.toString(), uri);
       }
     }
     const findings = [];

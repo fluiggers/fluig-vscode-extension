@@ -65,3 +65,33 @@ test('aceita pool e raia na exclusao multipla', () => {
   assert.equal(result.model.elements.some((item) => item.id === 'swimlane67'), false);
   assert.equal(result.validation.ok, true);
 });
+
+test('exclui raia de arquivo cujo pictogramLinks nao lista o container (criado antes da correcao)', () => {
+  const pool = createPool(fixture, { x: 570, y: 940 });
+  const first = createSwimLane(pool.text, { poolId: pool.elementId });
+  const second = createSwimLane(first.text, { poolId: pool.elementId });
+  const model = parseProcess(second.text);
+  const poolNode = model.shapes.find((shape) => shape.businessObject === pool.elementId).node;
+  const laneNode = model.shapes.find((shape) => shape.businessObject === second.elementId).node;
+  const poolIndex = model.diagram.children.filter((node) => node.localName === 'children').indexOf(poolNode);
+  const laneIndex = poolNode.children.filter((node) => node.localName === 'children').indexOf(laneNode);
+  const laneLink = `/0/@children.${poolIndex}/@children.${laneIndex}/@link`;
+  const links = model.diagram.attributeMap.pictogramLinks.value.split(' ');
+  assert.ok(links.includes(laneLink));
+  const broken = second.text.replace(
+    `pictogramLinks="${links.join(' ')}"`,
+    `pictogramLinks="${links.filter((link) => link !== laneLink).join(' ')}"`
+  );
+  assert.equal(parseProcess(broken).diagram.attributeMap.pictogramLinks.value.split(' ').includes(laneLink), false);
+
+  const result = deleteDiagramContainer(broken, second.elementId);
+  assert.equal(result.validation.ok, true);
+  assert.equal(result.model.elements.some((item) => item.id === second.elementId), false);
+});
+
+test('recusa excluir container referenciado em duplicidade no pictogramLinks', () => {
+  const pool = createPool(fixture, { x: 570, y: 940 });
+  const links = parseProcess(pool.text).diagram.attributeMap.pictogramLinks.value;
+  const duplicated = pool.text.replace(`pictogramLinks="${links}"`, `pictogramLinks="${links} /0/@children.0/@link"`);
+  assert.throws(() => deleteDiagramContainer(duplicated, pool.elementId), /nao referencia unicamente/);
+});

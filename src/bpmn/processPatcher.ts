@@ -339,6 +339,19 @@ function patchScriptReferences(text, model, currentCode, requestedCode, patches)
   }
 }
 
+// FMT-002: o codigo do processo e o BpmnProcess@id; o Diagram@name so acompanha esse codigo
+// (como o Studio cria) e nao vai para o ECM30, entao igualar nao muda o processo.
+function patchDiagramName(text) {
+  const model = parseProcess(text);
+  const code = model.process?.id;
+  if (!model.diagram || !code || model.diagram.attributeMap.name?.value === code) {
+    return { text, changed: false, code, patches: [] };
+  }
+  const patches = [];
+  patchAttribute(text, model.diagram, 'name', code, patches, { required: true });
+  return { text: applyPatches(text, patches), changed: true, code, patches };
+}
+
 function patchProcessIdentity(text, expectedCode, requestedCode) {
   const model = parseProcess(text);
   const beforeValidation = validateProcess(model);
@@ -2287,7 +2300,8 @@ function deleteDiagramContainer(text, elementId) {
     : `/0/@children.${directIndex}`;
   const pictogramLink = `${childRef}/@link`;
   const pictogramLinks = splitReferences(model.diagram.attributeMap.pictogramLinks?.value);
-  if (pictogramLinks.filter((reference) => reference === pictogramLink).length !== 1) {
+  // Zero referencias: arquivo criado antes da correcao do link de pool/raia em diagrama vazio.
+  if (pictogramLinks.filter((reference) => reference === pictogramLink).length > 1) {
     throw new Error(`O pictogramLinks nao referencia unicamente o shape de ${requestedId}.`);
   }
 
@@ -3793,42 +3807,37 @@ function patchSwimLaneVisualColor(text, model, element, hex, patches) {
 }
 
 function remapDirectChildReferencesForInsertion(text, model, insertionIndex, patches, newPictogramLink) {
-  walk(model.xml, (node) => {
-    for (const attribute of node.attributes) {
-      if (!attribute.value.includes('/0/@children.')) continue;
-      const remapped = attribute.value.replace(/\/0\/@children\.(\d+)/g, (match, digits) => {
-        const index = Number(digits);
-        return index >= insertionIndex ? `/0/@children.${index + 1}` : match;
-      });
-      const value = node === model.diagram && attribute.name === 'pictogramLinks'
-        ? appendReference(remapped, newPictogramLink)
-        : remapped;
-      if (value !== attribute.value) patchAttribute(text, node, attribute.name, value, patches, { required: true });
-    }
+  const remap = (value) => value.replace(/\/0\/@children\.(\d+)/g, (match, digits) => {
+    const index = Number(digits);
+    return index >= insertionIndex ? `/0/@children.${index + 1}` : match;
   });
+  remapReferencesForInsertion(text, model, '/0/@children.', remap, patches, newPictogramLink);
 }
 
 function remapNestedChildReferencesForInsertion(text, model, poolIndex, insertionIndex, patches, newPictogramLink) {
   const prefix = `/0/@children.${poolIndex}/@children.`;
   const escaped = prefix.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   const pattern = new RegExp(`${escaped}(\\d+)`, 'g');
+  const remap = (value) => value.replace(pattern, (match, digits) => {
+    const index = Number(digits);
+    return index >= insertionIndex ? `${prefix}${index + 1}` : match;
+  });
+  remapReferencesForInsertion(text, model, prefix, remap, patches, newPictogramLink);
+}
+
+// O pictogramLinks do Diagram e tratado a parte: o diagrama vazio do scaffold nem tem o atributo, e o
+// link do shape novo precisa entrar mesmo quando nenhuma referencia existente muda.
+function remapReferencesForInsertion(text, model, prefix, remap, patches, newPictogramLink) {
   walk(model.xml, (node) => {
     for (const attribute of node.attributes) {
+      if (node === model.diagram && attribute.name === 'pictogramLinks') continue;
       if (!attribute.value.includes(prefix)) continue;
-      const remapped = attribute.value.replace(pattern, (match, digits) => {
-        const index = Number(digits);
-        return index >= insertionIndex ? `${prefix}${index + 1}` : match;
-      });
-      const value = node === model.diagram && attribute.name === 'pictogramLinks'
-        ? appendReference(remapped, newPictogramLink)
-        : remapped;
+      const value = remap(attribute.value);
       if (value !== attribute.value) patchAttribute(text, node, attribute.name, value, patches, { required: true });
     }
   });
-  const pictogram = model.diagram.attributeMap.pictogramLinks;
-  if (pictogram && !pictogram.value.includes(prefix)) {
-    patchAttribute(text, model.diagram, 'pictogramLinks', appendReference(pictogram.value, newPictogramLink), patches, { required: true });
-  }
+  const links = remap(model.diagram.attributeMap.pictogramLinks?.value ?? '');
+  patchAttribute(text, model.diagram, 'pictogramLinks', appendReference(links, newPictogramLink), patches, { required: true });
 }
 
 function validateCreationResult(text, patches, originalModel, expected) {
@@ -4618,6 +4627,7 @@ module.exports = {
   patchProcessForm,
   patchProcessAttachmentSecurity,
   patchProcessGeneral,
+  patchDiagramName,
   patchProcessIdentity,
   patchProcessVersion,
   patchProcessManager,
