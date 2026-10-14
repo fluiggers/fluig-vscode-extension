@@ -2,6 +2,7 @@
 
 ## 3.0.1-alpha
 
+- Reorganiza a consulta de dataset: filtros, colunas e ordem num painel à vista (sem modal), filtros por condição (é igual a, contém, começa com, termina com, está entre, é diferente de) com E/OU e limite de registros, detalhe do registro ao clicar na linha, visão em JSON e valores exibidos como texto (nulos destacados, textos longos cortados com tooltip).
 - Exporta processos chamando o SOAP do Fluig direto no endereço do servidor, sem baixar o WSDL, o que evita falhas atrás de proxy reverso ou SSL terminado.
 - Detecta a versão do Fluig do servidor de destino na exportação e gera o ECM30 para ela; se a versão não for detectada, usa `fluiggers.fluigRuntimeVersion` e avisa na confirmação.
 - Limita a busca de referências na exclusão de elementos aos scripts do próprio processo e aos eventos do formulário vinculado, que antes bloqueava a exclusão por causa de formulários de outros processos do workspace.

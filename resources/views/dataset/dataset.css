@@ -1,17 +1,141 @@
-#tabConstraints {
-    padding: 10px 0;
+.toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 12px;
+    margin: 8px 0 12px;
 }
 
-.tab-content {
-    margin-bottom: 15px;
+.toolbar-dataset {
+    flex: 1 1 320px;
+    min-width: 220px;
 }
 
-#tabConstraints .table thead th {
-    border-top: none;
+.toolbar-limit {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
 }
 
-#addConstraint {
-    margin-right: 10px;
+.toolbar-limit input {
+    width: 90px;
+}
+
+.result-info,
+.hint {
+    color: var(--vscode-descriptionForeground);
+}
+
+.query-panel {
+    border: 1px solid var(--vscode-panel-border, var(--vscode-input-border, var(--bs-gray)));
+    border-radius: 4px;
+    padding: 4px 12px;
+    margin-bottom: 12px;
+}
+
+.query-panel details {
+    padding: 6px 0;
+}
+
+.query-panel details + details {
+    border-top: 1px solid var(--vscode-panel-border, var(--vscode-input-border, var(--bs-gray)));
+}
+
+.query-panel summary {
+    cursor: pointer;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.badge-count {
+    display: inline-block;
+    min-width: 1.4em;
+    padding: 0 6px;
+    border-radius: 10px;
+    font-size: .8em;
+    text-align: center;
+    color: var(--vscode-badge-foreground);
+    background-color: var(--vscode-badge-background);
+}
+
+.badge-count:empty {
+    display: none;
+}
+
+.filter-mode {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 6px;
+}
+
+.filter-row {
+    display: grid;
+    grid-template-columns: minmax(140px, 2fr) minmax(130px, 1fr) minmax(120px, 2fr) minmax(100px, 1.5fr) auto;
+    gap: 6px;
+    margin-bottom: 6px;
+}
+
+/* "até" só aparece em "está entre", mas guarda o lugar para as linhas ficarem alinhadas. */
+.filter-row input[hidden] {
+    display: block !important;
+    visibility: hidden;
+}
+
+.columns-tools {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 6px;
+    max-width: 520px;
+}
+
+.columns-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 2px 12px;
+    max-height: 220px;
+    overflow: auto;
+    margin-bottom: 8px;
+}
+
+.column-option {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.column-option[hidden] {
+    display: none;
+}
+
+.order {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+}
+
+.order label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+}
+
+.view-switch {
+    margin-bottom: 8px;
+}
+
+.result-layout {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+.result-main {
+    flex: 1 1 auto;
+    min-width: 0;
 }
 
 #tbResultDataset th,
@@ -19,71 +143,77 @@
     white-space: nowrap;
 }
 
-.selecionarCampos {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-auto-rows: minmax(200px, auto);
-    column-gap: 20px;
-}
-
-.list-sortable {
-    list-style: none;
-    padding-left: 0;
-    border: 1px solid var(--vscode-input-border, var(--gray));
-    max-height: 400px;
-    overflow: scroll;
-}
-
-.list-sortable:first-child {
-    border-left: none;
-}
-
-.list-sortable:last-child {
-    border-right: none;
-}
-
-.list-sortable li {
-    padding: .5rem;
-    margin-bottom: .5rem;
-    color: var(--vscode-button-foreground);
-    background-color: var(--vscode-button-background);
-    border-color: var(--vscode-button-separator);
-}
-
-.sortable-hover {
-    cursor: move;
-    color: #fff;
-    background-color: var(--vscode-button-hoverBackground, var(--primary));
-    border-color: var(--vscode-button-separator);
-}
-
-#tabOrders .form-switch {
-    padding-left: 1.5rem;
-}
-
-#tabOrders .form-switch .form-check-input,
-#tabOrders .form-switch .form-check-label {
+#tbResultDataset tbody tr {
     cursor: pointer;
 }
 
-#tabOrders .form-switch .form-check-input {
-    width: 1em;
-    height: 1.5em;
-    margin-top: 0;
-    background-position: top center;
-    margin-left: -1.5rem;
+#tbResultDataset tbody tr.selected > * {
+    box-shadow: inset 0 0 0 9999px var(--vscode-list-activeSelectionBackground) !important;
+    color: var(--vscode-list-activeSelectionForeground) !important;
 }
 
-#tabOrders .form-switch .form-check-input:focus {
-    border: 1px solid rgba(0,0,0,.25);
-    box-shadow: none;
-    outline: none;
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='rgba%280, 0, 0, 0.25%29'/%3e%3c/svg%3e");
+.cell-value {
+    display: inline-block;
+    max-width: 320px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: bottom;
 }
 
-#tabOrders .form-switch .form-check-input:checked {
-    background-color: #FFF;
-    border: 1px solid rgba(0,0,0,.25);
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='rgba%280, 0, 0, 0.25%29'/%3e%3c/svg%3e");
-    background-position: bottom center;
+.null-value {
+    color: var(--vscode-disabledForeground, var(--vscode-descriptionForeground));
+    font-style: italic;
+}
+
+.json-view {
+    max-height: 70vh;
+    overflow: auto;
+    padding: 8px;
+    font-family: var(--vscode-editor-font-family);
+    color: var(--vscode-editor-foreground);
+    background-color: var(--vscode-textCodeBlock-background, var(--vscode-input-background));
+    border: 1px solid var(--vscode-panel-border, var(--vscode-input-border, var(--bs-gray)));
+}
+
+.record-detail {
+    flex: 0 0 360px;
+    max-height: 75vh;
+    overflow: auto;
+    padding: 8px 12px;
+    border: 1px solid var(--vscode-panel-border, var(--vscode-input-border, var(--bs-gray)));
+    border-radius: 4px;
+    background-color: var(--vscode-sideBar-background, var(--vscode-editor-background));
+}
+
+.record-detail-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.record-detail-header strong {
+    flex: 1;
+}
+
+body.vscode-dark .record-detail .btn-close,
+body.vscode-high-contrast:not(.vscode-high-contrast-light) .record-detail .btn-close {
+    filter: invert(1);
+}
+
+.record-detail dt {
+    font-weight: 600;
+    color: var(--vscode-descriptionForeground);
+    margin-top: 6px;
+}
+
+.record-detail dd {
+    margin: 0 0 4px;
+    word-break: break-word;
+    white-space: pre-wrap;
+}
+
+.record-detail .copy-value {
+    padding: 0 4px;
+    font-size: .8em;
 }
