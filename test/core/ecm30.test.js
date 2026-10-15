@@ -7,6 +7,7 @@ const test = require("node:test");
 const zlib = require("node:zlib");
 
 const { generateEcm30 } = require("../../src/core/ecm30/generate");
+const { versionLess } = require("../../src/core/ecm30/writer");
 
 // Goldens gerados pela ponte Java (JARs do Fluig Studio 2.0.0.9) sobre as fixtures públicas do upstream:
 // 41 processos × 9 versões + "null" (servidor de versão desconhecida).
@@ -26,6 +27,13 @@ function normalizeEvents(xml) {
     return `${rest}\n${blocks.sort().join("")}`;
 }
 
+// O Studio grava <managedScript> em qualquer versão, mas 1.7.1 e 1.8.2 rejeitam o import com ele
+// (ConversionException do XStream no server.log): nesses goldens o Studio está errado.
+function expected(version, name) {
+    const xml = bundle.goldens[version][name];
+    return version !== "null" && versionLess(version, "2.0.0") ? xml.replace(/ *<managedScript>[^<]*<\/managedScript>\n/g, "") : xml;
+}
+
 function generate(name, version, processText = bundle.processes[name].processText) {
     return generateEcm30({ processText, baseName: name, events: bundle.processes[name].events }, version);
 }
@@ -37,7 +45,7 @@ test("gera o ECM30 igual ao do Fluig Studio para as fixtures públicas em todas 
         for (const name of Object.keys(bundle.processes)) {
             total += 1;
             const actual = generate(name, version === "null" ? undefined : version).xml;
-            if (normalizeEvents(actual) !== normalizeEvents(bundle.goldens[version][name])) {
+            if (normalizeEvents(actual) !== normalizeEvents(expected(version, name))) {
                 failures.push(`${name} @ ${version}`);
             }
         }

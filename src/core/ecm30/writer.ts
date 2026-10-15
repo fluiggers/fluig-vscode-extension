@@ -65,6 +65,9 @@ const FIELD_SINCE = new Map<string, [string, Value]>([
   ['ProcessLink.movementDescription', ['1.6.5', '']],
   ['ProcessLink.movementAccessLinkDescription', ['1.6.5', '']],
   ['ConditionProcessState.conditionType', ['1.6.5', '']], // padrão "" ⇒ sempre avisa
+  // Ausente no WorkflowProcessEvent de 1.7.1 e 1.8.2 (javap nos servidores): o XStream rejeita o import inteiro
+  // ("Erro durante a leitura do XML"). O Studio 2.0.0.9 grava sempre. Omitir o padrão false é inofensivo.
+  ['WorkflowProcessEvent.managedScript', ['2.0.0', false]],
 ]);
 
 // 09 §4: listas 16-20 (índices 13-17 dentro da raiz, depois de PD e PDV) só existem a partir de:
