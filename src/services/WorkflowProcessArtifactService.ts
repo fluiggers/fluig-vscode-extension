@@ -1,12 +1,11 @@
 import * as fs from "fs";
-import * as os from "os";
 import * as path from "path";
 import * as vscode from "vscode";
+import { readEcm30Events } from "../core/ecm30/events";
+import { generateEcm30 } from "../core/ecm30/generate";
+import { parseFluigVersion } from "../core/fluig-client/version";
 
 const {
-    findEclipsePluginsDirectory,
-    generateEcm30Artifact,
-    resolveJavaExecutable,
     writeEcm30Artifact,
     writeProcessImageArtifact,
 } = require("./Ecm30GenerationService");
@@ -61,11 +60,11 @@ export class WorkflowProcessArtifactService {
     }
 
     /**
-     * Com serverVersion (exportação), regenera para essa versão, porque o ECM30 do save usa
-     * fluiggers.fluigRuntimeVersion. Sem o conversor do Fluig Studio, mantém o ECM30 do save (se atualizado).
-     * Devolve true quando gerou para serverVersion.
+     * Com serverVersion definido (exportação, inclusive "" = versão desconhecida), regenera sempre, porque o
+     * ECM30 do save usa fluiggers.fluigRuntimeVersion. Sem serverVersion e com os artefatos atualizados, não
+     * gera e devolve []. Caso contrário, devolve os avisos da geração.
      */
-    public static async ensureGenerated(processUri: vscode.Uri, serverVersion?: string): Promise<boolean> {
+    public static async ensureGenerated(processUri: vscode.Uri, serverVersion?: string): Promise<string[]> {
         if (!isWorkflowDiagramProcessPath(processUri.fsPath)) {
             throw new Error("O arquivo .process deve estar diretamente em workflow/diagrams.");
         }
@@ -78,10 +77,7 @@ export class WorkflowProcessArtifactService {
             await running;
         }
 
-        const forVersion = serverVersion && WorkflowProcessArtifactService.findPluginsDirectory()
-            ? serverVersion
-            : undefined;
-        if (!forVersion) {
+        if (serverVersion === undefined) {
             const outputUris = [
                 vscode.Uri.file(ecm30PathForProcess(processUri.fsPath)),
                 vscode.Uri.file(processImagePathForProcess(processUri.fsPath)),
@@ -92,25 +88,25 @@ export class WorkflowProcessArtifactService {
                     ...outputUris.map(outputUri => vscode.workspace.fs.stat(outputUri)),
                 ]);
                 if (outputStats.every(outputStat => outputStat.mtime + 1000 >= processStat.mtime)) {
-                    return false;
+                    return [];
                 }
             } catch (_error) {
                 // Ausente ou desatualizado: a geração abaixo produzirá os artefatos.
             }
         }
 
-        const operation = WorkflowProcessArtifactService.generateForUri(processUri, false, forVersion);
+        const operation = WorkflowProcessArtifactService.generateForUri(processUri, false, serverVersion);
         WorkflowProcessArtifactService.running.set(key, operation);
         try {
-            await operation;
+            const generated = await operation;
             WorkflowProcessArtifactService.lastErrors.delete(key);
+            return generated.warnings;
         } finally {
             WorkflowProcessArtifactService.running.delete(key);
             if (WorkflowProcessArtifactService.rerun.delete(key)) {
                 WorkflowProcessArtifactService.scheduleAutomaticGeneration(processUri);
             }
         }
-        return Boolean(forVersion);
     }
 
     /** Cancels the pending automatic generation and waits for a running one, so the .process can be renamed safely. */
@@ -201,96 +197,32 @@ export class WorkflowProcessArtifactService {
         }
     }
 
-    private static bundledPluginsPath(): string {
-        return vscode.Uri.joinPath(
-            WorkflowProcessArtifactService.context.extensionUri,
-            "runtime",
-            "fluig-studio",
-            "plugins"
-        ).fsPath;
-    }
-
-    private static findPluginsDirectory(): string | undefined {
-        return findEclipsePluginsDirectory({
-            configuredPath: vscode.workspace.getConfiguration("fluiggers").get<string>("eclipsePluginsPath", ""),
-            bundledPath: WorkflowProcessArtifactService.bundledPluginsPath(),
-            homeDirectory: os.homedir(),
-        });
-    }
-
     private static async generateForUri(uri: vscode.Uri, interactive: boolean, serverVersion?: string): Promise<any> {
         if (!isWorkflowDiagramProcessPath(uri.fsPath)) {
             throw new Error("O arquivo .process deve estar diretamente em workflow/diagrams.");
         }
 
-        const configuration = vscode.workspace.getConfiguration("fluiggers");
-        const extensionDirectory = WorkflowProcessArtifactService.context.extensionUri.fsPath;
-        const bundledPluginsPath = WorkflowProcessArtifactService.bundledPluginsPath();
-        let pluginsDirectory = WorkflowProcessArtifactService.findPluginsDirectory();
-
-        if (!pluginsDirectory && interactive) {
-            const selected = await vscode.window.showOpenDialog({
-                canSelectFiles: false,
-                canSelectFolders: true,
-                canSelectMany: false,
-                title: "Selecione a pasta plugins do Eclipse com o Fluig Studio",
-            });
-            if (!selected?.length) {
-                throw new Error("Geracao cancelada: pasta plugins do Fluig Studio nao selecionada.");
-            }
-            pluginsDirectory = findEclipsePluginsDirectory({
-                configuredPath: selected[0].fsPath,
-                bundledPath: bundledPluginsPath,
-                homeDirectory: os.homedir(),
-            });
-            if (pluginsDirectory) {
-                await configuration.update(
-                    "eclipsePluginsPath",
-                    pluginsDirectory,
-                    vscode.ConfigurationTarget.Global
-                );
-            }
-        }
-        if (!pluginsDirectory) {
-            throw new Error(
-                "Plugins do Fluig Studio nao encontrados. Configure fluiggers.eclipsePluginsPath."
-            );
-        }
-
         const processId = path.basename(uri.fsPath, ".process");
-        const outputPath = ecm30PathForProcess(uri.fsPath);
+        const processText = fs.readFileSync(uri.fsPath, "utf8");
+        // No save não há servidor: vale fluiggers.fluigRuntimeVersion; vazio = versão desconhecida (todos os campos).
+        const raw = serverVersion
+            || vscode.workspace.getConfiguration("fluiggers").get<string>("fluigRuntimeVersion", "1.8.2");
+        // Texto livre ("v1.8.2", "1.8", "abc"): só x.y.z vale; senão gera como versão desconhecida.
+        const version = raw ? parseFluigVersion(raw) : undefined;
+        const generated = generateEcm30(
+            { processText, baseName: processId, events: readEcm30Events(uri.fsPath) },
+            version
+        );
+        if (raw && !version) {
+            generated.warnings.push(`fluiggers.fluigRuntimeVersion ("${raw}") não é uma versão x.y.z; gerado como versão desconhecida.`);
+        }
+
+        const written = writeEcm30Artifact(ecm30PathForProcess(uri.fsPath), Buffer.from(generated.xml, "utf8"));
         // The process image is always generated with the ECM30: Fluig needs it to open the flow drawing.
-        const processImage = renderProcessImageSvg(fs.readFileSync(uri.fsPath, "utf8"));
-        const bridgeClassesDirectory = vscode.Uri.joinPath(
-            WorkflowProcessArtifactService.context.extensionUri,
-            "tools",
-            "ecm30-bridge",
-            "classes"
-        ).fsPath;
-        const operation = () => generateEcm30Artifact({
-            processPath: uri.fsPath,
-            pluginsDirectory,
-            bridgeClassesDirectory,
-            cacheDirectory: WorkflowProcessArtifactService.context.globalStorageUri.fsPath,
-            javaExecutable: resolveJavaExecutable({
-                configuredPath: configuration.get<string>("javaPath", ""),
-            }),
-            serverVersion: serverVersion || configuration.get<string>("fluigRuntimeVersion", "1.8.2"),
-        });
-
-        const generated: any = interactive
-            ? await vscode.window.withProgress(
-                {
-                    location: vscode.ProgressLocation.Notification,
-                    title: `Gerando ECM30 de ${processId}`,
-                    cancellable: false,
-                },
-                operation
-            )
-            : await operation();
-
-        const written = writeEcm30Artifact(outputPath, generated.content);
-        writeProcessImageArtifact(processImagePathForProcess(uri.fsPath), processImage);
+        writeProcessImageArtifact(processImagePathForProcess(uri.fsPath), renderProcessImageSvg(processText));
+        for (const warning of generated.warnings) {
+            WorkflowProcessArtifactService.output.appendLine(`[${new Date().toISOString()}] ${processId}: ${warning}`);
+        }
         if (interactive) {
             const backup = written.backupPath
                 ? ` Backup anterior: ${written.backupPath}.`
@@ -299,7 +231,7 @@ export class WorkflowProcessArtifactService {
                 `ECM30 de ${processId} gerado (${written.bytes} bytes).${backup}`
             );
         }
-        return written;
+        return { ...written, warnings: generated.warnings };
     }
 
     private static resolveProcessUri(processUri?: vscode.Uri): vscode.Uri | undefined {

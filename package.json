@@ -641,21 +641,9 @@
                         "default": "",
                         "scope": "machine"
                     },
-                    "fluiggers.eclipsePluginsPath": {
-                        "type": "string",
-                        "description": "Pasta plugins de um Fluig Studio local. Opcional quando o VSIX ja inclui os JARs do conversor ECM30",
-                        "default": "",
-                        "scope": "machine"
-                    },
-                    "fluiggers.javaPath": {
-                        "type": "string",
-                        "description": "Executavel Java ou pasta JAVA_HOME para o gerador ECM30. Vazio usa JAVA_HOME e depois o Java disponivel no PATH",
-                        "default": "",
-                        "scope": "machine"
-                    },
                     "fluiggers.fluigRuntimeVersion": {
                         "type": "string",
-                        "description": "Versao do Fluig usada pelo conversor ECM30 ao salvar e, na exportacao, quando nao for possivel detectar a versao do servidor",
+                        "description": "Versao do Fluig usada pelo conversor ECM30 ao salvar e, na exportacao, quando nao for possivel detectar a versao do servidor. Vazio = versao desconhecida (gera todos os campos)",
                         "default": "1.8.2",
                         "scope": "machine"
                     },
@@ -687,8 +675,6 @@
     },
     "scripts": {
         "vscode:prepublish": "npm run package",
-        "prepare:runtime": "node scripts/prepare-fluig-runtime.js",
-        "prepare:runtime:check": "node scripts/prepare-fluig-runtime.js --check",
         "package:vsix": "vsce package",
         "precompile": "gulp",
         "buildResources": "gulp buildResources",
