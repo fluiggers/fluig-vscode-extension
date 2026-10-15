@@ -2,6 +2,7 @@
 
 ## 3.0.1-alpha
 
+- Troca a lista de seleção de grupo, papel e usuário dos mecanismos de atribuição (atividade, gestor do processo, condição de gateway, segurança de anexos e Associação) por um campo com sugestões que filtra pelo código ou pelo nome ao digitar; quando o processo ainda não tem servidor e só há um servidor configurado, os catálogos vêm dele.
 - Exporta processos chamando o SOAP do Fluig direto no endereço do servidor, sem baixar o WSDL, o que evita falhas atrás de proxy reverso ou SSL terminado.
 - Detecta a versão do Fluig do servidor de destino na exportação e gera o ECM30 para ela; se a versão não for detectada, usa `fluiggers.fluigRuntimeVersion` e avisa na confirmação.
 - Limita a busca de referências na exclusão de elementos aos scripts do próprio processo e aos eventos do formulário vinculado, que antes bloqueava a exclusão por causa de formulários de outros processos do workspace.

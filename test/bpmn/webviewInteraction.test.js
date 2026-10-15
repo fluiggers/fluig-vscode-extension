@@ -61,12 +61,15 @@ test('processo controla segurança de anexos com mecanismos e seis permissões',
   assert.match(source, /Não controlar segurança/);
   assert.match(source, /process-attachment-security-permissions/);
   assert.match(source, /function createGatewayConfigCatalogPicker/);
-  assert.match(source, /if \(!items\.length\) return createGatewayConfigInput/);
+  assert.match(source, /if \(!options\.length\) {\s*input\.placeholder = emptyPlaceholder;/);
   assert.match(source, /document\.createElement\('select'\)/);
   assert.match(source, /state\.data\?\.userCatalog \?\? \[\]/);
   assert.match(source, /state\.data\?\.roleCatalog \?\? \[\]/);
   assert.match(source, /state\.data\?\.groupCatalog \?\? \[\]/);
   assert.match(source, /function createGatewayAssociationValue/);
+  assert.match(source, /function createCatalogAutocompleteInput/);
+  assert.match(source, /document\.createElement\('datalist'\)/);
+  assert.match(source, /input\.setAttribute\('list', list\.id\)/);
   assert.match(source, /type: 'updateProcessAttachmentSecurity'/);
   assert.match(styles, /\.process-attachment-security-rule/);
   assert.match(provider, /applyProcessAttachmentSecurityChanges\(document, panel, message\.elementId, message\.configuration\)/);

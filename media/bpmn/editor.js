@@ -6491,88 +6491,59 @@
     const catalog = kind === 'group'
       ? (state.data?.groupCatalog ?? [])
       : (editor.userCatalog?.length ? editor.userCatalog : (state.data?.userCatalog ?? []));
-    let control;
-    if (catalog.length) {
-      control = document.createElement('select');
-      const normalizedCurrent = String(current ?? '').trim();
-      const empty = document.createElement('option');
-      empty.value = '';
-      empty.textContent = kind === 'group' ? 'Selecione um grupo' : 'Selecione um usuário';
-      control.append(empty);
-      const seen = new Set();
-      if (normalizedCurrent && !catalog.some((item) => String(item?.value ?? '').trim() === normalizedCurrent)) {
-        const legacy = document.createElement('option');
-        legacy.value = normalizedCurrent;
-        legacy.textContent = `${normalizedCurrent} (valor atual)`;
-        legacy.selected = true;
-        control.append(legacy);
-        seen.add(normalizedCurrent);
-      }
-      for (const item of catalog) {
-        const itemValue = String(item?.value ?? '').trim();
-        if (!itemValue || seen.has(itemValue)) continue;
-        seen.add(itemValue);
-        const option = document.createElement('option');
-        option.value = itemValue;
-        option.textContent = String(item?.label ?? '').trim() || itemValue;
-        option.selected = itemValue === normalizedCurrent;
-        control.append(option);
-      }
-    } else {
-      control = document.createElement('input');
-      control.type = 'text';
-      control.value = current ?? '';
-      control.placeholder = kind === 'group' ? 'Código do grupo' : 'Matrícula do usuário';
-    }
+    const control = createCatalogAutocompleteInput(
+      current,
+      catalog,
+      kind === 'group' ? 'Código do grupo' : 'Matrícula do usuário',
+      kind === 'group' ? 'Digite para buscar um grupo' : 'Digite para buscar um usuário'
+    );
     control.className = 'gateway-association-value';
     return control;
   }
 
-  function createGatewayConfigInput(labelText, key, value, placeholder = '') {
+  function createGatewayConfigCatalogPicker(labelText, key, value, items, emptyPlaceholder) {
     const label = document.createElement('label');
     label.append(document.createTextNode(labelText));
-    const input = document.createElement('input');
-    input.type = 'text';
+    const input = createCatalogAutocompleteInput(
+      value,
+      items,
+      emptyPlaceholder,
+      `Digite para buscar ${labelText.toLocaleLowerCase('pt-BR')}`
+    );
     input.dataset.configKey = key;
-    input.value = value ?? '';
-    input.placeholder = placeholder;
     label.append(input);
     return label;
   }
 
-  function createGatewayConfigCatalogPicker(labelText, key, value, items, emptyPlaceholder) {
-    if (!items.length) return createGatewayConfigInput(labelText, key, value, emptyPlaceholder);
-    const label = document.createElement('label');
-    label.append(document.createTextNode(labelText));
-    const select = document.createElement('select');
-    select.dataset.configKey = key;
-    const seen = new Set();
-    const current = String(value ?? '').trim();
-    const empty = document.createElement('option');
-    empty.value = '';
-    empty.textContent = `Selecione ${labelText.toLocaleLowerCase('pt-BR')}`;
-    empty.selected = !current;
-    select.append(empty);
-    if (current && !items.some((item) => String(item?.value ?? '').trim() === current)) {
-      const option = document.createElement('option');
-      option.value = current;
-      option.textContent = `${current} (valor atual)`;
-      option.selected = true;
-      select.append(option);
-      seen.add(current);
+  let catalogAutocompleteSequence = 0;
+
+  // Campo de texto com <datalist>: filtra pelo código ou pelo nome ao digitar e grava o código.
+  // Valores fora do catálogo continuam aceitos (catálogo incompleto ou servidor offline).
+  function createCatalogAutocompleteInput(value, items, emptyPlaceholder, searchPlaceholder) {
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.value = String(value ?? '').trim();
+    const options = normalizeCatalogOptions(items);
+    if (!options.length) {
+      input.placeholder = emptyPlaceholder;
+      return input;
     }
-    for (const item of items) {
-      const itemValue = String(item?.value ?? '').trim();
-      if (!itemValue || seen.has(itemValue)) continue;
-      seen.add(itemValue);
+    catalogAutocompleteSequence += 1;
+    const list = document.createElement('datalist');
+    list.id = `catalog-autocomplete-${catalogAutocompleteSequence}`;
+    for (const item of options) {
       const option = document.createElement('option');
-      option.value = itemValue;
-      option.textContent = String(item?.label ?? '').trim() || itemValue;
-      option.selected = itemValue === current;
-      select.append(option);
+      option.value = item.value;
+      option.label = item.label;
+      list.append(option);
     }
-    label.append(select);
-    return label;
+    input.setAttribute('list', list.id);
+    input.autocomplete = 'off';
+    input.placeholder = searchPlaceholder;
+    // O datalist fica dentro do input para sair junto quando a linha é trocada (replaceWith/remove);
+    // o atributo list resolve por id na árvore, então funciona mesmo sem ser irmão.
+    input.append(list);
+    return input;
   }
 
   function createGatewayConfigSelect(labelText, key, value, options) {
