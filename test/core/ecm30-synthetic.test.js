@@ -31,6 +31,8 @@ const NODES = [
         id: "mailtask6", name: "Mail", type: "84",
         messageData: xs("org.eclipse.bpmn2.documentacional.BpmnMessageData", "<type>1</type><receiver>a@b</receiver><subject>s</subject><content>c</content>"),
     }, [300, 50, 106, 56]],
+    // Tarefa de serviço criada fora do Studio, sem executionSucessfulMessage.
+    ["BpmnTask", { id: "servicetask8", name: "Svc", type: "82", executionType: "1" }, [600, 50, 106, 56]],
     ["BpmnSubProcess", {
         id: "subprocess7", name: "Sub", type: "100", process: "outroProc", selectColleague: "0", loopType: "0",
         formMaps: xs("list", xs("org.eclipse.bpmn2.impl.BpmnProcessFormMap", "<processField>a</processField><subProcessField>b</subProcessField><mapFlow>1</mapFlow>")),
@@ -113,4 +115,11 @@ test("abaixo da 2.0.0 o formulário vai só em formId", () => {
     const definitionVersion = blocks(generate("1.8.2").xml, "ProcessDefinitionVersion")[0];
     assert.equal(value(definitionVersion, "formId"), "55");
     assert.equal(value(definitionVersion, "formIdV2"), undefined);
+});
+
+test("tarefa de serviço sem mensagem de sucesso grava sucessFullMessage vazio, como o Studio", () => {
+    // Sem a tag o servidor recusa a importação: "Erro durante a leitura do XML do processo".
+    const service = blocks(generate("1.8.2").xml, "ProcessStateService")[0];
+    assert.equal(value(service, "sequence"), "8");
+    assert.match(service, /<sucessFullMessage><\/sucessFullMessage>/);
 });

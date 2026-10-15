@@ -479,7 +479,7 @@ export function generateEcm30(input: Ecm30Input, serverVersion?: string): Ecm30R
     const a = e.attributes;
     return {
       tag: 'ProcessStateService', companyId: 1, processId: pid, version: 1, sequence: seq(e.id), attempts: int(a.executionAttempts),
-      sucessFullMessage: str(a.executionSucessfulMessage), serviceName: str(a.serviceName),
+      sucessFullMessage: a.executionSucessfulMessage ?? '', serviceName: str(a.serviceName), // ausente = "" do Studio (02 §3)
       frequency: int(a.frequency) || 1, // 0 → 1 (observado nos goldens)
       frequencyType: int(a.frequencyType),
     };
