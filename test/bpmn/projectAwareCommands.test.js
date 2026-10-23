@@ -51,6 +51,7 @@ test('só servidores, bibliotecas de tipos e o próprio UtilsService usam a raiz
   const users = sources('src').filter((file) => read(file).includes('getWorkspaceUri()')).sort();
   assert.deepEqual(users, [
     'src/extensions/LibraryExtension.ts',
+    'src/services/FluigProjectService.ts',
     'src/services/ServerService.ts',
     'src/services/UtilsService.ts'
   ]);

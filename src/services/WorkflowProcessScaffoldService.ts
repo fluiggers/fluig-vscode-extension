@@ -4,7 +4,7 @@ import * as vscode from "vscode";
 import { UtilsService } from "./UtilsService";
 
 const { normalizeProcessCode } = require("../bpmn/processIdentity");
-const { buildProcessScaffold } = require("../bpmn/processScaffold");
+const { buildInitialProcess } = require("../bpmn/processScaffold");
 
 export class WorkflowProcessScaffoldService {
     public static async create(context: vscode.ExtensionContext, resourceUri?: vscode.Uri): Promise<void> {
@@ -39,18 +39,8 @@ export class WorkflowProcessScaffoldService {
             await this.assertCodeAvailable(diagramsDirectory, code);
             await this.assertTargetsAvailable([processUri, ...literalUris.values()]);
 
-            const encodedTemplateUri = vscode.Uri.joinPath(
-                context.extensionUri,
-                "runtime",
-                "bpmn",
-                "creation-template.process.gz.b64"
-            );
-            const encodedTemplate = Buffer.from(await vscode.workspace.fs.readFile(encodedTemplateUri))
-                .toString("ascii")
-                .replace(/\s+/g, "");
-            if (!encodedTemplate) throw new Error("O template BPMN empacotado esta vazio.");
-            const templateText = gunzipSync(Buffer.from(encodedTemplate, "base64")).toString("utf8");
-            const scaffold = buildProcessScaffold(templateText, code);
+            const templateText = await this.loadCreationTemplate(context);
+            const scaffold = buildInitialProcess(templateText, code, { poolName: path.basename(projectRoot.fsPath) });
 
             await vscode.workspace.fs.createDirectory(diagramsDirectory);
             await vscode.workspace.fs.createDirectory(literalsDirectory);
@@ -70,6 +60,21 @@ export class WorkflowProcessScaffoldService {
                 `Nao foi possivel criar o diagrama: ${error instanceof Error ? error.message : String(error)}`
             );
         }
+    }
+
+    /** Template BPMN empacotado de onde saem os shapes do diagrama inicial. */
+    public static async loadCreationTemplate(context: vscode.ExtensionContext): Promise<string> {
+        const encodedTemplateUri = vscode.Uri.joinPath(
+            context.extensionUri,
+            "runtime",
+            "bpmn",
+            "creation-template.process.gz.b64"
+        );
+        const encodedTemplate = Buffer.from(await vscode.workspace.fs.readFile(encodedTemplateUri))
+            .toString("ascii")
+            .replace(/\s+/g, "");
+        if (!encodedTemplate) throw new Error("O template BPMN empacotado esta vazio.");
+        return gunzipSync(Buffer.from(encodedTemplate, "base64")).toString("utf8");
     }
 
     private static async assertCodeAvailable(diagramsDirectory: vscode.Uri, code: string): Promise<void> {

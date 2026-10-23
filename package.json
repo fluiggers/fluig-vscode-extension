@@ -11,7 +11,8 @@
         "onCommand:fluigBpmn.validate",
         "onCommand:fluigBpmn.generateTranslations",
         "onCommand:fluigBpmn.exportPng",
-        "onCommand:fluiggers-fluig-vscode-extension.newWorkflowProcess"
+        "onCommand:fluiggers-fluig-vscode-extension.newWorkflowProcess",
+        "onCommand:fluiggers-fluig-vscode-extension.newFluigProject"
     ],
     "icon": "images/icon.png",
     "repository": {
@@ -84,6 +85,12 @@
                 "command": "fluiggers-fluig-vscode-extension.newWorkflowProcess",
                 "title": "Novo Diagrama de Processo",
                 "category": "Fluig"
+            },
+            {
+                "command": "fluiggers-fluig-vscode-extension.newFluigProject",
+                "title": "Novo Projeto Fluig",
+                "category": "Fluig",
+                "icon": "$(new-folder)"
             },
             {
                 "command": "fluiggers-fluig-vscode-extension.newWorkflowEvent",
@@ -343,6 +350,11 @@
             ],
             "explorer/context": [
                 {
+                    "command": "fluiggers-fluig-vscode-extension.newFluigProject",
+                    "when": "explorerResourceIsFolder",
+                    "group": "1_Fluig0Project@0"
+                },
+                {
                     "command": "fluiggers-fluig-vscode-extension.newWorkflowProcess",
                     "when": "explorerResourceIsFolder",
                     "group": "1_Fluig4Workflow@0"
@@ -474,6 +486,11 @@
                 }
             ],
             "view/title": [
+                {
+                    "command": "fluiggers-fluig-vscode-extension.newFluigProject",
+                    "when": "view == fluiggers-fluig-vscode-extension.servers",
+                    "group": "navigation"
+                },
                 {
                     "command": "fluiggers-fluig-vscode-extension.addServer",
                     "when": "view == fluiggers-fluig-vscode-extension.servers",
