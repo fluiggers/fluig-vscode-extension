@@ -10,11 +10,16 @@ test("extrai x.y.z dos formatos possíveis da resposta", () => {
     assert.equal(parseFluigVersion("1.7.1 - Crystal Lake"), "1.7.1");
     assert.equal(parseFluigVersion('{"version":"1.8.1"}'), "1.8.1");
     assert.equal(parseFluigVersion("  2.0.0\n"), "2.0.0");
+    // Contrato usado para normalizar fluiggers.fluigRuntimeVersion (texto livre).
+    assert.equal(parseFluigVersion("v1.8.2"), "1.8.2");
+    assert.equal(parseFluigVersion("Fluig 1.8.2"), "1.8.2");
 });
 
 test("sem número de versão ou página HTML não vira versão", () => {
     assert.equal(parseFluigVersion(""), undefined);
     assert.equal(parseFluigVersion('"Fluig"'), undefined);
+    assert.equal(parseFluigVersion("1.8"), undefined);
+    assert.equal(parseFluigVersion("abc"), undefined);
     assert.equal(parseFluigVersion('<html><script src="/portal/resources/1.8.2/app.js"></script></html>'), undefined);
 });
 
