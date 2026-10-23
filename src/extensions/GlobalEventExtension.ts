@@ -32,7 +32,7 @@ export class GlobalEventExtension {
     /**
      * Cria um Evento Global
      */
-    private static async createGlobalEvent() {
+    private static async createGlobalEvent(resourceUri?: vscode.Uri) {
         const eventName: string = await vscode.window.showQuickPick(
             TemplateService.globalEventsNames,
             {
@@ -47,7 +47,7 @@ export class GlobalEventExtension {
 
         const eventFilename = eventName + ".js";
         const eventUri = vscode.Uri.joinPath(
-            UtilsService.getWorkspaceUri(),
+            await UtilsService.getProjectUri(resourceUri),
             "events",
             eventFilename
         );

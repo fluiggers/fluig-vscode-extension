@@ -2,6 +2,15 @@
 
 const { normalizeProcessCode } = require('./processIdentity');
 const { parseProcess } = require('./processModel');
+const {
+  createConnectedEndEvent,
+  createConnectedTask,
+  createIsolatedNode,
+  createPool,
+  createSwimLane,
+  patchProcess,
+  patchProcessForm
+} = require('./processPatcher');
 const { validateProcess } = require('./processValidator');
 const { buildTranslationPlan, validateTranslationPlan } = require('./translationService');
 
@@ -44,7 +53,40 @@ function buildProcessScaffold(templateText, requestedCode, options = {}) {
     removeAttribute(templateText, templateModel.process.node, attribute, patches);
   }
 
-  const text = applyPatches(templateText, deduplicatePatches(patches));
+  return finishScaffold(code, applyPatches(templateText, deduplicatePatches(patches)), options);
+}
+
+// Pool do diagrama inicial; a raia ocupa a pool e os três elementos ficam centrados nela.
+const INITIAL_POOL = Object.freeze({ x: 40, y: 40, width: 760, height: 220 });
+
+/**
+ * Processo novo já desenhado: pool (nome `options.poolName`, padrão o código), uma raia e
+ * início → atividade → fim, com as mesmas funções de criação do editor. Com `options.form`,
+ * liga o processo a esse formulário local.
+ */
+function buildInitialProcess(templateText, requestedCode, options = {}) {
+  const scaffold = buildProcessScaffold(templateText, requestedCode, options);
+  const centerY = INITIAL_POOL.y + INITIAL_POOL.height / 2;
+  let text = scaffold.text;
+  const pool = createPool(text, { ...INITIAL_POOL, templateText });
+  text = patchProcess(pool.text, pool.elementId, { name: String(options.poolName ?? scaffold.code) }).text;
+  text = createSwimLane(text, { poolId: pool.elementId, templateText }).text;
+  const start = createIsolatedNode(text, { kind: 'start', subtype: '10', x: 130, y: centerY - 18, templateText });
+  const task = createConnectedTask(start.text, {
+    sourceId: start.elementId, x: 260, y: centerY - 28, bendpoints: [], templateText
+  });
+  text = createConnectedEndEvent(task.text, {
+    sourceId: task.taskId, x: 460, y: centerY - 18, bendpoints: [], templateText
+  }).text;
+  if (options.form) {
+    text = patchProcessForm(text, scaffold.code, { source: 'local', cardIndex: options.form, descriptorFields: [] }, {
+      localForms: [{ value: options.form, label: options.form, fields: [] }]
+    }).text;
+  }
+  return finishScaffold(scaffold.code, text, options);
+}
+
+function finishScaffold(code, text, options) {
   const model = parseProcess(text);
   const validation = validateProcess(model);
   if (!validation.ok) {
@@ -115,4 +157,4 @@ function encodeXmlAttribute(value) {
     .replaceAll('>', '&gt;');
 }
 
-module.exports = { buildProcessScaffold };
+module.exports = { buildInitialProcess, buildProcessScaffold };

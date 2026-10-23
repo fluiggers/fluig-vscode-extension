@@ -11,6 +11,7 @@ const {
     formRenameKey,
     renamedFormArtifactName
 } = require("../services/FormRenameIdentity");
+const { artifactFolderPath } = require("../services/projectRoot");
 
 export class FormExtension {
 
@@ -213,7 +214,7 @@ export class FormExtension {
     /**
      * Cria um Formulário
      */
-    private static async createForm() {
+    private static async createForm(resourceUri?: vscode.Uri) {
         let formName: string = await vscode.window.showInputBox({
             prompt: "Qual o nome do Formulário (sem espaços e sem caracteres especiais)?",
             placeHolder: "NomeFormulario"
@@ -225,7 +226,7 @@ export class FormExtension {
 
         const formFileName = formName + ".html";
         const formUri = vscode.Uri.joinPath(
-            UtilsService.getWorkspaceUri(),
+            await UtilsService.getProjectUri(resourceUri),
             "forms",
             formName,
             formFileName
@@ -264,8 +265,6 @@ export class FormExtension {
             return;
         }
 
-        const formName: string = folderUri.path.replace(/.*\/forms\/([^/]+).*/, "$1");
-
         const newFunctionOption = 'Nova Função';
 
         let eventName: string = await vscode.window.showQuickPick(
@@ -297,9 +296,7 @@ export class FormExtension {
 
         const eventFilename = eventName + ".js";
         const eventUri = vscode.Uri.joinPath(
-            UtilsService.getWorkspaceUri(),
-            "forms",
-            formName,
+            folderUri.with({ path: artifactFolderPath(folderUri.path, "forms") }),
             'events',
             eventFilename
         );

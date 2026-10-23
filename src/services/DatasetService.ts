@@ -174,7 +174,7 @@ export class DatasetService {
     /**
      * Realiza a importação de um dataset específico
      */
-    public static async import() {
+    public static async import(resourceUri?: Uri) {
         const server = await ServerService.getSelect();
 
         if (!server) {
@@ -188,7 +188,7 @@ export class DatasetService {
         }
 
         const datasetId = dataset.datasetPK.datasetId;
-        const datasetFolderUri = Uri.joinPath(UtilsService.getWorkspaceUri(), "datasets");
+        const datasetFolderUri = Uri.joinPath(await UtilsService.getProjectUri(resourceUri), "datasets");
 
         // Busca por arquivos de dataset com o mesmo nome
         const existingFiles = glob.sync(
@@ -208,21 +208,18 @@ export class DatasetService {
 
             window.showTextDocument(Uri.file(targetPath));
             window.showInformationMessage(
-                `Dataset ${datasetId} atualizado com sucesso!`
+                `Dataset ${datasetId} atualizado em ${workspace.asRelativePath(Uri.file(targetPath))}!`
             );
         } else {
             // Se não achar nenhum arquivo ou achar mais de um, vai ser salvo na pasta padrão ./datasets
-            DatasetService.saveFile(datasetId, dataset.datasetImpl);
-            window.showInformationMessage(
-                `Dataset ${datasetId} importado com sucesso!`
-            );
+            DatasetService.saveFile(datasetFolderUri, datasetId, dataset.datasetImpl);
         }
     }
 
     /**
      * Realiza a importação de vários datasets
      */
-    public static async importMany() {
+    public static async importMany(resourceUri?: Uri) {
         const server = await ServerService.getSelect();
 
         if (!server) {
@@ -235,7 +232,7 @@ export class DatasetService {
             return;
         }
 
-        const datasetFolderUri = Uri.joinPath(UtilsService.getWorkspaceUri(), "datasets");
+        const datasetFolderUri = Uri.joinPath(await UtilsService.getProjectUri(resourceUri), "datasets");
 
         const results = await window.withProgress(
             {
@@ -269,6 +266,7 @@ export class DatasetService {
                         } else {
                             // Se não achar nenhum arquivo ou achar mais de um, vai ser salvo na pasta padrão ./datasets
                             DatasetService.saveFile(
+                                datasetFolderUri,
                                 datasetId,
                                 dataset.datasetImpl,
                                 false
@@ -284,7 +282,7 @@ export class DatasetService {
         );
 
         window.showInformationMessage(
-            `${results.length} datasets foram importados.`
+            `${results.length} datasets foram importados em ${workspace.asRelativePath(datasetFolderUri)}.`
         );
     }
 
@@ -631,8 +629,8 @@ export class DatasetService {
     /**
      * Criar arquivo de dataset
      */
-    public static async saveFile(name: string, content: string, openDatasetFile: boolean = true) {
-        const datasetUri = Uri.joinPath(UtilsService.getWorkspaceUri(), "datasets", name + ".js");
+    public static async saveFile(datasetsUri: Uri, name: string, content: string, openDatasetFile: boolean = true) {
+        const datasetUri = Uri.joinPath(datasetsUri, name + ".js");
 
         await workspace.fs.writeFile(
             datasetUri,
@@ -641,7 +639,7 @@ export class DatasetService {
 
         if (openDatasetFile) {
             window.showTextDocument(datasetUri);
-            window.showInformationMessage(`Dataset ${name} importado com sucesso!`);
+            window.showInformationMessage(`Dataset ${name} importado em ${workspace.asRelativePath(datasetUri)}!`);
         }
     }
 }
