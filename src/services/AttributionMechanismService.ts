@@ -136,7 +136,7 @@ export class AttributionMechanismService {
     /**
      * Realiza a importação de um mecanismo específico
      */
-    public static async import() {
+    public static async import(resourceUri?: Uri) {
         const server = await ServerService.getSelect();
 
         if (!server) {
@@ -149,13 +149,17 @@ export class AttributionMechanismService {
             return;
         }
 
-        AttributionMechanismService.saveFile(mechanism.attributionMecanismPK.attributionMecanismId, mechanism.attributionMecanismDescription);
+        AttributionMechanismService.saveFile(
+            await UtilsService.getProjectUri(resourceUri),
+            mechanism.attributionMecanismPK.attributionMecanismId,
+            mechanism.attributionMecanismDescription
+        );
     }
 
     /**
      * Realiza a importação de vários mecanismos de atribuição
      */
-    public static async importMany() {
+    public static async importMany(resourceUri?: Uri) {
         const server = await ServerService.getSelect();
 
         if (!server) {
@@ -168,6 +172,7 @@ export class AttributionMechanismService {
             return;
         }
 
+        const projectUri = await UtilsService.getProjectUri(resourceUri);
         const results = await window.withProgress(
             {
                 location: ProgressLocation.Notification,
@@ -182,6 +187,7 @@ export class AttributionMechanismService {
 
                 return Promise.all(mechanisms.map(async mechanism => {
                     AttributionMechanismService.saveFile(
+                        projectUri,
                         mechanism.attributionMecanismPK.attributionMecanismId,
                         mechanism.attributionMecanismDescription,
                         false
@@ -193,7 +199,7 @@ export class AttributionMechanismService {
             }
         );
 
-        window.showInformationMessage(`${results.length} Mecanismos Customizados foram importados.`);
+        window.showInformationMessage(`${results.length} Mecanismos Customizados foram importados em ${workspace.asRelativePath(Uri.joinPath(projectUri, "mechanisms"))}.`);
     }
 
     /**
@@ -322,8 +328,8 @@ export class AttributionMechanismService {
     /**
      * Cria o arquivo de Mecanismo de Atribuição
      */
-    private static async saveFile(name: string, content: string, openFile: boolean = true) {
-        const fileUri = Uri.joinPath(UtilsService.getWorkspaceUri(), "mechanisms", name + ".js");
+    private static async saveFile(projectUri: Uri, name: string, content: string, openFile: boolean = true) {
+        const fileUri = Uri.joinPath(projectUri, "mechanisms", name + ".js");
 
         await workspace.fs.writeFile(
             fileUri,
@@ -332,7 +338,7 @@ export class AttributionMechanismService {
 
         if (openFile) {
             window.showTextDocument(fileUri);
-            window.showInformationMessage(`Mecanismo de Atribuição ${name} importado com sucesso!`);
+            window.showInformationMessage(`Mecanismo de Atribuição ${name} importado em ${workspace.asRelativePath(fileUri)}!`);
         }
     }
 }
