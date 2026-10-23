@@ -13,6 +13,8 @@ gulpfile.js
 node_modules/**
 out/**
 resources/**
+runtime/fluig-studio/**
+runtime/java/**
 src/**
 templates/**
 test/**

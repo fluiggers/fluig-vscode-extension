@@ -57,12 +57,9 @@ tanto ao indicar problemas como issues como auxiliar na programação em si.
 
 > **Não use essa funcionalidade em Produção**
 
-Para desenhar os diagramas é necessário configurar a extensão com os seguintes dados:
-
-- Indicar a versão do Fluig;
-- Indicar o caminho da pasta Plugins do Eclipse que possua
-o plugin Fluig Studio instalado.
-- Idicar o caminho do executável Java, caso ele não esteja na variável JAVA_HOME ou PATH do seu ambiente;
+Não é preciso Eclipse, Fluig Studio nem Java: o `ecm30.xml` é gerado pela própria extensão. Na
+exportação, a versão do Fluig é lida do servidor; ao salvar, vale a configuração
+`fluiggers.fluigRuntimeVersion` (vazia = gera todos os campos, como para um servidor de versão desconhecida).
 
 
 ## Funcionalidades da Extensão
@@ -399,41 +396,12 @@ ser utilizado em qual dos dois ambientes.
 - __fluig-modal__: Criar modal do Fluig;
 - __fluig-widget__: Criar o esqueleto de uma Widget com itens privados;
 
-## Gerador ECM30 multiplataforma
+## Gerador ECM30
 
-O VSIX nao inclui um JRE ou JDK portatil. Para converter `.process` em
-`ecm30.xml`, a extensao usa um Java 8 ou superior instalado no Windows, Linux
-ou macOS.
-
-O executavel e localizado nesta ordem:
-
-1. `fluiggers.javaPath`, que pode apontar para o executavel `java`/`java.exe` ou
-   para a pasta raiz do Java, no mesmo formato de `JAVA_HOME`;
-2. variavel de ambiente `JAVA_HOME`;
-3. comando `java` disponivel no `PATH`.
-
-`fluiggers.javaPath` possui escopo global da maquina: nao e lida nem
-sobrescrita pelo `.vscode/settings.json` do workspace. Deixe o campo vazio para
-usar `JAVA_HOME` ou `PATH`.
-
-Antes de gerar o VSIX, disponibilize uma instalacao local do Fluig Studio em
-`%USERPROFILE%\\EclipsePortable\\App\\eclipse\\plugins` ou informe a pasta:
-
-```powershell
-$env:FLUIG_ECLIPSE_PLUGINS = "C:\\EclipsePortable\\App\\eclipse\\plugins"
-npm run prepare:runtime
-npm run prepare:runtime:check
-npm run package:vsix
-```
-
-O comando `vscode:prepublish`, executado pelo empacotador VS Code, chama
-automaticamente `prepare:runtime`. O pacote recebe somente os JARs observados
-como necessarios para o conversor ECM30. O mesmo VSIX pode ser instalado no
-Windows, Linux e macOS, desde que haja um Java compativel disponivel.
-
-Os JARs TOTVS sao proprietarios e sao copiados apenas da instalacao local. A
-equipe responsavel deve confirmar a permissao contratual de redistribuicao antes
-de compartilhar o VSIX fora da organizacao.
+O `ecm30.xml` que o Fluig recebe no deploy é gerado pela extensão, em TypeScript, a cada save do `.process`
+e antes de cada exportação, no formato do Fluig Studio para a versão do servidor (1.4.4 em diante, com os
+campos de cada versão). A conformidade é conferida em `test/core/ecm30.test.js` contra a saída do Studio para
+as fixtures públicas do projeto, em todas as versões.
 
 ## Contribuindo com o Projeto
 
