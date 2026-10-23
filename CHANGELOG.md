@@ -2,6 +2,7 @@
 
 ## 3.0.1-alpha
 
+- O botão "Aplicar" do rodapé do painel de propriedades passa a aplicar também a última seção editada (por exemplo "Geral do processo", com descrição e categoria), cujo botão próprio costuma ficar fora da tela; antes ele continuava desabilitado e a alteração se perdia ao salvar.
 - Troca a lista de seleção de grupo, papel e usuário dos mecanismos de atribuição (atividade, gestor do processo, condição de gateway, segurança de anexos e Associação) por um campo com sugestões que filtra pelo código ou pelo nome ao digitar; quando o processo ainda não tem servidor e só há um servidor configurado, os catálogos vêm dele.
 - Adiciona o comando "Novo Projeto Fluig" (clique direito numa pasta, botão na aba Fluig ou paleta), que cria a estrutura de pastas do Fluig Studio, um processo inicial e o formulário `form_<projeto>` já vinculado.
 - "Novo Diagrama de Processo" passa a abrir com uma pool (nome da pasta do projeto), uma raia e início → atividade → fim ligados.

@@ -960,3 +960,14 @@ test('aba Associado lê e mostra controllers preservados sem descartá-los', () 
   assert.match(styles, /\.gateway-association-preserved\s*\{[^}]*grid-column:\s*1\s*\/\s*3/);
   assert.doesNotMatch(source, /querySelectorAll\('\.gateway-association-row'\)\]\.map\(\(association\) => \(\{\s*kind: association\.querySelector/);
 });
+
+test('rodape Aplicar aplica a ultima secao editada, cujo botao proprio fica fora da tela', () => {
+  const source = fs.readFileSync(path.join(__dirname, '..', '..', 'media', 'bpmn', 'editor.js'), 'utf8');
+  const updateDirtyState = source.slice(source.indexOf('function updateDirtyState('), source.indexOf('function submitProperties('));
+  const submitProperties = source.slice(source.indexOf('function submitProperties('), source.indexOf('function readForm('));
+  assert.match(updateDirtyState, /rememberEditedSection\(event\.target\)/);
+  assert.match(updateDirtyState, /applyButton\.disabled = !dirty && !pendingSection/);
+  assert.match(submitProperties, /pendingSectionApply\(\)\?\.click\(\)/);
+  assert.match(source, /function sectionApplyButtonFor\(target\)/);
+  assert.match(source, /apply\?\.isConnected && !apply\.disabled/);
+});

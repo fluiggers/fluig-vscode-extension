@@ -30,6 +30,7 @@
     remoteBusinessPeriodCatalogByProcess: new Map(),
     remoteDesignCatalogByProcess: new Map(),
     propertyCategoryOpen: new Map(),
+    editedSectionApply: null,
     renderedPropertyId: '',
     isDragging: false,
     pointerInteraction: null,
@@ -7363,18 +7364,44 @@
     receiverField.replaceWith(createField(receiverProperty, currentReceiver));
   }
 
-  function updateDirtyState() {
+  function updateDirtyState(event) {
+    if (event?.target) rememberEditedSection(event.target);
     const current = readForm();
     const dirty = Object.keys(current).some((key) => current[key] !== state.formInitial[key]);
-    applyButton.disabled = !dirty;
-    dirtyHint.textContent = dirty ? 'Alterações não aplicadas' : '';
+    const pendingSection = pendingSectionApply();
+    applyButton.disabled = !dirty && !pendingSection;
+    dirtyHint.textContent = dirty || pendingSection ? 'Alterações não aplicadas' : '';
+  }
+
+  // O rodapé também aplica a última seção editada (Geral do processo, atribuição...), cujo botão
+  // próprio costuma ficar fora da tela. Só a última: aplicar re-renderiza o painel e descarta as demais.
+  function rememberEditedSection(target) {
+    const apply = sectionApplyButtonFor(target);
+    if (apply) state.editedSectionApply = apply;
+  }
+
+  function sectionApplyButtonFor(target) {
+    for (let section = target.closest?.('section'); section; section = section.parentElement?.closest('section')) {
+      const apply = section.querySelector('button.primary[class*="-apply"]');
+      if (apply) return apply;
+    }
+    return null;
+  }
+
+  function pendingSectionApply() {
+    const apply = state.editedSectionApply;
+    return apply?.isConnected && !apply.disabled ? apply : null;
   }
 
   function submitProperties(event) {
     event.preventDefault();
     const current = readForm();
     const changes = Object.fromEntries(Object.entries(current).filter(([key, value]) => value !== state.formInitial[key]));
-    if (Object.keys(changes).length === 0) return;
+    if (Object.keys(changes).length === 0) {
+      pendingSectionApply()?.click();
+      updateDirtyState();
+      return;
+    }
     applyButton.disabled = true;
     dirtyHint.textContent = 'Aplicando...';
     vscode.postMessage({ type: 'updateProperties', elementId: state.selectedId, changes });
