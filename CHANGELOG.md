@@ -2,6 +2,7 @@
 
 ## 3.0.1-alpha
 
+- Troca a lista de seleção de grupo, papel e usuário dos mecanismos de atribuição (atividade, gestor do processo, condição de gateway, segurança de anexos e Associação) por um campo com sugestões que filtra pelo código ou pelo nome ao digitar; quando o processo ainda não tem servidor e só há um servidor configurado, os catálogos vêm dele.
 - Adiciona o comando "Novo Projeto Fluig" (clique direito numa pasta, botão na aba Fluig ou paleta), que cria a estrutura de pastas do Fluig Studio, um processo inicial e o formulário `form_<projeto>` já vinculado.
 - "Novo Diagrama de Processo" passa a abrir com uma pool (nome da pasta do projeto), uma raia e início → atividade → fim ligados.
 - Os comandos "Novo ...", as importações do servidor e as exportações de formulário, widget e eventos de processo passam a usar o projeto Fluig da pasta clicada ou do arquivo aberto (a primeira pasta acima com `.project` ou `workflow/`), em vez de sempre a raiz do workspace; num workspace com vários projetos cada arquivo vai para o projeto certo.

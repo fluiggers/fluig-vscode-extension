@@ -57,7 +57,7 @@ const { BackupService } = require('./backupService');
 const { discoverFormFields, discoverLocalFormCatalog } = require('./formFields');
 const { discoverExpedientCatalog } = require('./expedientCatalog');
 const { discoverVolumeCatalog } = require('./volumeCatalog');
-const { discoverServerCatalog, resolveServerConfiguration } = require('./serverCatalog');
+const { discoverServerCatalog, resolveCatalogServerConfiguration, resolveServerConfiguration } = require('./serverCatalog');
 const { RemoteFormCatalogService } = require('./remoteFormCatalog');
 const { discoverMechanismCatalog } = require('./mechanismCatalog');
 const { discoverUserCatalog } = require('./userCatalog');
@@ -1359,8 +1359,7 @@ class FluigProcessEditorProvider {
     const localCatalog = await discoverUserCatalog(vscode, document.uri);
     const process = model.process;
     const serverId = String(requestedServerId || process?.attributes?.serverId || '').trim();
-    if (!serverId) return localCatalog;
-    const server = await resolveServerConfiguration(vscode, document.uri, serverId);
+    const server = await resolveCatalogServerConfiguration(vscode, document.uri, serverId);
     if (!server) return localCatalog;
     const cached = this.remoteFormCatalog.cachedUsers(server);
     if (cached.length) return cached;
@@ -1375,8 +1374,7 @@ class FluigProcessEditorProvider {
   async discoverEffectiveRoleCatalog(document, model, requestedServerId = '') {
     const process = model.process;
     const serverId = String(requestedServerId || process?.attributes?.serverId || '').trim();
-    if (!serverId) return [];
-    const server = await resolveServerConfiguration(vscode, document.uri, serverId);
+    const server = await resolveCatalogServerConfiguration(vscode, document.uri, serverId);
     if (!server) return [];
     const cached = this.remoteFormCatalog.cachedWorkflowRoles(server);
     if (cached.length) return cached;
@@ -1390,8 +1388,7 @@ class FluigProcessEditorProvider {
   async discoverEffectiveGroupCatalog(document, model, requestedServerId = '') {
     const process = model.process;
     const serverId = String(requestedServerId || process?.attributes?.serverId || '').trim();
-    if (!serverId) return [];
-    const server = await resolveServerConfiguration(vscode, document.uri, serverId);
+    const server = await resolveCatalogServerConfiguration(vscode, document.uri, serverId);
     if (!server) return [];
     const cached = this.remoteFormCatalog.cachedGroups(server);
     if (cached.length) return cached;

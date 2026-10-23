@@ -2,7 +2,7 @@
 
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { extractServerCatalog, extractServerConfigurations, matchesServer } = require('../../src/bpmn/serverCatalog');
+const { extractServerCatalog, extractServerConfigurations, matchesServer, pickCatalogServer } = require('../../src/bpmn/serverCatalog');
 
 test('extrai somente identificacao segura dos servidores cadastrados', () => {
   const source = JSON.stringify({ configurations: [{
@@ -41,4 +41,14 @@ test('resolve a conexão pelo valor gravado no processo, nome ou id interno', ()
   assert.equal(matchesServer(configuration, 'uuid-interno'), true);
   assert.equal(matchesServer(configuration, 'outro'), false);
   assert.equal(extractServerConfigurations('{"configurations":[]}').length, 0);
+});
+
+test('catálogos de atribuição usam o único servidor configurado quando o processo não tem serverId', () => {
+  const unico = { name: 'Produção', host: 'fluig.local' };
+  const outro = { name: 'Homologação', host: 'hml.local' };
+  assert.equal(pickCatalogServer([unico], ''), unico);
+  assert.equal(pickCatalogServer([unico, outro], ''), null);
+  assert.equal(pickCatalogServer([], ''), null);
+  assert.equal(pickCatalogServer([unico, outro], 'homologação'), outro);
+  assert.equal(pickCatalogServer([unico], 'inexistente'), null);
 });

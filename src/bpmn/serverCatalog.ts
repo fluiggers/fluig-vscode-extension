@@ -77,6 +77,19 @@ async function readServerConfiguration(vscode, processUri) {
   return { configurations: [], source: '' };
 }
 
+// Sem servidor gravado no processo, usa o único servidor configurado (processo novo ainda sem serverId).
+function pickCatalogServer(configurations, requestedValue) {
+  if (String(requestedValue ?? '').trim()) {
+    return configurations.find((configuration) => matchesServer(configuration, requestedValue)) ?? null;
+  }
+  return configurations.length === 1 ? configurations[0] : null;
+}
+
+async function resolveCatalogServerConfiguration(vscode, processUri, requestedValue) {
+  const { configurations } = await readServerConfiguration(vscode, processUri);
+  return pickCatalogServer(configurations, requestedValue);
+}
+
 async function discoverServerCatalog(vscode, processUri) {
   const { configurations } = await readServerConfiguration(vscode, processUri);
   return extractServerCatalog(JSON.stringify({ configurations }));
@@ -92,6 +105,8 @@ module.exports = {
   extractServerCatalog,
   extractServerConfigurations,
   matchesServer,
+  pickCatalogServer,
+  resolveCatalogServerConfiguration,
   resolveServerConfiguration,
   serverCatalogValue
 };
