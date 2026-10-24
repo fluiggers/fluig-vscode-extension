@@ -1,6 +1,6 @@
 # Change Log
 
-## 3.0.1-alpha
+## 3.0.2-alpha
 
 - O botão "Aplicar" do rodapé do painel de propriedades passa a aplicar também a última seção editada (por exemplo "Geral do processo", com descrição e categoria), cujo botão próprio costuma ficar fora da tela; antes ele continuava desabilitado e a alteração se perdia ao salvar.
 - Troca a lista de seleção de grupo, papel e usuário dos mecanismos de atribuição (atividade, gestor do processo, condição de gateway, segurança de anexos e Associação) por um campo com sugestões que filtra pelo código ou pelo nome ao digitar; quando o processo ainda não tem servidor e só há um servidor configurado, os catálogos vêm dele.
@@ -14,6 +14,9 @@
 - Detecta a versão do Fluig do servidor de destino na exportação e gera o ECM30 para ela; se a versão não for detectada, usa `fluiggers.fluigRuntimeVersion` e avisa na confirmação.
 - Limita a busca de referências na exclusão de elementos aos scripts do próprio processo e aos eventos do formulário vinculado, que antes bloqueava a exclusão por causa de formulários de outros processos do workspace.
 - Corrige automaticamente, ao abrir o `.process`, o nome do diagrama diferente do código do processo (FMT-002), que deixava o editor somente leitura.
+
+## 3.0.1-alpha
+
 - Corrige o erro de validação equivocada do tratar erro nos casos de atividade "Capturar Erro".
 - Codifica usuário e senha no login por formulário, permitindo senhas com `&`, `+`, `%` e `=`.
 - Preserva, no mecanismo "Atribuição por Associação", os mecanismos aninhados que a aba ainda não edita (Papel, Campo Formulário, Executor, Grupos Colaborador), que antes eram descartados ao salvar.
