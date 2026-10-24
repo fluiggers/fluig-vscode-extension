@@ -2,7 +2,7 @@
     "name": "fluiggers-fluig-vscode-extension",
     "displayName": "Fluig - Extensão para Desenvolvimento",
     "description": "Extensão para agilizar o desenvolvimento para o TOTVS Fluig no VS Code",
-    "version": "3.0.1",
+    "version": "3.0.2",
     "publisher": "Fluiggers",
     "activationEvents": [
         "workspaceContains:**/*.process",
