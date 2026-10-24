@@ -26,16 +26,32 @@
     },
     "contributors": [
         {
-            "name": "Pedro Costa",
-            "url": "https://github.com/pedro-costa-neto"
-        },
-        {
             "name": "Bruno Araujo",
             "url": "https://github.com/brunotda"
         },
         {
+            "name": "Daniel Bom Conselho Sales",
+            "url": "https://github.com/danielbomconselho"
+        },
+        {
+            "name": "Daniel Cabral Santos",
+            "url": "https://github.com/daniel-cabral"
+        },
+        {
+            "name": "Gian Silva",
+            "url": "https://github.com/kyso1"
+        },
+        {
+            "name": "Isaac Figueiredo",
+            "url": "https://github.com/isacfg"
+        },
+        {
             "name": "Jhonatan Serafim",
             "url": "https://github.com/jhonnytuba"
+        },
+        {
+            "name": "Pedro Costa",
+            "url": "https://github.com/pedro-costa-neto"
         }
     ],
     "engines": {
