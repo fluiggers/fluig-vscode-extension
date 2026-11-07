@@ -21,13 +21,6 @@ export class LoginService {
         }
 
         cookies = server.hasBrowser ? await this.tryBrowserAuthenticate(server) : await this.tryAuthenticate(server);
-
-    	if (this.isAuthenticated(cookies) && !await this.isValidCookies(cookies, server)) {
-			await this.setDemoMode(server);
-
-			cookies = server.hasBrowser ? await this.tryBrowserAuthenticate(server) : await this.tryAuthenticate(server);
-    	}
-
         this.cachedCookies[cookiesKey] = cookies;
 
         return cookies;
@@ -59,10 +52,6 @@ export class LoginService {
         return cookiesKey;
     }
 
-    private static isAuthenticated(cookies: string) {
-        return cookies.includes("JSESSIONIDSSO") || cookies.includes("jwt.token");
-    }
-
     private static async isValidCookies(cookiesCached: string, server: ServerDTO) : Promise<boolean> {
         const pingUrl = `${UtilsService.getHost(server)}/portal/p/api/servlet/ping`;
 
@@ -81,14 +70,6 @@ export class LoginService {
         }
 
         return false;
-    }
-
-    private static async setDemoMode(server: ServerDTO) {
-        const pingUrl = `${UtilsService.getHost(server)}/portal/api/servlet/license.do?demo=true`;
-
-        await fetch(pingUrl, {
-            method: 'POST'
-        });
     }
 
     private static async tryAuthenticate(server: ServerDTO) {
