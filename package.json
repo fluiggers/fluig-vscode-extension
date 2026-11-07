@@ -704,7 +704,11 @@
                     }
                 }
             }
-        ]
+        ],
+        "FluiggersWidget": {
+            "url": "https://github.com/fluiggers/fluig-widget-helper/raw/57b44bfbd8efb1e996393d50e1d596d4b2c6a58d/target/fluiggersWidget.war",
+            "sha256": "01382e97b85835f52b87f8c79f8310560053c139b25d8d5ae09fbf900eb0d805"
+        }
     },
     "scripts": {
         "vscode:prepublish": "npm run package",

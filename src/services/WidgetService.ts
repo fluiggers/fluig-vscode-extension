@@ -1,7 +1,8 @@
-import { Uri, window, workspace, FileType, ProgressLocation } from "vscode";
+import { Uri, window, workspace, FileType, ProgressLocation, extensions } from "vscode";
 import { readFileSync } from "fs";
 import { glob } from "glob";
 import { basename } from "path";
+import { createHash } from 'crypto';
 import * as JSZip from "jszip";
 import { UtilsService } from "../services/UtilsService";
 import { TemplateService } from "../services/TemplateService";
@@ -214,10 +215,25 @@ export class WidgetService {
         }
 
         try {
-            const downloadedWidget = await fetch("https://raw.githubusercontent.com/fluiggers/fluig-widget-helper/refs/heads/master/target/fluiggersWidget.war")
+            const myExtension = extensions.getExtension("Fluiggers.fluiggers-fluig-vscode-extension");
+
+            if (!myExtension) {
+                throw new Error("Não foi possível carregar os dados da extensão");
+            }
+
+            const widgetProperties = myExtension.packageJSON.contributes.FluiggersWidget;
+
+            const downloadedWidget = await fetch(widgetProperties.url)
 
             if (!downloadedWidget.ok || !downloadedWidget.body) {
                 throw new Error("Não foi possível baixar a widget do GitHub");
+            }
+
+            const blob = await downloadedWidget.blob();
+            const checkSum = await WidgetService.getBlobChecksum(blob);
+
+            if (widgetProperties.sha256 !== checkSum) {
+                throw new Error("Arquivo do GitHub não compatível com essa versão da Extensão");
             }
 
             const url = `${UtilsService.getHost(server)}/portal/api/rest/wcmservice/rest/product/uploadfile`;
@@ -225,7 +241,7 @@ export class WidgetService {
             const formData = new FormData();
             formData.append("fileName", "fluiggersWidget.war");
             formData.append("fileDescription", "WCM Eclipse Plugin Deploy Artifact");
-            formData.append("attachment", await downloadedWidget.blob(), "fluiggersWidget.war");
+            formData.append("attachment", blob, "fluiggersWidget.war");
 
             const response:any = await fetch(
                 url,
@@ -446,5 +462,11 @@ export class WidgetService {
             }
             return r.arrayBuffer();
         })
+    }
+
+    public static async getBlobChecksum(blob: Blob): Promise<string> {
+        const arrayBuffer = await blob.arrayBuffer();
+        const buffer = Buffer.from(arrayBuffer);
+        return createHash("sha256").update(buffer).digest('hex');
     }
 }
