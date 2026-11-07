@@ -1,5 +1,10 @@
 # Change Log
 
+## 3.0.3-alpha
+
+- Melhora a segurança ao instalar a FluiggersWidget, efetuando o download de um commit específico e realizando checksum;
+- Remove tentativa de Login usando o Modo Demonstração nos casos de falha na primeira tentativa de Login;
+
 ## 3.0.2-alpha
 
 - O botão "Aplicar" do rodapé do painel de propriedades passa a aplicar também a última seção editada (por exemplo "Geral do processo", com descrição e categoria), cujo botão próprio costuma ficar fora da tela; antes ele continuava desabilitado e a alteração se perdia ao salvar.
