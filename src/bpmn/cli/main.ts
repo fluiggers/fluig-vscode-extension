@@ -10,6 +10,7 @@ const { normalizeProcessCode } = require('../processIdentity');
 const { OPERATIONS, applyOperations } = require('./operations');
 const { creationTemplateText, editorData, openSession } = require('./session');
 const { lintProcess } = require('./lint');
+const { renderPreview } = require('./render');
 
 const USAGE = `fluig-bpmn: lê e edita diagramas .process do Fluig sem abrir o editor visual.
 
@@ -21,8 +22,11 @@ const USAGE = `fluig-bpmn: lê e edita diagramas .process do Fluig sem abrir o e
       formFields, localForms. Sem nome, mostra as contagens.
   fluig-bpmn ops [tipo]
       Operações aceitas por "apply", cada uma com um exemplo de payload.
-  fluig-bpmn apply <arquivo.process> --ops <json | @arquivo.json | -> [--dry-run]
+  fluig-bpmn apply <arquivo.process> --ops <json | @arquivo.json | -> [--dry-run] [--render]
       Aplica as operações em ordem. Grava só se todas passarem; antes, faz backup em .fluig-bpmn/backups.
+      --render devolve também a imagem do resultado, inclusive em --dry-run.
+  fluig-bpmn render <arquivo.process> [--out imagem.png] [--no-ids]
+      Imagem PNG do diagrama com o id de cada elemento e fluxo, para conferir o layout.
   fluig-bpmn validate <arquivo.process>
       Validação estrutural do editor mais as invariantes que só o editor garante. Sai com 1 se houver erro.
   fluig-bpmn new <codigo> --project <raiz do projeto> [--form pasta] [--pool-name nome]
@@ -32,8 +36,8 @@ const USAGE = `fluig-bpmn: lê e edita diagramas .process do Fluig sem abrir o e
   A CLI não consulta o servidor Fluig: os catálogos do servidor vêm do cache que o editor visual
   grava em .fluig-bpmn/catalogs ao abrir o processo.`;
 
-const VALUE_FLAGS = new Set(['element', 'search', 'limit', 'form', 'ops', 'project', 'pool-name']);
-const BOOLEAN_FLAGS = new Set(['dry-run', 'help']);
+const VALUE_FLAGS = new Set(['element', 'search', 'limit', 'form', 'ops', 'project', 'pool-name', 'out']);
+const BOOLEAN_FLAGS = new Set(['dry-run', 'help', 'render', 'no-ids']);
 
 const CATALOGS = Object.freeze({
   users: 'userCatalog',
@@ -101,10 +105,16 @@ const COMMANDS = {
       names: result.aliases,
       repairs: result.repairs,
       validation: summarize({ ...validation, lint: lintProcess(result.text, model, session.filePath) }),
-      warnings: session.warnings
+      warnings: session.warnings,
+      ...(flags.render ? { preview: renderPreview(session.filePath, result.text, { outFile: flags.out }) } : {})
     };
     if (output.dryRun || !output.changed) return output;
     return { ...output, ...await commit(session, result) };
+  },
+  render: async ({ positionals, flags }) => {
+    const filePath = path.resolve(requiredFile(positionals));
+    const text = await fs.promises.readFile(filePath, 'utf8');
+    return { file: filePath, ...renderPreview(filePath, text, { outFile: flags.out, ids: !flags['no-ids'] }) };
   },
   validate: async ({ positionals }) => {
     const filePath = path.resolve(requiredFile(positionals));

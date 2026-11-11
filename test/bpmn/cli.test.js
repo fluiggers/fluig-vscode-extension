@@ -290,6 +290,25 @@ test('instala no projeto a skill, o bloco do AGENTS.md e um atalho que roda a CL
   assert.equal(output.ok, true);
 });
 
+test('render desenha o processo com os ids e apply --render mostra o resultado sem gravar', async (t) => {
+  const { root, file } = fixtureProject(t);
+  const { previewSvg } = require('../../src/bpmn/cli/render');
+  const preview = previewSvg(fixture);
+  assert.ok(preview.width > 500 && preview.height > 300);
+  assert.match(preview.svg, />task5<\/text>/);
+  assert.match(preview.svg, />flow46<\/text>/);
+  assert.equal(previewSvg(fixture, { ids: false }).svg.includes('>task5</text>'), false);
+
+  const before = await read(file);
+  const result = await apply(file, [{ type: 'createConnectedTask', task: { sourceId: 'task5' }, as: 'nova' }], '--dry-run', '--render');
+  assert.equal(result.ok, true, result.error);
+  assert.equal(before.equals(await read(file)), true);
+  assert.equal(result.preview.svg, path.join(root, '.fluig-bpmn', 'preview', 'toexportbpmnteste.svg'));
+  assert.match(fs.readFileSync(result.preview.svg, 'utf8'), new RegExp(`>${result.names.nova.elementId}</text>`));
+  assert.ok(result.preview.png ? fs.statSync(result.preview.png).size > 0 : result.preview.hint);
+  assert.equal(fs.readFileSync(path.join(root, '.fluig-bpmn', 'preview', '.gitignore'), 'utf8'), '*\n');
+});
+
 test('cada operação documenta um exemplo aplicável e erros de uso voltam como JSON', async () => {
   for (const [type, operation] of Object.entries(OPERATIONS)) {
     assert.ok(operation.summary.length > 20, type);

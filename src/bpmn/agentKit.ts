@@ -21,7 +21,19 @@ Rode da raiz do projeto Fluig. Toda saída é JSON.
 4. \`ops\` lista as operações, e \`ops <tipo>\` mostra um payload de exemplo.
 5. \`apply <arquivo> --ops '<json>' --dry-run\` testa um lote. Sem \`--dry-run\`, grava.
 6. \`validate <arquivo>\` confere o resultado.
-7. \`new <codigo> --project .\` cria um processo novo.
+7. \`render <arquivo>\` gera um PNG do diagrama com o id de cada elemento e fluxo.
+8. \`new <codigo> --project .\` cria um processo novo.
+
+## Confira o desenho
+
+Um processo válido pode ficar feio ou confuso. Depois de criar ou mover elementos, olhe o resultado:
+
+1. Rode \`apply\` com \`--render\` (funciona com \`--dry-run\`) ou rode \`render\`. A resposta traz o caminho do PNG em \`preview.png\` ou \`png\`.
+2. Abra o PNG como imagem e procure: elementos sobrepostos ou colados, elemento fora da raia, fluxo passando por cima de um elemento, fluxos cruzados sem necessidade, rótulos ilegíveis, e o caminho principal fora da ordem esquerda para a direita.
+3. Corrija com \`updateLayout\`: \`moves\` muda a posição (\`describe\` mostra \`bounds\` de cada elemento), \`resizes\` aumenta pool ou raia, e \`connections\` redesenha um fluxo. Passe \`"bendpoints": []\` para o fluxo sair reto entre dois elementos alinhados.
+4. Gere a imagem de novo. Pare quando não houver mais problema da lista, ou depois de três rodadas.
+
+Mantenha 60 px ou mais entre elementos e alinhe pelo centro os que estão na mesma linha. Se não houver conversor de imagem, a resposta traz \`hint\` e só o SVG: avise o usuário.
 
 Regras:
 

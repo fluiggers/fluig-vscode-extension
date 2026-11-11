@@ -26,6 +26,7 @@ Toda saída é JSON. O código de saída é 0 quando deu certo e 1 quando houve 
 | `catalog <arquivo> [nome]` | Catálogos do editor: `users`, `roles`, `groups`, `mechanisms`, `processes`, `expedients`, `volumes`, `servers`, `formFields`, `localForms`. Aceita `--search` e `--limit`. |
 | `ops [tipo]` | Operações aceitas por `apply`. Com o tipo, mostra um payload de exemplo. |
 | `apply <arquivo> --ops <json \| @arquivo \| ->` | Aplica uma lista de operações. `--dry-run` valida sem gravar. |
+| `render <arquivo>` | PNG do diagrama com o id de cada elemento e fluxo. `--out` escolhe o arquivo e `--no-ids` tira os ids. |
 | `validate <arquivo>` | Validação estrutural do editor mais as invariantes que só o editor garante. |
 | `new <codigo> --project <raiz>` | Cria o processo com início, atividade e fim, e as três literais. |
 
@@ -46,6 +47,12 @@ Cada operação de `apply` tem o nome e o payload da mensagem que o webview envi
 - **Posição automática.** Sem `x`, `y` e `bendpoints`, a CLI escolhe uma área livre perto da origem, dentro da mesma raia, e calcula a rota com o roteador do editor. Quando a raia não tem espaço, o elemento fica fora dela e a resposta traz um `notice`.
 - **Backup.** Antes de gravar, o arquivo original vai para `.fluig-bpmn/backups`, como no editor.
 - **Exclusão.** `deleteElements` remove junto os fluxos incidentes e o script que pertence ao elemento. Recusa quando outro script ou evento de formulário cita o código do elemento.
+
+## Conferir o desenho
+
+Um processo válido pode ficar confuso de ler. `render`, ou `apply --render` (inclusive com `--dry-run`), grava um PNG em `.fluig-bpmn/preview`, fora do git. A skill instalada manda o agente olhar a imagem depois de cada edição, corrigir sobreposições e fluxos tortos com `updateLayout`, e repetir por até três rodadas.
+
+O SVG vem do mesmo desenhista que o editor usa para exportar a imagem do processo. A extensão não empacota um conversor para PNG: a CLI usa o primeiro que achar entre `rsvg-convert`, ImageMagick, Inkscape, Chrome, Edge e, no macOS, `qlmanage`. Sem nenhum, devolve só o SVG e um `hint`.
 
 ## Contexto do servidor
 
