@@ -43,9 +43,10 @@ function safeIdentifier(value, label) {
   return normalized;
 }
 
+// O Fluig Studio aceita espaço e acento no código do processo e grava scripts como "Solicitação de Compra.servicetask9.js".
 function safeFileNamePart(value, label) {
   const normalized = String(value ?? '').trim();
-  if (!/^[A-Za-z0-9_][A-Za-z0-9_.-]*$/.test(normalized) || normalized.includes('..')) {
+  if (!/^[\p{L}\p{N}_][\p{L}\p{N}_. -]*$/u.test(normalized) || normalized.includes('..')) {
     throw new Error(`${label} inválido para gerar o script.`);
   }
   return normalized;

@@ -87,3 +87,8 @@ test('recusa quantidade, operador, estrutura e elemento incompatíveis', () => {
   assert.throws(() => patchTaskAttachmentRules(reference(58), 'servicetask11', []), /não aceita regras de anexo/);
   assert.throws(() => patchTaskAttachmentRules(reference(58), 'usertask30', []), /não aceita regras de anexo/);
 });
+
+test('lê a quantidade vazia que o Fluig Studio grava em regras sem quantidade', () => {
+  const stored = task(58).attributes.attachmentRules.replace('<amount>2</amount>', '<amount></amount>');
+  assert.equal(attachmentRuleValues(stored)[0].amount, 0);
+});

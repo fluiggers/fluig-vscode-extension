@@ -66,3 +66,11 @@ test('recusa tipo incompatível, referência divergente e identificador inseguro
   assert.throws(() => patchTaskScriptReference(divergent, 'servicetask11'), /diverge do padrão seguro/);
   assert.throws(() => expectedTaskScriptFileName('../processo', 'servicetask11'), /código do processo inválido/);
 });
+
+test('aceita código de processo com espaço e acento, como o Fluig Studio grava', () => {
+  assert.equal(
+    expectedTaskScriptFileName('Solicitação de Pagamento', 'servicetask166'),
+    'Solicitação de Pagamento.servicetask166.js'
+  );
+  assert.throws(() => expectedTaskScriptFileName('pasta/processo', 'servicetask11'), /código do processo inválido/);
+});
