@@ -142,7 +142,9 @@ test('eventos iniciais compatíveis escolhem ou removem inicializador do cache',
   assert.match(source, /function renderEventInitializerEditor\(element\)/);
   assert.match(source, /className = 'event-initializer-user'/);
   assert.match(source, /type: 'updateEventInitializer', elementId: element\.id, initializer/);
-  assert.match(provider, /discoverUserCatalog\(vscode, document\.uri\)/);
+  const catalogs = fs.readFileSync(path.join(__dirname, '..', '..', 'src', 'bpmn', 'editorCatalogs.ts'), 'utf8');
+  assert.match(provider, /this\.catalogs\.all\(document\.uri, model\)/);
+  assert.match(catalogs, /discoverUserCatalog\(this\.vscode, uri\)/);
   assert.match(provider, /applyEventInitializerChanges\(document, panel, message\.elementId, message\.initializer\)/);
   assert.match(provider, /patchEventInitializer\(document\.getText\(\), elementId, initializer\)/);
 });
