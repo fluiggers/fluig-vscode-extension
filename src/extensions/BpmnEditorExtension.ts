@@ -4,6 +4,7 @@ interface FluigProcessEditorCommands {
     validateActiveDocument(): Promise<void>;
     generateActiveTranslations(): Promise<void>;
     exportActivePng(processUri?: vscode.Uri): Promise<void>;
+    installAgentKit(processUri: vscode.Uri): void;
 }
 
 type FluigProcessEditorProviderInstance = vscode.CustomTextEditorProvider & FluigProcessEditorCommands;
@@ -53,6 +54,10 @@ export class BpmnEditorExtension {
                 "fluigBpmn.exportPng",
                 (processUri?: vscode.Uri) => provider.exportActivePng(processUri)
             )
+        );
+        // Um agente pode chegar ao projeto antes de alguém abrir um diagrama no editor.
+        void vscode.workspace.findFiles("**/workflow/diagrams/*.process", "**/node_modules/**").then(
+            (processes) => processes.forEach((uri) => provider.installAgentKit(uri))
         );
     }
 

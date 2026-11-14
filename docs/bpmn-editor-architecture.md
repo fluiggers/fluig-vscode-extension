@@ -7,6 +7,7 @@ O editor de processos Fluig e distribuido no mesmo VSIX da extensao principal.
 - `src/extensions/BpmnEditorExtension.ts`: fronteira tipada com a API do VS Code e registro dos comandos.
 - `src/bpmn/*.ts`: parser, validadores, patchers, catalogos e provider do editor.
 - `media/bpmn`: webview executada no sandbox do VS Code.
+- `src/bpmn/cli`: CLI `fluig-bpmn`, que aplica os mesmos patchers fora do VS Code para agentes e scripts. Veja `docs/bpmn-cli.md`.
 - `test/bpmn`: testes funcionais e fixtures autocontidos.
 
 O bundle e gerado pela mesma entrada `src/extension.ts` e pelo mesmo webpack do restante da extensao. O editor separado nao e uma dependencia de execucao.

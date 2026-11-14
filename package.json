@@ -56,6 +56,9 @@
         "Other"
     ],
     "main": "./dist/extension.js",
+    "bin": {
+        "fluig-bpmn": "./dist/fluig-bpmn.js"
+    },
     "contributes": {
         "customEditors": [
             {
@@ -683,6 +686,12 @@
                         "type": "string",
                         "description": "Diretorio relativo a raiz do workspace usado para backups antes de editar arquivos .process",
                         "default": ".fluig-bpmn/backups",
+                        "scope": "resource"
+                    },
+                    "fluiggers.bpmnAgentKit": {
+                        "type": "boolean",
+                        "description": "Instala nos projetos Fluig o atalho da CLI fluig-bpmn, a skill do Claude Code e um bloco no AGENTS.md, para agentes de codigo editarem arquivos .process com seguranca",
+                        "default": true,
                         "scope": "resource"
                     },
                     "fluiggers.bpmnEditorPriority": {

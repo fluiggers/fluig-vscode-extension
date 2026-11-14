@@ -54,13 +54,12 @@ const { validateProcess } = require('./processValidator');
 const { toWebviewData } = require('./webviewData');
 const { getWebviewHtml } = require('./webviewHtml');
 const { BackupService } = require('./backupService');
-const { discoverFormFields, discoverLocalFormCatalog } = require('./formFields');
-const { discoverExpedientCatalog } = require('./expedientCatalog');
-const { discoverVolumeCatalog } = require('./volumeCatalog');
-const { discoverServerCatalog, resolveCatalogServerConfiguration, resolveServerConfiguration } = require('./serverCatalog');
+const { discoverLocalFormCatalog } = require('./formFields');
+const { discoverServerCatalog, resolveServerConfiguration } = require('./serverCatalog');
 const { RemoteFormCatalogService } = require('./remoteFormCatalog');
-const { discoverMechanismCatalog } = require('./mechanismCatalog');
-const { discoverUserCatalog } = require('./userCatalog');
+const { EditorCatalogs } = require('./editorCatalogs');
+const { writeCatalogSnapshot } = require('./catalogSnapshot');
+const { installAgentKit } = require('./agentKit');
 const { findLikelyNodeReferences, projectRootForProcessPath, referenceScanFilter } = require('./nodeReferenceScanner');
 const { triggerScriptConditionFileName } = require('./eventTrigger');
 const { buildTranslationPlan, LOCALES, validateTranslationPlan } = require('./translationService');
@@ -79,6 +78,7 @@ class FluigProcessEditorProvider {
     this.context = context;
     this.backupService = new BackupService();
     this.remoteFormCatalog = new RemoteFormCatalogService();
+    this.catalogs = new EditorCatalogs(vscode, this.remoteFormCatalog);
     this.translationPreviewProvider = new TranslationPreviewProvider();
     context.subscriptions.push(vscode.workspace.registerTextDocumentContentProvider(
       TranslationPreviewProvider.scheme,
@@ -169,37 +169,12 @@ class FluigProcessEditorProvider {
       try {
         const model = parseProcess(document.getText());
         const validation = validateProcess(model);
-        const [formFields, localFormCatalog, mechanismCatalog, userCatalog, roleCatalog, groupCatalog, processCatalog, expedientCatalog, volumeCatalog, serverCatalog] = await Promise.all([
-          this.discoverEffectiveFormFields(document, model),
-          discoverLocalFormCatalog(vscode, document.uri),
-          this.discoverEffectiveMechanismCatalog(document, model),
-          this.discoverEffectiveUserCatalog(document, model),
-          this.discoverEffectiveRoleCatalog(document, model),
-          this.discoverEffectiveGroupCatalog(document, model),
-          this.discoverEffectiveProcessCatalog(document, model),
-          this.discoverEffectiveExpedientCatalog(document, model),
-          this.discoverEffectiveVolumeCatalog(document, model),
-          discoverServerCatalog(vscode, document.uri)
-        ]);
-        const subProcessFormFieldCatalogs = await this.discoverSubProcessFormFieldCatalogs(
-          document,
-          model,
-          formFields
-        );
+        const catalogs = await this.catalogs.all(document.uri, model);
+        this.saveCatalogSnapshot(document, model, catalogs);
         void panel.webview.postMessage({
           type: 'model',
           data: toWebviewData(model, validation, {
-            formFields,
-            localFormCatalog,
-            mechanismCatalog,
-            userCatalog,
-            roleCatalog,
-            groupCatalog,
-            processCatalog,
-            subProcessFormFieldCatalogs,
-            expedientCatalog,
-            volumeCatalog,
-            serverCatalog,
+            ...catalogs,
             extensionVersion: this.context.extension.packageJSON.version
           })
         });
@@ -349,6 +324,7 @@ class FluigProcessEditorProvider {
       }
     });
     void this.fixDiagramName(document);
+    this.installAgentKit(document.uri);
     panel.onDidDispose(() => {
       changeSubscription.dispose();
       const remainingPanels = this.panels.get(documentKey);
@@ -363,6 +339,45 @@ class FluigProcessEditorProvider {
         this.pendingPngExports.delete(requestId);
       }
     });
+  }
+
+  /**
+   * Guarda os catálogos para a CLI `fluig-bpmn`, que não consulta o servidor. É uma conveniência:
+   * falhar ao gravar não pode atrapalhar o editor.
+   */
+  saveCatalogSnapshot(document, model, catalogs) {
+    if (document.uri.scheme !== 'file') return;
+    try {
+      writeCatalogSnapshot(document.uri.fsPath, String(model.process?.attributes?.serverId ?? ''), catalogs);
+    } catch (error) {
+      console.warn(`Fluig BPMN: cache de catálogos não gravado: ${error.message}`);
+    }
+  }
+
+  /** Regrava o cache depois de uma busca feita pelo painel (mecanismos, expedientes, campos). */
+  async refreshCatalogSnapshot(document) {
+    try {
+      const model = parseProcess(document.getText());
+      this.saveCatalogSnapshot(document, model, await this.catalogs.all(document.uri, model));
+    } catch {
+      // O sendModel ja informa a falha de leitura do processo.
+    }
+  }
+
+  /**
+   * Instala no projeto o atalho da CLI e as instruções para agentes de código. Roda ao abrir um
+   * processo e só grava o que mudou; `fluiggers.bpmnAgentKit` desliga.
+   */
+  installAgentKit(processUri) {
+    if (processUri.scheme !== 'file') return;
+    if (!vscode.workspace.getConfiguration('fluiggers', processUri).get('bpmnAgentKit', true)) return;
+    const projectRoot = projectRootForProcessPath(processUri.fsPath);
+    if (!projectRoot) return;
+    try {
+      installAgentKit(projectRoot, path.join(this.context.extensionUri.fsPath, 'dist', 'fluig-bpmn.js'));
+    } catch (error) {
+      console.warn(`Fluig BPMN: instruções para agentes não instaladas: ${error.message}`);
+    }
   }
 
   /**
@@ -855,8 +870,8 @@ class FluigProcessEditorProvider {
     try {
       const model = parseProcess(document.getText());
       const [volumeCatalog, expedientCatalog, serverCatalog] = await Promise.all([
-        this.discoverEffectiveVolumeCatalog(document, model, configuration?.serverId),
-        this.discoverEffectiveExpedientCatalog(document, model, configuration?.serverId),
+        this.catalogs.volumes(document.uri, model, configuration?.serverId),
+        this.catalogs.expedients(document.uri, model, configuration?.serverId),
         discoverServerCatalog(vscode, document.uri)
       ]);
       const result = patchProcessGeneral(document.getText(), elementId, configuration, {
@@ -1207,6 +1222,7 @@ class FluigProcessEditorProvider {
         },
         () => this.remoteFormCatalog.fields(server, vscode.env.machineId, normalizedDocumentId)
       );
+      void this.refreshCatalogSnapshot(document);
       void panel.webview.postMessage({
         type: 'serverFormFieldsComplete',
         elementId,
@@ -1250,6 +1266,7 @@ class FluigProcessEditorProvider {
         },
         () => this.remoteFormCatalog.businessPeriods(server, vscode.env.machineId, { forceRefresh: true })
       );
+      void this.refreshCatalogSnapshot(document);
       void panel.webview.postMessage({
         type: 'serverBusinessPeriodsComplete',
         elementId,
@@ -1287,6 +1304,7 @@ class FluigProcessEditorProvider {
         },
         () => this.remoteFormCatalog.designCatalogs(server, vscode.env.machineId, { forceRefresh: true })
       );
+      void this.refreshCatalogSnapshot(document);
       void panel.webview.postMessage({
         type: 'serverDesignCatalogsComplete',
         elementId,
@@ -1309,177 +1327,6 @@ class FluigProcessEditorProvider {
         volumes: null
       });
     }
-  }
-
-  async discoverEffectiveFormFields(document, model) {
-    const localFields = await discoverFormFields(vscode, document.uri, model);
-    const process = model.process;
-    if (!process || String(process.attributes?.formSource ?? 'local').toLowerCase() !== 'server') return localFields;
-    const serverId = String(process.attributes?.serverId ?? '').trim();
-    const documentId = String(process.attributes?.cardIndex ?? '').trim();
-    if (!serverId || !documentId) return [];
-    const server = await resolveServerConfiguration(vscode, document.uri, serverId);
-    return server ? this.remoteFormCatalog.cachedFields(server, documentId) : [];
-  }
-
-  async discoverEffectiveExpedientCatalog(document, model, requestedServerId = '') {
-    const localCatalog = await discoverExpedientCatalog(vscode, document.uri);
-    const process = model.process;
-    const serverId = String(requestedServerId || process?.attributes?.serverId || '').trim();
-    if (!serverId) return localCatalog;
-    const server = await resolveServerConfiguration(vscode, document.uri, serverId);
-    if (!server) return localCatalog;
-    const remoteCatalog = this.remoteFormCatalog.cachedBusinessPeriods(server);
-    return remoteCatalog.length ? remoteCatalog : localCatalog;
-  }
-
-  async discoverEffectiveMechanismCatalog(document, model, requestedServerId = '') {
-    const localCatalog = await discoverMechanismCatalog(vscode, document.uri);
-    const process = model.process;
-    const serverId = String(requestedServerId || process?.attributes?.serverId || '').trim();
-    if (!serverId) return localCatalog;
-    const server = await resolveServerConfiguration(vscode, document.uri, serverId);
-    if (!server) return localCatalog;
-    const remoteCatalog = this.remoteFormCatalog.cachedAttributionMechanisms(server);
-    return remoteCatalog.length ? remoteCatalog : localCatalog;
-  }
-
-  async discoverEffectiveVolumeCatalog(document, model, requestedServerId = '') {
-    const localCatalog = await discoverVolumeCatalog(vscode, document.uri);
-    const process = model.process;
-    const serverId = String(requestedServerId || process?.attributes?.serverId || '').trim();
-    if (!serverId) return localCatalog;
-    const server = await resolveServerConfiguration(vscode, document.uri, serverId);
-    if (!server) return localCatalog;
-    const remoteCatalog = this.remoteFormCatalog.cachedVolumes(server);
-    return remoteCatalog.length ? remoteCatalog : localCatalog;
-  }
-
-  async discoverEffectiveUserCatalog(document, model, requestedServerId = '') {
-    const localCatalog = await discoverUserCatalog(vscode, document.uri);
-    const process = model.process;
-    const serverId = String(requestedServerId || process?.attributes?.serverId || '').trim();
-    const server = await resolveCatalogServerConfiguration(vscode, document.uri, serverId);
-    if (!server) return localCatalog;
-    const cached = this.remoteFormCatalog.cachedUsers(server);
-    if (cached.length) return cached;
-    try {
-      const remoteCatalog = await this.remoteFormCatalog.users(server, vscode.env.machineId);
-      return remoteCatalog.length ? remoteCatalog : localCatalog;
-    } catch {
-      return localCatalog;
-    }
-  }
-
-  async discoverEffectiveRoleCatalog(document, model, requestedServerId = '') {
-    const process = model.process;
-    const serverId = String(requestedServerId || process?.attributes?.serverId || '').trim();
-    const server = await resolveCatalogServerConfiguration(vscode, document.uri, serverId);
-    if (!server) return [];
-    const cached = this.remoteFormCatalog.cachedWorkflowRoles(server);
-    if (cached.length) return cached;
-    try {
-      return await this.remoteFormCatalog.workflowRoles(server, vscode.env.machineId);
-    } catch {
-      return [];
-    }
-  }
-
-  async discoverEffectiveGroupCatalog(document, model, requestedServerId = '') {
-    const process = model.process;
-    const serverId = String(requestedServerId || process?.attributes?.serverId || '').trim();
-    const server = await resolveCatalogServerConfiguration(vscode, document.uri, serverId);
-    if (!server) return [];
-    const cached = this.remoteFormCatalog.cachedGroups(server);
-    if (cached.length) return cached;
-    try {
-      return await this.remoteFormCatalog.groups(server, vscode.env.machineId);
-    } catch {
-      return [];
-    }
-  }
-
-  async discoverEffectiveProcessCatalog(document, model, requestedServerId = '') {
-    const process = model.process;
-    const serverId = String(requestedServerId || process?.attributes?.serverId || '').trim();
-    if (!serverId) return [];
-    const server = await resolveServerConfiguration(vscode, document.uri, serverId);
-    if (!server) return [];
-    const cached = this.remoteFormCatalog.cachedWorkflowProcesses(server);
-    if (cached.length) return cached;
-    try {
-      return await this.remoteFormCatalog.workflowProcesses(server, vscode.env.machineId);
-    } catch {
-      return [];
-    }
-  }
-
-  async discoverSubProcessFormFieldCatalogs(document, model, parentFields = []) {
-    const catalogs = {};
-    const subProcesses = model.elements.filter((element) => (
-      element.tag === 'BpmnSubProcess' && String(element.type) === '100'
-    ));
-    if (!subProcesses.length) return catalogs;
-    const process = model.process;
-    const serverId = String(process?.attributes?.serverId ?? '').trim();
-    const processFormId = String(process?.attributes?.formSource ?? '').toLowerCase() === 'server'
-      ? String(process?.attributes?.cardIndex ?? '').trim()
-      : '0';
-    if (!serverId) {
-      for (const child of subProcesses) {
-        catalogs[child.id] = {
-          supported: false,
-          reason: 'Selecione e aplique um servidor nas propriedades gerais do processo.',
-          parentFields,
-          childFields: []
-        };
-      }
-      return catalogs;
-    }
-    const server = await resolveServerConfiguration(vscode, document.uri, serverId);
-    if (!server) {
-      for (const child of subProcesses) {
-        catalogs[child.id] = {
-          supported: false,
-          reason: `O servidor "${serverId}" nao foi encontrado na configuracao do Fluiggers.`,
-          parentFields,
-          childFields: []
-        };
-      }
-      return catalogs;
-    }
-    await Promise.all(subProcesses.map(async (child) => {
-      const childProcessId = String(child.attributes?.process ?? '').trim();
-      if (!childProcessId) {
-        catalogs[child.id] = { supported: true, reason: '', parentFields, childFields: [] };
-        return;
-      }
-      try {
-        const remote = this.remoteFormCatalog.cachedSubProcessFormFields(server, processFormId, childProcessId)
-          ?? await this.remoteFormCatalog.subProcessFormFields(
-            server,
-            vscode.env.machineId,
-            processFormId,
-            childProcessId
-          );
-        catalogs[child.id] = {
-          supported: true,
-          reason: '',
-          parentFields: processFormId === '0' ? parentFields : remote.processFormFields,
-          childFields: remote.subProcessFormFields,
-          processFormId: remote.processFormId,
-          subProcessFormId: remote.subProcessFormId
-        };
-      } catch (error) {
-        catalogs[child.id] = {
-          supported: false,
-          reason: `Nao foi possivel consultar os campos do subprocesso: ${error.message}`,
-          parentFields,
-          childFields: []
-        };
-      }
-    }));
-    return catalogs;
   }
 
   async applyProcessManagerChanges(document, panel, elementId, assignment) {
@@ -1784,8 +1631,8 @@ class FluigProcessEditorProvider {
     try {
       const model = parseProcess(document.getText());
       const [formFields, expedientCatalog] = await Promise.all([
-        this.discoverEffectiveFormFields(document, model),
-        this.discoverEffectiveExpedientCatalog(document, model)
+        this.catalogs.formFields(document.uri, model),
+        this.catalogs.expedients(document.uri, model)
       ]);
       const result = patchTaskDeadline(document.getText(), elementId, configuration, {
         formFields,
@@ -1878,8 +1725,8 @@ class FluigProcessEditorProvider {
   async applySubProcessFormMapChanges(document, panel, elementId, maps) {
     try {
       const model = parseProcess(document.getText());
-      const formFields = await this.discoverEffectiveFormFields(document, model);
-      const catalogs = await this.discoverSubProcessFormFieldCatalogs(document, model, formFields);
+      const formFields = await this.catalogs.formFields(document.uri, model);
+      const catalogs = await this.catalogs.subProcessFormFields(document.uri, model, formFields);
       const catalog = catalogs[elementId];
       if (!catalog?.supported) throw new Error(catalog?.reason || 'Os campos dos formularios nao estao disponiveis.');
       const result = patchSubProcessFormMaps(document.getText(), elementId, maps, catalog);
@@ -2773,7 +2620,7 @@ class FluigProcessEditorProvider {
    * @param {string} ownerLabel
    */
   async resolveLinkedScriptFile(document, fileName, ownerLabel) {
-    if (path.basename(fileName) !== fileName || !/^[A-Za-z0-9._-]+\.js$/i.test(fileName)) {
+    if (path.basename(fileName) !== fileName || !/^[\p{L}\p{N}._ -]+\.js$/iu.test(fileName)) {
       throw new Error(`Referência de script da ${ownerLabel} insegura: ${fileName}.`);
     }
 

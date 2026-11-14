@@ -5,7 +5,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const { parseProcess } = require('../../src/bpmn/processModel');
-const { patchTaskAssignment } = require('../../src/bpmn/processPatcher');
+const { createConnectedTask, patchTaskAssignment } = require('../../src/bpmn/processPatcher');
 const { taskAssignmentDefinition } = require('../../src/bpmn/taskAssignment');
 
 const fixture = fs.readFileSync(
@@ -106,4 +106,15 @@ test('grava associação completa e recusa atividade sem atribuição', () => {
     () => patchTaskAssignment(fixture, 'mailtask31', { mechanism: 'Grupo', mechanismConfiguration: { groupId: 'TODOS' } }),
     /não aceita mecanismo/
   );
+});
+
+test('grava mecanismo e configuração em atividade recém-criada, sem os dois atributos', () => {
+  const created = createConnectedTask(fixture, { sourceId: 'task5', x: 900, y: 600 });
+  const result = patchTaskAssignment(created.text, created.taskId, {
+    mechanism: 'Papel',
+    mechanismConfiguration: { roleId: 'admin' }
+  });
+  const task = result.model.elements.find((item) => item.id === created.taskId);
+  assert.equal(task.attributes.managerMechanism, 'Papel');
+  assert.match(task.attributes.managerAssignmentControllerString, /<roleId>admin<\/roleId>/);
 });

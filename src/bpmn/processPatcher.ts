@@ -4580,7 +4580,11 @@ function patchMaterializedShapeLabel(text, element, value, patches) {
 
 function deduplicatePatches(patches) {
   const bySpan = new Map();
-  for (const patch of patches) bySpan.set(`${patch.start}:${patch.end}`, patch);
+  for (const patch of patches) {
+    // Dois atributos novos no mesmo nó entram no mesmo ponto; só o mesmo atributo é a mesma alteração.
+    const insertedAttribute = patch.start === patch.end ? patch.value.match(/^ ([\w:.-]+)="/)?.[1] : undefined;
+    bySpan.set(`${patch.start}:${patch.end}:${insertedAttribute ?? ''}`, patch);
+  }
   return [...bySpan.values()];
 }
 

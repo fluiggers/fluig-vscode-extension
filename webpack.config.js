@@ -3,6 +3,7 @@
 'use strict';
 
 const path = require('path');
+const webpack = require('webpack');
 
 /**@type {import('webpack').Configuration}*/
 const config = {
@@ -51,4 +52,21 @@ const config = {
     ]
   }
 };
-module.exports = config;
+/**
+ * CLI que edita .process fora do VS Code, para agentes e scripts. Reusa os módulos de src/bpmn
+ * que não importam `vscode`.
+ * @type {import('webpack').Configuration}
+ */
+const cliConfig = {
+  ...config,
+  entry: './src/bpmn/cli/main.ts',
+  output: {
+    path: path.resolve(__dirname, 'dist'),
+    filename: 'fluig-bpmn.js',
+    libraryTarget: 'commonjs2'
+  },
+  externals: {},
+  plugins: [new webpack.BannerPlugin({ banner: '#!/usr/bin/env node', raw: true, entryOnly: true })]
+};
+
+module.exports = [config, cliConfig];

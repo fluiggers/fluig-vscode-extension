@@ -107,7 +107,9 @@ function directSimpleChild(node, name) {
   return matches[0];
 }
 
+// O Fluig Studio grava <amount></amount> vazio nas regras que não usam quantidade.
 function normalizedStoredAmount(value, index) {
+  if (String(value).trim() === '') return 0;
   if (!/^\d+$/.test(String(value))) throw new Error(`Quantidade inválida na regra ${index + 1}.`);
   return Number(value);
 }
