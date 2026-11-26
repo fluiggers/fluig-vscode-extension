@@ -1,5 +1,9 @@
 # Change Log
 
+## 3.0.4-alpha
+
+Adiciona a CLI fluig-bpmn para agentes editarem arquivos .process.
+
 ## 3.0.3-alpha
 
 - Melhora a segurança ao instalar a FluiggersWidget, efetuando o download de um commit específico e realizando checksum;
